@@ -13,6 +13,11 @@ public partial class MainForm : Form
     private readonly List<BodyIndexRecord> _bodyRecords = new();
     private readonly List<DirectionalIndexRecord> _directionalRecords = new();
     private readonly List<FxIndexRecord> _fxRecords = new();
+    private string? _directionalPath;
+    private string? _iniDirectionalPath;
+    private string? _fxPath;
+    private GrhStorageFormat _directionalFormat;
+    private GrhStorageFormat _fxFormat;
     private List<int> _searchResults = new();
     private int _searchCursor;
 
@@ -232,7 +237,9 @@ public partial class MainForm : Form
 
     private void UpdateUi()
     {
-        saveButton.Enabled = _file is not null && _indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase);
+        var canSaveState = _indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase)
+            || _directionalPath is not null || _iniDirectionalPath is not null || _fxPath is not null;
+        saveButton.Enabled = _file is not null && canSaveState;
         statusLabel.Text = _file is null ? "Abre un Graficos.ind para comenzar." : $"GRH: {_file.Records.Count}";
     }
 
@@ -320,9 +327,14 @@ public partial class MainForm : Form
 
     private void SaveCurrentIndex()
     {
-        if (_file is null || !_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase))
+        if (_file is null)
         {
-            statusLabel.Text = $"Guardar para {StateCaption(_indexerState)} se habilitará con su escritor específico.";
+            statusLabel.Text = "No hay ningún índice cargado para guardar.";
+            return;
+        }
+        if (!_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase))
+        {
+            SaveCurrentNonGrh();
             return;
         }
         if (string.IsNullOrWhiteSpace(_loadedPath))
@@ -343,9 +355,14 @@ public partial class MainForm : Form
 
     private void SaveIndexAs()
     {
-        if (_file is null || !_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase))
+        if (_file is null)
         {
-            statusLabel.Text = $"Guardar para {StateCaption(_indexerState)} se habilitará con su escritor específico.";
+            statusLabel.Text = "No hay ningún índice cargado para guardar.";
+            return;
+        }
+        if (!_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase))
+        {
+            statusLabel.Text = $"Guardar como para {StateCaption(_indexerState)} se habilitará con su escritor específico.";
             return;
         }
         using var dialog = new SaveFileDialog { Filter = "Índice gráfico (*.ind)|*.ind|Todos los archivos (*.*)|*.*", FileName = Path.GetFileName(_loadedPath ?? "Graficos.ind") };
@@ -359,6 +376,54 @@ public partial class MainForm : Form
         }
         catch (Exception ex) { MessageBox.Show(this, ex.Message, "No se pudo guardar el índice", MessageBoxButtons.OK, MessageBoxIcon.Error); }
     }
+
+    private void SaveCurrentNonGrh()
+    {
+        var path = _directionalPath ?? _iniDirectionalPath ?? _fxPath;
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            statusLabel.Text = $"No hay archivo de {StateCaption(_indexerState)} cargado para guardar.";
+            return;
+        }
+        var answer = MessageBox.Show(this, $"¿Sobrescribir el índice actual?\n{path}", "Guardar índice", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+        if (answer != DialogResult.Yes) return;
+        try
+        {
+            ApplyNonGrhToModel();
+            if (_directionalPath is not null)
+                DirectionalIndexFile.Save(_directionalPath, _directionalRecords, _directionalFormat, _indexerState is "Body" or "Alas" or "Botas");
+            else if (_iniDirectionalPath is not null)
+                IniDirectionalIndexFile.Save(_iniDirectionalPath, _directionalRecords, _indexerState);
+            else if (_fxPath is not null)
+                FxIndexFile.Save(_fxPath, _fxRecords, _fxFormat);
+            statusLabel.Text = $"Guardado: {path}";
+        }
+        catch (Exception ex) { MessageBox.Show(this, ex.Message, "No se pudo guardar el índice", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+    }
+
+    private void ApplyNonGrhToModel()
+    {
+        if (indexList.SelectedIndex < 0) return;
+        if (_indexerState.Equals("Fx", StringComparison.OrdinalIgnoreCase) && indexList.SelectedIndex < _fxRecords.Count)
+        {
+            var item = _fxRecords[indexList.SelectedIndex];
+            item.Animation = ParseInt(bmpText.Text);
+            item.OffsetX = ParseShort(xText.Text);
+            item.OffsetY = ParseShort(yText.Text);
+            return;
+        }
+        if (indexList.SelectedIndex >= _directionalRecords.Count) return;
+        var directional = _directionalRecords[indexList.SelectedIndex];
+        var values = framesText.Text.Split('-', StringSplitOptions.RemoveEmptyEntries)
+            .Select(value => int.TryParse(value, out var number) ? number : 0)
+            .ToArray();
+        if (values.Length == 4) directional.Directions = values;
+        else directional.Directions[0] = ParseInt(bmpText.Text);
+        directional.OffsetX = ParseShort(xText.Text);
+        directional.OffsetY = ParseShort(yText.Text);
+    }
+
+    private static int ParseInt(object? value) => int.TryParse(Convert.ToString(value), out var result) ? result : 0;
 
     private void viewButton_Click(object? sender, EventArgs e)
     {
@@ -811,9 +876,11 @@ public partial class MainForm : Form
     {
         _bodyRecords.Clear();
         _directionalRecords.Clear();
+        _directionalPath = null;
+        _iniDirectionalPath = null;
         var path = Path.Combine(ResolvePath(_settings.InitPath), "Personajes.ind");
         if (!File.Exists(path)) { statusLabel.Text = $"No se encontró: {path}"; return; }
-        try { _directionalRecords.AddRange(DirectionalIndexFile.LoadAuto(path, includesOffsets: true)); }
+        try { _directionalRecords.AddRange(LoadDirectionalAutoWithFormat(path, includesOffsets: true, out _directionalFormat)); _directionalPath = path; }
         catch (InvalidDataException ex) { statusLabel.Text = $"No se pudo cargar Bodies: {ex.Message}"; return; }
         foreach (var item in _directionalRecords)
             _bodyRecords.Add(new BodyIndexRecord { Id = item.Id, Walk1 = item.Directions[0], Walk2 = item.Directions[1], Walk3 = item.Directions[2], Walk4 = item.Directions[3], HeadOffsetX = item.OffsetX, HeadOffsetY = item.OffsetY });
@@ -835,12 +902,20 @@ public partial class MainForm : Form
         var initPath = ResolvePath(_settings.InitPath);
         var binaryPath = Path.Combine(initPath, baseName + ".ind");
         var iniPath = Path.Combine(initPath, baseName + ".dat");
+        _directionalPath = null;
+        _iniDirectionalPath = null;
         try
         {
             if (File.Exists(binaryPath))
-                _directionalRecords.AddRange(DirectionalIndexFile.LoadAuto(binaryPath, includesOffsets: state is "Alas" or "Botas"));
+            {
+                _directionalRecords.AddRange(LoadDirectionalAutoWithFormat(binaryPath, includesOffsets: state is "Alas" or "Botas", out _directionalFormat));
+                _directionalPath = binaryPath;
+            }
             else if (File.Exists(iniPath))
+            {
                 _directionalRecords.AddRange(IniDirectionalIndexFile.Load(iniPath, state));
+                _iniDirectionalPath = iniPath;
+            }
             else
                 statusLabel.Text = $"No se encontró {baseName}.ind ni {baseName}.dat en {initPath}.";
         }
@@ -853,6 +928,8 @@ public partial class MainForm : Form
         var fileName = state == "Armas" ? "Armas.dat" : "Escudos.dat";
         var path = Path.Combine(ResolvePath(_settings.InitPath), fileName);
         if (!File.Exists(path)) { statusLabel.Text = $"No se encontró: {path}"; return; }
+        _directionalPath = null;
+        _iniDirectionalPath = path;
         try { _directionalRecords.AddRange(IniDirectionalIndexFile.Load(path, state)); }
         catch (InvalidDataException ex) { statusLabel.Text = $"No se pudo cargar {StateCaption(state)}: {ex.Message}"; }
     }
@@ -860,6 +937,7 @@ public partial class MainForm : Form
     private void LoadFxState()
     {
         _fxRecords.Clear();
+        _fxPath = null;
         var initPath = ResolvePath(_settings.InitPath);
         foreach (var fileName in new[] { "Fxs.ind", "Fxsz.ind" })
         {
@@ -867,12 +945,41 @@ public partial class MainForm : Form
             if (!File.Exists(path)) continue;
             try
             {
-                _fxRecords.AddRange(FxIndexFile.LoadAuto(path));
+                _fxRecords.AddRange(LoadFxAutoWithFormat(path, out _fxFormat));
+                _fxPath = path;
                 if (_fxRecords.Count > 0) return;
             }
             catch (InvalidDataException)
             {
             }
+        }
+    }
+
+    private static List<DirectionalIndexRecord> LoadDirectionalAutoWithFormat(string path, bool includesOffsets, out GrhStorageFormat format)
+    {
+        try
+        {
+            format = GrhStorageFormat.LegacyInteger;
+            return DirectionalIndexFile.Load(path, format, includesOffsets);
+        }
+        catch (InvalidDataException)
+        {
+            format = GrhStorageFormat.LongIndexes;
+            return DirectionalIndexFile.Load(path, format, includesOffsets);
+        }
+    }
+
+    private static List<FxIndexRecord> LoadFxAutoWithFormat(string path, out GrhStorageFormat format)
+    {
+        try
+        {
+            format = GrhStorageFormat.LegacyInteger;
+            return FxIndexFile.Load(path, format);
+        }
+        catch (InvalidDataException)
+        {
+            format = GrhStorageFormat.LongIndexes;
+            return FxIndexFile.Load(path, format);
         }
     }
 

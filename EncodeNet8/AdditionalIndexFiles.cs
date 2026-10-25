@@ -31,6 +31,34 @@ public static class FxIndexFile
         }
         return result;
     }
+
+    public static void Save(string path, IReadOnlyCollection<FxIndexRecord> records, GrhStorageFormat format)
+    {
+        var count = records.Count == 0 ? 0 : records.Max(record => record.Id);
+        var byId = records.ToDictionary(record => record.Id);
+        var prefix = File.Exists(path) ? ReadPrefix(path) : new byte[HeaderSize];
+        using var stream = File.Create(path);
+        using var writer = new BinaryWriter(stream);
+        writer.Write(prefix);
+        writer.Write((short)Math.Min(count, short.MaxValue));
+        for (var i = 1; i <= count; i++)
+        {
+            byId.TryGetValue(i, out var record);
+            var animation = record?.Animation ?? 0;
+            if (format == GrhStorageFormat.LongIndexes) writer.Write(animation);
+            else writer.Write(animation is >= short.MinValue and <= short.MaxValue ? (short)animation : (short)0);
+            writer.Write(record?.OffsetX ?? (short)0);
+            writer.Write(record?.OffsetY ?? (short)0);
+        }
+    }
+
+    private static byte[] ReadPrefix(string path)
+    {
+        using var stream = File.OpenRead(path);
+        using var reader = new BinaryReader(stream);
+        var prefix = reader.ReadBytes(HeaderSize);
+        return prefix.Length == HeaderSize ? prefix : new byte[HeaderSize];
+    }
 }
 
 public static class IniDirectionalIndexFile
@@ -96,5 +124,47 @@ public static class IniDirectionalIndexFile
             .OrderBy(pair => pair.Key)
             .Select(pair => new DirectionalIndexRecord { Id = pair.Key, Directions = pair.Value })
             .ToList();
+    }
+
+    public static void Save(string path, IReadOnlyCollection<DirectionalIndexRecord> records, string state)
+    {
+        var countKey = state switch
+        {
+            "Armas" => "NumArmas",
+            "Escudos" => "NumEscudos",
+            "Alas" => "NumAlas",
+            "Capas" => "NumCapas",
+            "Botas" => "NumBotas",
+            _ => throw new InvalidDataException($"Estado INI no soportado: {state}")
+        };
+        var sectionPrefix = state switch
+        {
+            "Armas" => "ARMA",
+            "Escudos" => "ESC",
+            "Alas" => "ALAS",
+            "Capas" => "CAPA",
+            "Botas" => "BOTA",
+            _ => string.Empty
+        };
+        var keyPrefix = state switch
+        {
+            "Alas" => "ALAS",
+            "Capas" => "Capa",
+            "Botas" => "Bota",
+            _ => "Dir"
+        };
+        var count = records.Count == 0 ? 0 : records.Max(record => record.Id);
+        var byId = records.ToDictionary(record => record.Id);
+        using var writer = new StreamWriter(path, false);
+        writer.WriteLine("[INIT]");
+        writer.WriteLine($"{countKey}={count}");
+        for (var i = 1; i <= count; i++)
+        {
+            if (!byId.TryGetValue(i, out var record)) continue;
+            writer.WriteLine();
+            writer.WriteLine($"[{sectionPrefix}{i}]");
+            for (var direction = 0; direction < 4; direction++)
+                writer.WriteLine($"{keyPrefix}{direction + 1}={record.Directions[direction]}");
+        }
     }
 }

@@ -32,16 +32,16 @@ public sealed class BodyIndexRecord
 
 public sealed class DirectionalIndexRecord
 {
-    public int Id { get; init; }
-    public int[] Directions { get; init; } = new int[4];
-    public short OffsetX { get; init; }
-    public short OffsetY { get; init; }
+    public int Id { get; set; }
+    public int[] Directions { get; set; } = new int[4];
+    public short OffsetX { get; set; }
+    public short OffsetY { get; set; }
 }
 
 public sealed class FxIndexRecord
 {
-    public int Id { get; init; }
-    public int Animation { get; init; }
-    public short OffsetX { get; init; }
-    public short OffsetY { get; init; }
+    public int Id { get; set; }
+    public int Animation { get; set; }
+    public short OffsetX { get; set; }
+    public short OffsetY { get; set; }
 }

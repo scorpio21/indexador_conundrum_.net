@@ -43,4 +43,40 @@ public static class DirectionalIndexFile
 
         return result;
     }
+
+    public static void Save(string path, IReadOnlyCollection<DirectionalIndexRecord> records, GrhStorageFormat format, bool includesOffsets)
+    {
+        var count = records.Count == 0 ? 0 : records.Max(record => record.Id);
+        var byId = records.ToDictionary(record => record.Id);
+        var prefix = File.Exists(path) ? ReadPrefix(path) : new byte[HeaderSize];
+        using var stream = File.Create(path);
+        using var writer = new BinaryWriter(stream);
+        writer.Write(prefix);
+        writer.Write((short)Math.Min(count, short.MaxValue));
+        for (var i = 1; i <= count; i++)
+        {
+            byId.TryGetValue(i, out var record);
+            var directions = record?.Directions ?? new int[4];
+            for (var direction = 0; direction < 4; direction++) WriteIndex(writer, directions[direction], format);
+            if (includesOffsets)
+            {
+                writer.Write(record?.OffsetX ?? (short)0);
+                writer.Write(record?.OffsetY ?? (short)0);
+            }
+        }
+    }
+
+    private static byte[] ReadPrefix(string path)
+    {
+        using var stream = File.OpenRead(path);
+        using var reader = new BinaryReader(stream);
+        var prefix = reader.ReadBytes(HeaderSize);
+        return prefix.Length == HeaderSize ? prefix : new byte[HeaderSize];
+    }
+
+    private static void WriteIndex(BinaryWriter writer, int value, GrhStorageFormat format)
+    {
+        if (format == GrhStorageFormat.LongIndexes) writer.Write(value);
+        else writer.Write(value is >= short.MinValue and <= short.MaxValue ? (short)value : (short)0);
+    }
 }

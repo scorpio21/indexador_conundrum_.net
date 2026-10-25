@@ -2,7 +2,16 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
-## [0.0.11-beta] - 2026-10-25
+## [0.0.12-beta] - 2026-10-25
+
+### Completado — Issues #3 y #4
+
+- Se añadieron escritores para índices direccionales `.ind`, FX `.ind` y equipamiento `.dat`.
+- El guardado conserva la cabecera binaria cuando existe y vuelve a cargar los datos guardados sin pérdida de formato Integer/Long.
+- Se añadieron pruebas de ida y vuelta para registros direccionales, FX y Botas INI.
+- Bodies, Cabezas, Cascos, Capas, Alas y Botas quedan cubiertos; los tres últimos usan fixtures porque no están presentes en la copia actual del cliente.
+- FX, Armas y Escudos quedan cubiertos con lectores/escritores y validación de archivos reales.
+- Issues cerrados: [#3](https://github.com/scorpio21/indexador_conundrum_.net/issues/3) y [#4](https://github.com/scorpio21/indexador_conundrum_.net/issues/4).
 
 ### Corrección — Issue #6
 

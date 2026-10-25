@@ -154,6 +154,10 @@ static void TestDirectionalReader(string root)
         var records = DirectionalIndexFile.Load(path, format, includesOffsets: true);
         Assert(records.Count == 2 && records[1].Directions[3] == 17, $"lector directional {format}");
         Assert(records[1].OffsetX == 3 && records[1].OffsetY == 4, $"offsets directional {format}");
+        var roundtrip = Path.Combine(root, $"Personajes-roundtrip-{format}.ind");
+        DirectionalIndexFile.Save(roundtrip, records, format, includesOffsets: true);
+        var reopened = DirectionalIndexFile.Load(roundtrip, format, includesOffsets: true);
+        Assert(reopened.Count == 2 && reopened[0].Directions[0] == 10, $"guardado directional {format}");
     }
 }
 
@@ -180,6 +184,9 @@ static void TestAdditionalReaders(string root)
     }
     var fx = FxIndexFile.Load(fxPath, GrhStorageFormat.LegacyInteger);
     Assert(fx.Count == 1 && fx[0].Animation == 20 && fx[0].OffsetX == 1, "lector FX");
+    var fxRoundtrip = Path.Combine(root, "Fxs-roundtrip.ind");
+    FxIndexFile.Save(fxRoundtrip, fx, GrhStorageFormat.LegacyInteger);
+    Assert(FxIndexFile.Load(fxRoundtrip, GrhStorageFormat.LegacyInteger).Count == 1, "guardado FX");
 
     var weaponPath = Path.Combine(root, "Armas.dat");
     File.WriteAllText(weaponPath, "[INIT]\nNumArmas=3\n\n[ARMA1]\nDir1=10\nDir2=11\nDir3=12\nDir4=13\n\n[ARMA3]\nDir1=20\nDir2=21\nDir3=22\nDir4=23\n");
@@ -190,4 +197,7 @@ static void TestAdditionalReaders(string root)
     File.WriteAllText(bootsPath, "[INIT]\nNumBotas=2\n\n[Bota1]\nBota1=30\nBota2=31\nBota3=32\nBota4=33\n");
     var boots = IniDirectionalIndexFile.Load(bootsPath, "Botas");
     Assert(boots.Count == 1 && boots[0].Directions[2] == 32, "lector de botas INI");
+    var bootsRoundtrip = Path.Combine(root, "Botas-roundtrip.dat");
+    IniDirectionalIndexFile.Save(bootsRoundtrip, boots, "Botas");
+    Assert(IniDirectionalIndexFile.Load(bootsRoundtrip, "Botas").Count == 1, "guardado INI direccional");
 }
