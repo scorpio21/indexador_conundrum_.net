@@ -62,10 +62,10 @@ public partial class MainForm : Form
         archivoMenu.DropDownItems.Add(MenuItem("Salir", (_, _) => Close()));
 
         edicionMenu.DropDownItems.Add(MenuItem("Nuevo/Ir A", newSearchButton_Click, Keys.Control | Keys.F));
-        edicionMenu.DropDownItems.Add(MenuItem("Mover", (_, _) => MoveOrCopySelectedGrh(deleteOriginal: true)));
-        edicionMenu.DropDownItems.Add(MenuItem("Copiar", (_, _) => MoveOrCopySelectedGrh(deleteOriginal: false)));
+        edicionMenu.DropDownItems.Add(MenuItem("Mover", (_, _) => MoveOrCopySelectedIndex(deleteOriginal: true)));
+        edicionMenu.DropDownItems.Add(MenuItem("Copiar", (_, _) => MoveOrCopySelectedIndex(deleteOriginal: false)));
         edicionMenu.DropDownItems.Add(MenuItem("Suprimir", deleteButton_Click, Keys.Delete));
-        edicionMenu.DropDownItems.Add(MenuItem("Clonar...", (_, _) => CloneSelectedGrh()));
+        edicionMenu.DropDownItems.Add(MenuItem("Clonar...", (_, _) => CloneSelectedIndex()));
         edicionMenu.DropDownItems.Add(MenuItem("Color de fondo...", (_, _) => ShowPending("Color de fondo")));
 
         herramientasMenu.DropDownItems.Add(MenuItem("Buscar Grh con bmp...", (_, _) => SearchGrhWithBmp()));
@@ -533,6 +533,95 @@ public partial class MainForm : Form
         statusLabel.Text = $"GRH {source.Id} {(deleteOriginal ? "movido" : "copiado")} a {targetId}. Guarda los cambios para escribir el índice.";
     }
 
+    private void MoveOrCopySelectedIndex(bool deleteOriginal)
+    {
+        if (_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase))
+        {
+            MoveOrCopySelectedGrh(deleteOriginal);
+            return;
+        }
+        if (_indexerState.Equals("Resource", StringComparison.OrdinalIgnoreCase))
+        {
+            SetUtilError($"{(deleteOriginal ? "Mover" : "Copiar")} no está disponible para recursos.");
+            return;
+        }
+        if (indexList.SelectedIndex < 0)
+        {
+            SetUtilError("Selecciona primero un índice.");
+            return;
+        }
+
+        var sourceId = int.TryParse(indexList.SelectedItem?.ToString(), out var parsedId) ? parsedId : 0;
+        if (sourceId <= 0)
+        {
+            SetUtilError("El índice seleccionado no es válido.");
+            return;
+        }
+        var targetText = Microsoft.VisualBasic.Interaction.InputBox(
+            $"Introduzca número de {StateCaption(_indexerState)} al que quieres {(deleteOriginal ? "mover" : "copiar")} el índice {sourceId}.",
+            deleteOriginal ? $"Mover {StateCaption(_indexerState)}" : $"Copiar {StateCaption(_indexerState)}", sourceId.ToString());
+        if (string.IsNullOrWhiteSpace(targetText)) return;
+        if (!int.TryParse(targetText, out var targetId) || targetId <= 0 || targetId >= 31000)
+        {
+            SetUtilError("Introduzca un número de índice válido.");
+            return;
+        }
+        if (targetId == sourceId)
+        {
+            SetUtilError("El índice de destino debe ser diferente del origen.");
+            return;
+        }
+
+        if (_indexerState.Equals("Fx", StringComparison.OrdinalIgnoreCase))
+        {
+            var source = _fxRecords.FirstOrDefault(record => record.Id == sourceId);
+            if (source is null) { SetUtilError("No se encontró el FX seleccionado."); return; }
+            var existing = _fxRecords.FirstOrDefault(record => record.Id == targetId);
+            if (existing is not null && !ConfirmOverwrite(targetId)) return;
+            if (existing is not null) _fxRecords.Remove(existing);
+            _fxRecords.Add(new FxIndexRecord { Id = targetId, Animation = source.Animation, OffsetX = source.OffsetX, OffsetY = source.OffsetY });
+            if (deleteOriginal) _fxRecords.Remove(source);
+            RefreshFxList();
+        }
+        else
+        {
+            var source = _directionalRecords.FirstOrDefault(record => record.Id == sourceId);
+            if (source is null) { SetUtilError("No se encontró el índice seleccionado."); return; }
+            var existing = _directionalRecords.FirstOrDefault(record => record.Id == targetId);
+            if (existing is not null && !ConfirmOverwrite(targetId)) return;
+            if (existing is not null)
+            {
+                _directionalRecords.Remove(existing);
+                if (_indexerState.Equals("Body", StringComparison.OrdinalIgnoreCase))
+                    _bodyRecords.RemoveAll(record => record.Id == targetId);
+            }
+            _directionalRecords.Add(new DirectionalIndexRecord
+            {
+                Id = targetId,
+                Directions = source.Directions.ToArray(),
+                OffsetX = source.OffsetX,
+                OffsetY = source.OffsetY
+            });
+            if (deleteOriginal)
+            {
+                _directionalRecords.Remove(source);
+                if (_indexerState.Equals("Body", StringComparison.OrdinalIgnoreCase))
+                    _bodyRecords.RemoveAll(record => record.Id == sourceId);
+            }
+            if (_indexerState.Equals("Body", StringComparison.OrdinalIgnoreCase)) RefreshBodyList();
+            else RefreshDirectionalList();
+        }
+
+        RebuildReferenceCounts();
+        SelectGrhById(targetId);
+        ClearUtilError();
+        statusLabel.Text = $"{StateCaption(_indexerState)} {sourceId} {(deleteOriginal ? "movido" : "copiado")} a {targetId}. Guarda los cambios para escribir el índice.";
+    }
+
+    private bool ConfirmOverwrite(int targetId) => MessageBox.Show(this,
+        $"El índice {targetId} ya existe. ¿Deseas sobrescribirlo?", "Aviso",
+        MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes;
+
     private void CloneSelectedGrh()
     {
         if (!_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase) || _file is null)
@@ -581,6 +670,74 @@ public partial class MainForm : Form
         SelectGrhById(firstId);
         ClearUtilError();
         statusLabel.Text = $"Se clonó el GRH {source.Id} {count} vez/veces desde {firstId}. Guarda los cambios para escribir el índice.";
+    }
+
+    private void CloneSelectedIndex()
+    {
+        if (_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase))
+        {
+            CloneSelectedGrh();
+            return;
+        }
+        if (_indexerState.Equals("Resource", StringComparison.OrdinalIgnoreCase))
+        {
+            SetUtilError("Clonar no está disponible para recursos.");
+            return;
+        }
+        if (indexList.SelectedIndex < 0)
+        {
+            SetUtilError("Selecciona primero un índice.");
+            return;
+        }
+
+        var sourceId = int.TryParse(indexList.SelectedItem?.ToString(), out var parsedId) ? parsedId : 0;
+        if (sourceId <= 0) { SetUtilError("El índice seleccionado no es válido."); return; }
+        var firstText = Microsoft.VisualBasic.Interaction.InputBox(
+            $"Introduzca el primer número de {StateCaption(_indexerState)} para clonar {sourceId}.", "Clonar índice", (sourceId + 1).ToString());
+        if (string.IsNullOrWhiteSpace(firstText)) return;
+        var countText = Microsoft.VisualBasic.Interaction.InputBox("Introduzca la cantidad de copias.", "Clonar índice", "1");
+        if (string.IsNullOrWhiteSpace(countText)) return;
+        if (!int.TryParse(firstText, out var firstId) || !int.TryParse(countText, out var count) || firstId <= 0 || count <= 0 || firstId >= 31000 || count > 31000 - firstId)
+        {
+            SetUtilError("El rango de clonación no es válido.");
+            return;
+        }
+
+        var targets = Enumerable.Range(firstId, count).ToList();
+        var occupied = targets.Where(target => indexList.Items.Cast<object>().Any(item => string.Equals(item.ToString(), target.ToString(), StringComparison.OrdinalIgnoreCase))).ToList();
+        if (occupied.Count > 0 && MessageBox.Show(this, $"Ya existen los índices: {string.Join(", ", occupied)}. ¿Deseas sobrescribirlos?", "Aviso", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+            return;
+
+        if (_indexerState.Equals("Fx", StringComparison.OrdinalIgnoreCase))
+        {
+            var source = _fxRecords.FirstOrDefault(record => record.Id == sourceId);
+            if (source is null) { SetUtilError("No se encontró el FX seleccionado."); return; }
+            _fxRecords.RemoveAll(record => targets.Contains(record.Id));
+            foreach (var target in targets)
+                _fxRecords.Add(new FxIndexRecord { Id = target, Animation = source.Animation, OffsetX = source.OffsetX, OffsetY = source.OffsetY });
+            RefreshFxList();
+        }
+        else
+        {
+            var source = _directionalRecords.FirstOrDefault(record => record.Id == sourceId);
+            if (source is null) { SetUtilError("No se encontró el índice seleccionado."); return; }
+            _directionalRecords.RemoveAll(record => targets.Contains(record.Id));
+            foreach (var target in targets)
+                _directionalRecords.Add(new DirectionalIndexRecord { Id = target, Directions = source.Directions.ToArray(), OffsetX = source.OffsetX, OffsetY = source.OffsetY });
+            if (_indexerState.Equals("Body", StringComparison.OrdinalIgnoreCase))
+            {
+                _bodyRecords.RemoveAll(record => targets.Contains(record.Id));
+                foreach (var target in targets)
+                    _bodyRecords.Add(new BodyIndexRecord { Id = target, Walk1 = source.Directions[0], Walk2 = source.Directions[1], Walk3 = source.Directions[2], Walk4 = source.Directions[3], HeadOffsetX = source.OffsetX, HeadOffsetY = source.OffsetY });
+                RefreshBodyList();
+            }
+            else RefreshDirectionalList();
+        }
+
+        RebuildReferenceCounts();
+        SelectGrhById(firstId);
+        ClearUtilError();
+        statusLabel.Text = $"Se clonó el índice {sourceId} {count} vez/veces desde {firstId}. Guarda los cambios para escribir el índice.";
     }
 
     private static GrhRecord CloneGrh(GrhRecord source, int id) => new()

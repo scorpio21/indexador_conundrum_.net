@@ -2,6 +2,16 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.26-beta] - 2026-10-26
+
+### En progreso — Issue #6
+
+- `Mover`, `Copiar` y `Clonar...` se amplían a Bodies, Cabezas, Cascos, Alas, Capas, Botas, Armas, Escudos y FX.
+- Los registros direccionales conservan sus cuatro GRH y offsets X/Y.
+- Bodies mantiene sincronizada su representación de compatibilidad con el índice direccional.
+- Se mantienen validaciones de límites, confirmación de sobrescritura y protección de Resource.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.25-beta] - 2026-10-26
 
 ### En progreso — Issue #6
