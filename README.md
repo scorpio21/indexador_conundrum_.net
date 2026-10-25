@@ -1,4 +1,4 @@
-# EncodeNet8 — v0.0.2-beta
+# EncodeNet8 — v0.0.3-beta
 
 Migración progresiva del indexador de gráficos de Conundrum/AOSpain desde Visual Basic 6 a C# .NET 8 WinForms.
 
@@ -13,7 +13,8 @@ La base funcional actual incluye:
 - detección del encabezado de 263 bytes del formato VB6;
 - carga automática de `Init\\Graficos.ind` y resolución de rutas configurables;
 - menú principal inspirado en el indexador original;
-- cambio de estado GRH y Bodies, lista de índices, selección, edición básica y visor GDI+;
+- cambio de estado para Gráficos, Bodies, Cabezas, Cascos, Escudos, Armas, Alas, Capas, FX, Recursos y Botas;
+- listas con restauración de selección por estado y visor GDI+ para GRH/Bodies;
 - configuración persistente en `EncodeNet8.settings.json`;
 - auditoría de la migración en [AUDITORIA_MIGRACION_VB6_NET8.md](AUDITORIA_MIGRACION_VB6_NET8.md).
 
@@ -21,7 +22,7 @@ La migración todavía es parcial. Las búsquedas, el autoindexador, la edición
 
 ## Versionado y seguimiento
 
-La versión actual es `v0.0.2-beta`. Cada mejora relevante incrementará la versión y se registrará en `CHANGELOG.md` con la referencia al issue correspondiente.
+La versión actual es `v0.0.3-beta`. Cada mejora relevante incrementará la versión y se registrará en `CHANGELOG.md` con la referencia al issue correspondiente.
 
 - `beta`: etapa de migración y validación, todavía no estable.
 - `patch`: corrección compatible sin añadir una fase nueva.

@@ -12,6 +12,8 @@ public partial class MainForm : Form
     private readonly Dictionary<string, int> _lastIndexByState = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<BodyIndexRecord> _bodyRecords = new();
 
+    private static readonly string[] AllStates = { "Grh", "Body", "Cabezas", "Cascos", "Escudos", "Armas", "Alas", "Capas", "Fx", "Resource", "Botas" };
+
     public MainForm()
     {
         InitializeComponent();
@@ -211,7 +213,7 @@ public partial class MainForm : Form
         if (_file is null) return;
         foreach (var record in _file.Records)
             indexList.Items.Add(record.Id);
-        if (indexList.Items.Count > 0) indexList.SelectedIndex = 0;
+        ComprobarIndexLista();
         UpdateUi();
     }
 
@@ -244,6 +246,17 @@ public partial class MainForm : Form
         if (_indexerState.Equals("Body", StringComparison.OrdinalIgnoreCase))
         {
             ClickBodyEnLista();
+            return;
+        }
+        if (!_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase))
+        {
+            _lastIndexByState[_indexerState] = indexList.SelectedIndex;
+            grhText.Text = indexList.SelectedItem?.ToString() ?? "";
+            foreach (var box in new[] { bmpText, framesText, heightText, widthText, speedText, xText, yText, tileHeightText, tileWidthText, referencesText }) box.Clear();
+            _selectedRecord = null;
+            _drawTimer.Stop();
+            previewPanel.Invalidate();
+            statusLabel.Text = $"{StateCaption(_indexerState)} {grhText.Text} seleccionado. Detalles pendientes del lector de este índice.";
             return;
         }
         if (_file is null || indexList.SelectedIndex < 0) return;
@@ -291,18 +304,19 @@ public partial class MainForm : Form
 
     private void CambiarEstado(string state)
     {
-        _indexerState = state;
+        _indexerState = NormalizeState(state);
         _drawTimer.Stop();
         _selectedRecord = null;
         previewPanel.Invalidate();
+        ConfigureStateFields(_indexerState);
 
-        if (state.Equals("Grh", StringComparison.OrdinalIgnoreCase))
+        if (_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase))
         {
             if (_file is null) LoadConfiguredGraphics();
-            else RefreshGrid();
+            RefreshGrid();
             statusLabel.Text = $"Estado Gráficos seleccionado. GRH cargados: {_file?.Records.Count ?? 0}.";
         }
-        else if (state.Equals("Body", StringComparison.OrdinalIgnoreCase))
+        else if (_indexerState.Equals("Body", StringComparison.OrdinalIgnoreCase))
         {
             if (_file is null) LoadConfiguredGraphics();
             LoadBodies();
@@ -311,8 +325,78 @@ public partial class MainForm : Form
         }
         else
         {
-            indexList.Items.Clear();
-            statusLabel.Text = $"Estado {state} seleccionado.";
+            LoadStateSlots(_indexerState);
+            statusLabel.Text = $"Estado {StateCaption(_indexerState)} seleccionado. {indexList.Items.Count} índices disponibles.";
+        }
+
+        ComprobarIndexLista();
+    }
+
+    private static string NormalizeState(string state)
+    {
+        if (state.Equals("Bodies", StringComparison.OrdinalIgnoreCase)) return "Body";
+        if (state.Equals("Gráficos", StringComparison.OrdinalIgnoreCase)) return "Grh";
+        return AllStates.FirstOrDefault(x => x.Equals(state, StringComparison.OrdinalIgnoreCase)) ?? "Grh";
+    }
+
+    private static string StateCaption(string state) => state switch
+    {
+        "Grh" => "Gráficos",
+        "Body" => "Bodies",
+        "Fx" => "FX",
+        "Resource" => "Recursos",
+        _ => state
+    };
+
+    private void ConfigureStateFields(string state)
+    {
+        var textBoxes = new[] { bmpText, framesText, heightText, widthText, speedText, xText, yText, tileHeightText, tileWidthText, referencesText };
+        var labels = new[] { bmpLabel, framesLabel, heightLabel, widthLabel, speedLabel, xLabel, yLabel, tileHeightLabel, tileWidthLabel, referencesLabel };
+        foreach (var control in textBoxes) control.Visible = true;
+        foreach (var control in labels) control.Visible = true;
+
+        if (state == "Grh")
+        {
+            grhLabel.Text = "Grh:";
+            bmpLabel.Text = "Numero BMP:";
+            framesLabel.Text = "Numero Frames:";
+            heightLabel.Text = "Alto:";
+            widthLabel.Text = "Ancho:";
+            speedLabel.Text = "Velocidad:";
+            xLabel.Text = "Posicion X:";
+            yLabel.Text = "Posicion Y:";
+            tileHeightLabel.Text = "Alto Titles:";
+            tileWidthLabel.Text = "Ancho Titles:";
+            referencesLabel.Text = "Referencias:";
+            return;
+        }
+
+        if (state == "Fx")
+        {
+            grhLabel.Text = "Fx:";
+            bmpLabel.Text = "NumGrh:";
+            framesLabel.Text = "Offset:";
+            HideStateFields(3);
+            return;
+        }
+
+        grhLabel.Text = $"{StateCaption(state)}:";
+        bmpLabel.Text = "Subir:";
+        framesLabel.Text = "Derecha:";
+        heightLabel.Text = "Abajo:";
+        widthLabel.Text = "Izquierda:";
+        speedLabel.Text = state == "Body" || state == "Alas" ? "Offset:" : "";
+        HideStateFields(state == "Body" || state == "Alas" ? 6 : 5);
+    }
+
+    private void HideStateFields(int visibleCount)
+    {
+        var textBoxes = new[] { bmpText, framesText, heightText, widthText, speedText, xText, yText, tileHeightText, tileWidthText, referencesText };
+        var labels = new[] { bmpLabel, framesLabel, heightLabel, widthLabel, speedLabel, xLabel, yLabel, tileHeightLabel, tileWidthLabel, referencesLabel };
+        for (var i = visibleCount; i < textBoxes.Length; i++)
+        {
+            textBoxes[i].Visible = false;
+            labels[i].Visible = false;
         }
     }
 
@@ -328,6 +412,74 @@ public partial class MainForm : Form
         if (lastIndex < 0) indexList.SelectedIndex = -1;
         else if (lastIndex >= indexList.Items.Count) indexList.SelectedIndex = indexList.Items.Count - 1;
         else indexList.SelectedIndex = lastIndex;
+    }
+
+    private void LoadStateSlots(string state)
+    {
+        indexList.Items.Clear();
+        var initPath = ResolvePath(_settings.InitPath);
+        var candidates = state switch
+        {
+            "Cabezas" => new[] { "Cabezas.ind" },
+            "Cascos" => new[] { "Cascos.ind" },
+            "Fx" => new[] { "Fxs.ind", "Fxsz.ind" },
+            "Armas" => new[] { "Armas.dat" },
+            "Escudos" => new[] { "Escudos.dat" },
+            "Alas" => new[] { "Alas.ind", "Alas.dat" },
+            "Capas" => new[] { "Capas.ind", "Capas.dat" },
+            "Botas" => new[] { "Botas.ind", "Botas.dat" },
+            _ => Array.Empty<string>()
+        };
+
+        foreach (var candidate in candidates)
+        {
+            var path = Path.Combine(initPath, candidate);
+            if (!File.Exists(path)) continue;
+            var count = Path.GetExtension(path).Equals(".ind", StringComparison.OrdinalIgnoreCase)
+                ? ReadBinaryIndexCount(path)
+                : ReadIniIndexCount(path, state);
+            for (var i = 1; i <= count; i++) indexList.Items.Add(i);
+            if (count > 0) return;
+        }
+    }
+
+    private static int ReadBinaryIndexCount(string path)
+    {
+        using var stream = File.OpenRead(path);
+        if (stream.Length < 265) return 0;
+        stream.Position = 263;
+        using var reader = new BinaryReader(stream);
+        var count = reader.ReadInt16();
+        return count > 0 ? count : 0;
+    }
+
+    private static int ReadIniIndexCount(string path, string state)
+    {
+        var key = state switch
+        {
+            "Armas" => "NumArmas",
+            "Escudos" => "NumEscudos",
+            "Alas" => "NumAlas",
+            "Capas" => "NumCapas",
+            "Botas" => "NumBotas",
+            _ => "NumFxs"
+        };
+        var inInit = false;
+        foreach (var rawLine in File.ReadLines(path))
+        {
+            var line = rawLine.Trim();
+            if (line.StartsWith("["))
+            {
+                inInit = line.Equals("[INIT]", StringComparison.OrdinalIgnoreCase);
+                continue;
+            }
+            if (!inInit) continue;
+            var separator = line.IndexOf('=');
+            if (separator <= 0) continue;
+            if (!line[..separator].Trim().Equals(key, StringComparison.OrdinalIgnoreCase)) continue;
+            return int.TryParse(line[(separator + 1)..].Trim(), out var count) && count > 0 ? count : 0;
+        }
+        return 0;
     }
 
     private void drawTimer_Tick(object? sender, EventArgs e)
@@ -431,11 +583,12 @@ public partial class MainForm : Form
     {
         indexList.Items.Clear();
         foreach (var body in _bodyRecords) indexList.Items.Add(body.Id);
+        ComprobarIndexLista();
     }
 
     private void ClickBodyEnLista()
     {
-        if (_file is null || indexList.SelectedIndex < 0 || indexList.SelectedIndex >= _bodyRecords.Count) return;
+        if (indexList.SelectedIndex < 0 || indexList.SelectedIndex >= _bodyRecords.Count) return;
         var body = _bodyRecords[indexList.SelectedIndex];
         _lastIndexByState[_indexerState] = indexList.SelectedIndex;
         grhText.Text = body.Id.ToString();
@@ -446,7 +599,7 @@ public partial class MainForm : Form
         heightText.Text = body.Walk3.ToString();
         framesText.Text = $"{body.Walk1}-{body.Walk2}-{body.Walk3}-{body.Walk4}";
         referencesText.Text = "4 direcciones";
-        _selectedRecord = _file.Records.FirstOrDefault(x => x.Id == body.Walk1);
+        _selectedRecord = _file?.Records.FirstOrDefault(x => x.Id == body.Walk1);
         frameText.Text = "1";
         previewPanel.Invalidate();
         statusLabel.Text = $"Body {body.Id} seleccionado.";
