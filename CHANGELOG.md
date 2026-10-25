@@ -2,6 +2,15 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.16-beta] - 2026-10-26
+
+### En progreso — Issue #5
+
+- El contador de referencias se reconstruye con todos los índices auxiliares disponibles: Bodies, cabezas, cascos, alas, capas, botas, armas, escudos y FX.
+- La reconstrucción se ejecuta al cargar o cambiar `Graficos.ind` y después de guardar un índice auxiliar.
+- Los índices auxiliares inválidos se omiten individualmente para que no bloqueen el visor.
+- Issue #5 sigue abierto para completar las pruebas visuales automatizadas y la cobertura de recursos no indexados.
+
 ## [0.0.15-beta] - 2026-10-26
 
 ### En progreso — Issue #5

@@ -13,6 +13,7 @@ public partial class MainForm : Form
     private readonly List<BodyIndexRecord> _bodyRecords = new();
     private readonly List<DirectionalIndexRecord> _directionalRecords = new();
     private readonly List<FxIndexRecord> _fxRecords = new();
+    private readonly Dictionary<int, int> _referenceCounts = new();
     private string? _directionalPath;
     private string? _iniDirectionalPath;
     private string? _fxPath;
@@ -138,6 +139,7 @@ public partial class MainForm : Form
             _file = LoadAuto(dialog.FileName);
 
             _loadedPath = dialog.FileName;
+            RebuildReferenceCounts();
             RefreshGrid();
             statusLabel.Text = $"Cargados {_file.Records.Count} GRH: {dialog.FileName}";
         }
@@ -157,6 +159,7 @@ public partial class MainForm : Form
         {
             _file = LoadAuto(indexPath);
             _loadedPath = indexPath;
+            RebuildReferenceCounts();
             RefreshGrid();
             statusLabel.Text = $"Cargados {_file.Records.Count} GRH desde Init.";
         }
@@ -209,7 +212,7 @@ public partial class MainForm : Form
     private void formatCombo_SelectedIndexChanged(object? sender, EventArgs e)
     {
         if (_file is null || _loadedPath is null) return;
-        try { _file = GraficosIndFile.Load(_loadedPath, SelectedFormat); RefreshGrid(); } catch { }
+        try { _file = GraficosIndFile.Load(_loadedPath, SelectedFormat); RebuildReferenceCounts(); RefreshGrid(); } catch { }
     }
 
     private void RefreshGrid()
@@ -317,12 +320,77 @@ public partial class MainForm : Form
     private int CountReferences(int grhId)
     {
         if (grhId <= 0) return 0;
+        return _referenceCounts.TryGetValue(grhId, out var count) ? count : 0;
+    }
 
-        var count = _file?.Records.Count(record =>
-            record.Id != grhId && record.Frames.Contains(grhId)) ?? 0;
-        count += _directionalRecords.Count(record => record.Directions.Contains(grhId));
-        count += _fxRecords.Count(record => record.Animation == grhId);
-        return count;
+    private void RebuildReferenceCounts()
+    {
+        _referenceCounts.Clear();
+
+        if (_file is not null)
+        {
+            foreach (var record in _file.Records)
+            {
+                foreach (var frame in record.Frames)
+                    AddReference(frame);
+            }
+        }
+
+        var initPath = ResolvePath(_settings.InitPath);
+        foreach (var state in new[] { "Personajes", "Cabezas", "Cascos", "Alas", "Capas", "Botas" })
+        {
+            var binaryPath = Path.Combine(initPath, state + ".ind");
+            var iniPath = Path.Combine(initPath, state + ".dat");
+            try
+            {
+                var records = File.Exists(binaryPath)
+                    ? LoadDirectionalAutoWithFormat(binaryPath, includesOffsets: state is "Personajes" or "Alas" or "Botas", out _)
+                    : File.Exists(iniPath) ? IniDirectionalIndexFile.Load(iniPath, state) : new List<DirectionalIndexRecord>();
+                foreach (var record in records)
+                    foreach (var direction in record.Directions)
+                        AddReference(direction);
+            }
+            catch (InvalidDataException)
+            {
+                // Un índice auxiliar inválido no impide consultar el resto del visor.
+            }
+        }
+
+        foreach (var state in new[] { "Armas", "Escudos" })
+        {
+            var path = Path.Combine(initPath, state + ".dat");
+            if (!File.Exists(path)) continue;
+            try
+            {
+                foreach (var record in IniDirectionalIndexFile.Load(path, state))
+                    foreach (var direction in record.Directions)
+                        AddReference(direction);
+            }
+            catch (InvalidDataException)
+            {
+            }
+        }
+
+        foreach (var fileName in new[] { "Fxs.ind", "Fxsz.ind" })
+        {
+            var path = Path.Combine(initPath, fileName);
+            if (!File.Exists(path)) continue;
+            try
+            {
+                foreach (var record in LoadFxAutoWithFormat(path, out _))
+                    AddReference(record.Animation);
+                break;
+            }
+            catch (InvalidDataException)
+            {
+            }
+        }
+    }
+
+    private void AddReference(int grhId)
+    {
+        if (grhId <= 0) return;
+        _referenceCounts[grhId] = _referenceCounts.TryGetValue(grhId, out var count) ? count + 1 : 1;
     }
 
     private void ClearMemory()
@@ -408,6 +476,7 @@ public partial class MainForm : Form
                 IniDirectionalIndexFile.Save(_iniDirectionalPath, _directionalRecords, _indexerState);
             else if (_fxPath is not null)
                 FxIndexFile.Save(_fxPath, _fxRecords, _fxFormat);
+            RebuildReferenceCounts();
             statusLabel.Text = $"Guardado: {path}";
         }
         catch (Exception ex) { MessageBox.Show(this, ex.Message, "No se pudo guardar el índice", MessageBoxButtons.OK, MessageBoxIcon.Error); }
