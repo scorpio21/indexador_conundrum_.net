@@ -2,7 +2,7 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
-## [Unreleased]
+## [0.0.1-beta] - 2026-10-25
 
 ### Añadido
 
@@ -13,6 +13,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Soporte inicial para IDs GRH y frames en formato Integer y Long.
 - Cambio de estado y visor inicial para GRH y Bodies.
 - Menús principales compatibles con la organización del indexador VB6.
+- Issues de implantación [#1](https://github.com/scorpio21/indexador_conundrum_.net/issues/1) a [#9](https://github.com/scorpio21/indexador_conundrum_.net/issues/9).
 
 ### Pendiente
 
@@ -20,7 +21,11 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Completar edición, guardado, búsquedas, superficies y autoindexador.
 - Añadir fixtures y pruebas de compatibilidad Integer/Long.
 
-## [0.1.0] - 2026-10-25
+### Política de cierre
+
+Cada issue se cerrará únicamente cuando la funcionalidad esté implementada, probada, documentada en esta sección y subida a Git. Las versiones futuras enlazarán explícitamente cada cambio con su issue.
+
+## [0.0.1] - 2026-10-25
 
 ### Añadido
 
