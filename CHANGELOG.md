@@ -2,6 +2,15 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.17-beta] - 2026-10-26
+
+### En progreso — Issue #5
+
+- El visor reutiliza los BMP ya cargados en memoria en lugar de abrirlos y aplicar transparencia en cada frame.
+- El panel de previsualización usa doble buffer para reducir parpadeos y tirones durante la animación.
+- La caché se libera al cerrar el programa o al cambiar las rutas de configuración.
+- Issue #5 sigue abierto para validar fluidez con los recursos reales y completar pruebas visuales automatizadas.
+
 ## [0.0.16-beta] - 2026-10-26
 
 ### En progreso — Issue #5

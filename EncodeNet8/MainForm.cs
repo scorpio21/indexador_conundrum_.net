@@ -6,6 +6,7 @@ public partial class MainForm : Form
     private string? _loadedPath;
     private readonly IndexerSettings _settings;
     private readonly System.Windows.Forms.Timer _drawTimer = new() { Interval = 150 };
+    private readonly Dictionary<string, Bitmap> _bitmapCache = new(StringComparer.OrdinalIgnoreCase);
     private GrhRecord? _selectedRecord;
     private int _animationFrame;
     private string _indexerState = "Grh";
@@ -29,6 +30,7 @@ public partial class MainForm : Form
         InitializeComponent();
         _settings = IndexerSettings.Load();
         _drawTimer.Tick += drawTimer_Tick;
+        FormClosed += (_, _) => DisposeBitmapCache();
         ConfigureRuntimeUi();
         ConfigureIcons();
         indsText.Text = _settings.InitPath;
@@ -89,8 +91,10 @@ public partial class MainForm : Form
         using var dialog = new SettingsForm(_settings);
         if (dialog.ShowDialog(this) == DialogResult.OK)
         {
+            DisposeBitmapCache();
             indsText.Text = _settings.InitPath;
             graphicsText.Text = _settings.GraphicsPath;
+            previewPanel.Invalidate();
             statusLabel.Text = "Configuración guardada en JSON.";
         }
     }
@@ -398,6 +402,22 @@ public partial class MainForm : Form
         _file = null; _loadedPath = null; _selectedRecord = null; _drawTimer.Stop(); indexList.Items.Clear(); previewPanel.Invalidate();
         foreach (var box in new[] { grhText, bmpText, framesText, heightText, widthText, speedText, xText, yText, tileHeightText, tileWidthText, referencesText }) box.Clear();
         UpdateUi();
+    }
+
+    private Bitmap GetCachedBitmap(string path)
+    {
+        if (_bitmapCache.TryGetValue(path, out var cached)) return cached;
+
+        var bitmap = new Bitmap(path);
+        bitmap.MakeTransparent(Color.Black);
+        _bitmapCache[path] = bitmap;
+        return bitmap;
+    }
+
+    private void DisposeBitmapCache()
+    {
+        foreach (var bitmap in _bitmapCache.Values) bitmap.Dispose();
+        _bitmapCache.Clear();
     }
 
     private void SaveIndex()
@@ -924,8 +944,7 @@ public partial class MainForm : Form
 
         try
         {
-            using var bitmap = new Bitmap(bitmapPath);
-            bitmap.MakeTransparent(Color.Black);
+            var bitmap = GetCachedBitmap(bitmapPath);
             var source = new Rectangle(record.X, record.Y, record.Width, record.Height);
             if (source.Width <= 0 || source.Height <= 0)
             {

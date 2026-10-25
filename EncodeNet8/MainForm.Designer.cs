@@ -86,7 +86,7 @@ partial class MainForm
         indsText = new TextBox();
         graphicsText = new TextBox();
         maxGrhText = new TextBox();
-        previewPanel = new Panel();
+        previewPanel = new BufferedPreviewPanel();
         statusStrip = new StatusStrip();
         statusLabel = new ToolStripStatusLabel();
         menuStrip.SuspendLayout();
