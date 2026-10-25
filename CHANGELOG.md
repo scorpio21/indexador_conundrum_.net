@@ -2,7 +2,15 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
-## [0.0.7-beta] - 2026-10-25
+## [0.0.8-beta] - 2026-10-25
+
+### En progreso — Issue #6
+
+- `Guardar` utiliza el archivo actualmente cargado y solicita confirmación antes de sobrescribirlo.
+- `Guardar...` permite elegir un destino distinto.
+- El guardado aplica los datos editados del GRH seleccionado y mantiene el formato Integer/Long elegido.
+- El Issue #6 sigue abierto hasta completar edición, clonado, mover, slots y guardado de todos los estados.
+- Issue relacionado: [#6](https://github.com/scorpio21/indexador_conundrum_.net/issues/6).
 
 ### En progreso — Issue #5
 

@@ -196,11 +196,7 @@ public partial class MainForm : Form
 
     private void saveButton_Click(object? sender, EventArgs e)
     {
-        if (_file is null) return;
-        using var dialog = new SaveFileDialog { Filter = "Índice gráfico (*.ind)|*.ind|Todos los archivos (*.*)|*.*", FileName = Path.GetFileName(_loadedPath ?? "Graficos.ind") };
-        if (dialog.ShowDialog(this) != DialogResult.OK) return;
-        try { ApplyGridToModel(); _file.Save(dialog.FileName, SelectedFormat); _loadedPath = dialog.FileName; statusLabel.Text = $"Guardado: {dialog.FileName}"; }
-        catch (Exception ex) { MessageBox.Show(this, ex.Message, "No se pudo guardar el índice", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+        SaveCurrentIndex();
     }
 
     private void formatCombo_SelectedIndexChanged(object? sender, EventArgs e)
@@ -303,7 +299,41 @@ public partial class MainForm : Form
 
     private void SaveIndex()
     {
-        saveButton.PerformClick();
+        SaveIndexAs();
+    }
+
+    private void SaveCurrentIndex()
+    {
+        if (_file is null) return;
+        if (string.IsNullOrWhiteSpace(_loadedPath))
+        {
+            SaveIndexAs();
+            return;
+        }
+        var answer = MessageBox.Show(this, $"¿Sobrescribir el índice actual?\n{_loadedPath}", "Guardar índice", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+        if (answer != DialogResult.Yes) return;
+        try
+        {
+            ApplyGridToModel();
+            _file.Save(_loadedPath, SelectedFormat);
+            statusLabel.Text = $"Guardado: {_loadedPath}";
+        }
+        catch (Exception ex) { MessageBox.Show(this, ex.Message, "No se pudo guardar el índice", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+    }
+
+    private void SaveIndexAs()
+    {
+        if (_file is null) return;
+        using var dialog = new SaveFileDialog { Filter = "Índice gráfico (*.ind)|*.ind|Todos los archivos (*.*)|*.*", FileName = Path.GetFileName(_loadedPath ?? "Graficos.ind") };
+        if (dialog.ShowDialog(this) != DialogResult.OK) return;
+        try
+        {
+            ApplyGridToModel();
+            _file.Save(dialog.FileName, SelectedFormat);
+            _loadedPath = dialog.FileName;
+            statusLabel.Text = $"Guardado: {dialog.FileName}";
+        }
+        catch (Exception ex) { MessageBox.Show(this, ex.Message, "No se pudo guardar el índice", MessageBoxButtons.OK, MessageBoxIcon.Error); }
     }
 
     private void viewButton_Click(object? sender, EventArgs e)
