@@ -2,7 +2,14 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
-## [0.0.6-beta] - 2026-10-25
+## [0.0.7-beta] - 2026-10-25
+
+### En progreso — Issue #5
+
+- El visor GDI+ resuelve los frames animados y muestra errores explícitos cuando falta un GRH.
+- Los recortes con dimensiones inválidas o fuera de los límites del BMP ya no se sustituyen silenciosamente por la imagen completa.
+- El timer detiene animaciones sin frames válidos.
+- Issue todavía abierto: [#5](https://github.com/scorpio21/indexador_conundrum_.net/issues/5).
 
 ### En progreso — Issue #4
 

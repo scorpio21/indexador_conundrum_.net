@@ -585,9 +585,35 @@ public partial class MainForm : Form
     private void drawTimer_Tick(object? sender, EventArgs e)
     {
         if (_selectedRecord is null || !_selectedRecord.IsAnimation) return;
+        if (_selectedRecord.Frames.Count == 0)
+        {
+            _drawTimer.Stop();
+            return;
+        }
         _animationFrame = (_animationFrame + 1) % _selectedRecord.Frames.Count;
         frameText.Text = (_animationFrame + 1).ToString();
         previewPanel.Invalidate();
+    }
+
+    private GrhRecord? GetPreviewRecord(out string? error)
+    {
+        error = null;
+        if (_selectedRecord is null) return null;
+        if (!_selectedRecord.IsAnimation) return _selectedRecord;
+        if (_file is null)
+        {
+            error = "No hay un índice gráfico cargado para resolver la animación.";
+            return null;
+        }
+        if (_animationFrame < 0 || _animationFrame >= _selectedRecord.Frames.Count)
+        {
+            error = $"Frame fuera de rango: {_animationFrame + 1}.";
+            return null;
+        }
+        var frameId = _selectedRecord.Frames[_animationFrame];
+        var frame = _file.Records.FirstOrDefault(x => x.Id == frameId);
+        if (frame is null) error = $"No existe el GRH de frame {frameId}.";
+        return frame;
     }
 
     private void previewPanel_Paint(object? sender, PaintEventArgs e)
@@ -595,12 +621,12 @@ public partial class MainForm : Form
         e.Graphics.Clear(previewPanel.BackColor);
         if (_selectedRecord is null) return;
 
-        var record = _selectedRecord;
-        if (record.IsAnimation && _file is not null)
+        var record = GetPreviewRecord(out var frameError);
+        if (record is null)
         {
-            var frameId = record.Frames[Math.Min(_animationFrame, record.Frames.Count - 1)];
-            var frameRecord = _file.Records.FirstOrDefault(x => x.Id == frameId);
-            if (frameRecord is not null) record = frameRecord;
+            using var errorBrush = new SolidBrush(Color.DarkRed);
+            e.Graphics.DrawString(frameError ?? "No hay un recurso seleccionado.", Font, errorBrush, new PointF(12, 12));
+            return;
         }
 
         var graphicsFolder = ResolvePath(_settings.GraphicsPath);
@@ -617,8 +643,18 @@ public partial class MainForm : Form
         {
             using var bitmap = Image.FromFile(bitmapPath);
             var source = new Rectangle(record.X, record.Y, record.Width, record.Height);
-            if (source.Width <= 0 || source.Height <= 0 || source.Right > bitmap.Width || source.Bottom > bitmap.Height)
-                source = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+            if (source.Width <= 0 || source.Height <= 0)
+            {
+                using var invalidBrush = new SolidBrush(Color.DarkRed);
+                e.Graphics.DrawString($"GRH {record.Id}: dimensiones inválidas ({source.Width}x{source.Height}).", Font, invalidBrush, new PointF(12, 12));
+                return;
+            }
+            if (source.X < 0 || source.Y < 0 || source.Right > bitmap.Width || source.Bottom > bitmap.Height)
+            {
+                using var invalidBrush = new SolidBrush(Color.DarkRed);
+                e.Graphics.DrawString($"GRH {record.Id}: recorte fuera de BMP {record.FileNumber} ({bitmap.Width}x{bitmap.Height}).", Font, invalidBrush, new PointF(12, 12));
+                return;
+            }
             var scale = Math.Min((double)(previewPanel.ClientSize.Width - 20) / source.Width, (double)(previewPanel.ClientSize.Height - 20) / source.Height);
             scale = Math.Min(scale, 4D);
             var dest = new Rectangle((previewPanel.ClientSize.Width - (int)(source.Width * scale)) / 2, (previewPanel.ClientSize.Height - (int)(source.Height * scale)) / 2, (int)(source.Width * scale), (int)(source.Height * scale));
