@@ -227,7 +227,7 @@ public partial class MainForm : Form
         indexList.Items.Clear();
         if (_file is null) return;
         foreach (var record in _file.Records)
-            indexList.Items.Add(record.Id);
+            indexList.Items.Add(FormatGrhLabel(record));
         ComprobarIndexLista();
         UpdateUi();
     }
@@ -323,6 +323,9 @@ public partial class MainForm : Form
         if (separator >= 0) text = text[..separator];
         return int.TryParse(text, out var id) ? _file.Records.FirstOrDefault(x => x.Id == id) : null;
     }
+
+    private static string FormatGrhLabel(GrhRecord record) =>
+        record.IsAnimation ? $"{record.Id} [animación]" : record.Id.ToString();
 
     private int CountReferences(int grhId)
     {
@@ -593,7 +596,11 @@ public partial class MainForm : Form
     private void ReplaceGrhList(IEnumerable<int> ids)
     {
         indexList.Items.Clear();
-        foreach (var id in ids) indexList.Items.Add(id);
+        foreach (var id in ids)
+        {
+            var record = _file?.Records.FirstOrDefault(x => x.Id == id);
+            indexList.Items.Add(record is null ? id.ToString() : FormatGrhLabel(record));
+        }
         _lastIndexByState[_indexerState] = 0;
         ComprobarIndexLista();
     }

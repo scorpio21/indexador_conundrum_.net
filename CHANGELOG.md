@@ -2,6 +2,14 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.19-beta] - 2026-10-26
+
+### En progreso — Issue #5
+
+- La lista de `Graficos.ind` marca los GRH animados con `[animación]`, igual que el indexador VB6.
+- Las búsquedas conservan esa etiqueta sin perder la resolución del ID real al seleccionar un elemento.
+- Issue #5 sigue abierto para validar fluidez con recursos reales y completar pruebas visuales automatizadas.
+
 ## [0.0.18-beta] - 2026-10-26
 
 ### En progreso — Issue #5
