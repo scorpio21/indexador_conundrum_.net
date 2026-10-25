@@ -11,6 +11,7 @@ public partial class MainForm : Form
     private string _indexerState = "Grh";
     private readonly Dictionary<string, int> _lastIndexByState = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<BodyIndexRecord> _bodyRecords = new();
+    private readonly List<DirectionalIndexRecord> _directionalRecords = new();
 
     private static readonly string[] AllStates = { "Grh", "Body", "Cabezas", "Cascos", "Escudos", "Armas", "Alas", "Capas", "Fx", "Resource", "Botas" };
 
@@ -245,7 +246,12 @@ public partial class MainForm : Form
     {
         if (_indexerState.Equals("Body", StringComparison.OrdinalIgnoreCase))
         {
-            ClickBodyEnLista();
+            ClickDirectionalEnLista();
+            return;
+        }
+        if (IsDirectionalState(_indexerState))
+        {
+            ClickDirectionalEnLista();
             return;
         }
         if (!_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase))
@@ -320,8 +326,14 @@ public partial class MainForm : Form
         {
             if (_file is null) LoadConfiguredGraphics();
             LoadBodies();
-            RefreshBodyList();
+            RefreshDirectionalList();
             statusLabel.Text = $"Estado Bodies seleccionado. Bodies cargados: {_bodyRecords.Count}.";
+        }
+        else if (IsDirectionalState(_indexerState))
+        {
+            LoadDirectionalState(_indexerState);
+            RefreshDirectionalList();
+            statusLabel.Text = $"Estado {StateCaption(_indexerState)} seleccionado. {_directionalRecords.Count} índices cargados.";
         }
         else
         {
@@ -347,6 +359,8 @@ public partial class MainForm : Form
         "Resource" => "Recursos",
         _ => state
     };
+
+    private static bool IsDirectionalState(string state) => state is "Cabezas" or "Cascos" or "Alas" or "Capas" or "Botas";
 
     private void ConfigureStateFields(string state)
     {
@@ -617,27 +631,32 @@ public partial class MainForm : Form
     private void LoadBodies()
     {
         _bodyRecords.Clear();
+        _directionalRecords.Clear();
         var path = Path.Combine(ResolvePath(_settings.InitPath), "Personajes.ind");
         if (!File.Exists(path)) { statusLabel.Text = $"No se encontró: {path}"; return; }
+        try { _directionalRecords.AddRange(DirectionalIndexFile.LoadAuto(path, includesOffsets: true)); }
+        catch (InvalidDataException ex) { statusLabel.Text = $"No se pudo cargar Bodies: {ex.Message}"; return; }
+        foreach (var item in _directionalRecords)
+            _bodyRecords.Add(new BodyIndexRecord { Id = item.Id, Walk1 = item.Directions[0], Walk2 = item.Directions[1], Walk3 = item.Directions[2], Walk4 = item.Directions[3], HeadOffsetX = item.OffsetX, HeadOffsetY = item.OffsetY });
+    }
 
-        using var stream = File.OpenRead(path);
-        using var reader = new BinaryReader(stream);
-        if (stream.Length < 265) return;
-        stream.Position = 263;
-        var count = reader.ReadInt16();
-        if (count < 0) return;
-        var legacyLength = 263L + 2L + count * 12L;
-        var longFormat = stream.Length >= 263L + 2L + count * 20L && stream.Length != legacyLength;
-        for (var i = 1; i <= count; i++)
+    private void LoadDirectionalState(string state)
+    {
+        _directionalRecords.Clear();
+        var fileName = state switch
         {
-            var walk1 = longFormat ? reader.ReadInt32() : reader.ReadInt16();
-            var walk2 = longFormat ? reader.ReadInt32() : reader.ReadInt16();
-            var walk3 = longFormat ? reader.ReadInt32() : reader.ReadInt16();
-            var walk4 = longFormat ? reader.ReadInt32() : reader.ReadInt16();
-            var offsetX = reader.ReadInt16();
-            var offsetY = reader.ReadInt16();
-            if (walk1 > 0) _bodyRecords.Add(new BodyIndexRecord { Id = i, Walk1 = walk1, Walk2 = walk2, Walk3 = walk3, Walk4 = walk4, HeadOffsetX = offsetX, HeadOffsetY = offsetY });
-        }
+            "Cabezas" => "Cabezas.ind",
+            "Cascos" => "Cascos.ind",
+            "Alas" => "Alas.ind",
+            "Capas" => "Capas.ind",
+            "Botas" => "Botas.ind",
+            _ => string.Empty
+        };
+        if (string.IsNullOrEmpty(fileName)) return;
+        var path = Path.Combine(ResolvePath(_settings.InitPath), fileName);
+        if (!File.Exists(path)) { statusLabel.Text = $"No se encontró: {path}"; return; }
+        try { _directionalRecords.AddRange(DirectionalIndexFile.LoadAuto(path, includesOffsets: state is "Alas" or "Botas")); }
+        catch (InvalidDataException ex) { statusLabel.Text = $"No se pudo cargar {StateCaption(state)}: {ex.Message}"; }
     }
 
     private void RefreshBodyList()
@@ -647,22 +666,29 @@ public partial class MainForm : Form
         ComprobarIndexLista();
     }
 
-    private void ClickBodyEnLista()
+    private void RefreshDirectionalList()
     {
-        if (indexList.SelectedIndex < 0 || indexList.SelectedIndex >= _bodyRecords.Count) return;
-        var body = _bodyRecords[indexList.SelectedIndex];
+        indexList.Items.Clear();
+        foreach (var item in _directionalRecords) indexList.Items.Add(item.Id);
+        ComprobarIndexLista();
+    }
+
+    private void ClickDirectionalEnLista()
+    {
+        if (indexList.SelectedIndex < 0 || indexList.SelectedIndex >= _directionalRecords.Count) return;
+        var item = _directionalRecords[indexList.SelectedIndex];
         _lastIndexByState[_indexerState] = indexList.SelectedIndex;
-        grhText.Text = body.Id.ToString();
-        bmpText.Text = body.Walk1.ToString();
-        xText.Text = body.HeadOffsetX.ToString();
-        yText.Text = body.HeadOffsetY.ToString();
-        widthText.Text = body.Walk2.ToString();
-        heightText.Text = body.Walk3.ToString();
-        framesText.Text = $"{body.Walk1}-{body.Walk2}-{body.Walk3}-{body.Walk4}";
+        grhText.Text = item.Id.ToString();
+        bmpText.Text = item.Directions[0].ToString();
+        xText.Text = item.OffsetX.ToString();
+        yText.Text = item.OffsetY.ToString();
+        widthText.Text = item.Directions[1].ToString();
+        heightText.Text = item.Directions[2].ToString();
+        framesText.Text = string.Join("-", item.Directions);
         referencesText.Text = "4 direcciones";
-        _selectedRecord = _file?.Records.FirstOrDefault(x => x.Id == body.Walk1);
+        _selectedRecord = _file?.Records.FirstOrDefault(x => x.Id == item.Directions[0]);
         frameText.Text = "1";
         previewPanel.Invalidate();
-        statusLabel.Text = $"Body {body.Id} seleccionado.";
+        statusLabel.Text = $"{StateCaption(_indexerState)} {item.Id} seleccionado.";
     }
 }

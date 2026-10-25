@@ -2,7 +2,16 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
-## [0.0.4-beta] - 2026-10-25
+## [0.0.5-beta] - 2026-10-25
+
+### En progreso — Issue #3
+
+- Se añadió `DirectionalIndexFile` para leer registros de cuatro direcciones en formatos Integer y Long.
+- Se añadieron offsets X/Y para cuerpos, alas y botas.
+- Bodies, Cabezas y Cascos ya cargan sus registros ocupados y se muestran en la lista y el visor.
+- Validación real: `Personajes.ind` (277 cuerpos), `Cabezas.ind` (57 cabezas) y `Cascos.ind` (9 cascos).
+- Se añadieron pruebas sintéticas de registros direccionales y un modo de validación de archivos reales.
+- Issue todavía abierto: [#3](https://github.com/scorpio21/indexador_conundrum_.net/issues/3).
 
 ### Completado — Issue #2
 

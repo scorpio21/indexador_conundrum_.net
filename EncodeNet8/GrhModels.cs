@@ -29,3 +29,11 @@ public sealed class BodyIndexRecord
     public short HeadOffsetX { get; init; }
     public short HeadOffsetY { get; init; }
 }
+
+public sealed class DirectionalIndexRecord
+{
+    public int Id { get; init; }
+    public int[] Directions { get; init; } = new int[4];
+    public short OffsetX { get; init; }
+    public short OffsetY { get; init; }
+}

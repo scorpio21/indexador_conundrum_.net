@@ -5,6 +5,20 @@ var root = Path.Combine(Path.GetTempPath(), "EncodeNet8.Tests", Guid.NewGuid().T
 Directory.CreateDirectory(root);
 try
 {
+    if (args.Length > 0 && args[0].Equals("--directional", StringComparison.OrdinalIgnoreCase))
+    {
+        foreach (var path in args.Skip(1))
+        {
+            var name = Path.GetFileName(path);
+            var includesOffsets = name.StartsWith("Personajes", StringComparison.OrdinalIgnoreCase)
+                || name.StartsWith("Alas", StringComparison.OrdinalIgnoreCase)
+                || name.StartsWith("Botas", StringComparison.OrdinalIgnoreCase);
+            var records = DirectionalIndexFile.LoadAuto(path, includesOffsets);
+            Console.WriteLine($"{path}: {records.Count} índices direccionales ocupados");
+        }
+        return;
+    }
+
     if (args.Length > 0)
     {
         foreach (var path in args)
@@ -48,7 +62,8 @@ try
     File.WriteAllBytes(invalid, new byte[273]);
     ExpectInvalid(() => GraficosIndFile.Load(invalid, GrhStorageFormat.LegacyInteger));
     TestStateSlotReaders(root);
-    Console.WriteLine("Graficos.ind: Integer y Long OK; truncado rechazado.");
+    TestDirectionalReader(root);
+    Console.WriteLine("Graficos.ind y lectores direccionales: Integer/Long OK; truncado rechazado.");
 }
 finally
 {
@@ -98,4 +113,40 @@ static void TestStateSlotReaders(string root)
     var iniMethod = typeof(MainForm).GetMethod("ReadOccupiedIniSlots", BindingFlags.NonPublic | BindingFlags.Static)!;
     var ini = (List<int>)iniMethod.Invoke(null, new object[] { iniPath, "Armas" })!;
     Assert(ini.SequenceEqual(new[] { 1, 3 }), "lista INI de índices ocupados");
+}
+
+static void TestDirectionalReader(string root)
+{
+    foreach (var format in new[] { GrhStorageFormat.LegacyInteger, GrhStorageFormat.LongIndexes })
+    {
+        var path = Path.Combine(root, $"Personajes-{format}.ind");
+        using (var stream = File.Create(path))
+        using (var writer = new BinaryWriter(stream))
+        {
+            writer.Write(new byte[263]);
+            writer.Write((short)2);
+            WriteIndex(writer, 10, format);
+            WriteIndex(writer, 11, format);
+            WriteIndex(writer, 12, format);
+            WriteIndex(writer, 13, format);
+            writer.Write((short)-1);
+            writer.Write((short)2);
+            WriteIndex(writer, format == GrhStorageFormat.LongIndexes ? 40000 : 14, format);
+            WriteIndex(writer, 15, format);
+            WriteIndex(writer, 16, format);
+            WriteIndex(writer, 17, format);
+            writer.Write((short)3);
+            writer.Write((short)4);
+        }
+
+        var records = DirectionalIndexFile.Load(path, format, includesOffsets: true);
+        Assert(records.Count == 2 && records[1].Directions[3] == 17, $"lector directional {format}");
+        Assert(records[1].OffsetX == 3 && records[1].OffsetY == 4, $"offsets directional {format}");
+    }
+}
+
+static void WriteIndex(BinaryWriter writer, int value, GrhStorageFormat format)
+{
+    if (format == GrhStorageFormat.LongIndexes) writer.Write(value);
+    else writer.Write((short)value);
 }
