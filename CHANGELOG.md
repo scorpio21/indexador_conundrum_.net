@@ -2,6 +2,14 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.15-beta] - 2026-10-26
+
+### En progreso — Issue #5
+
+- El visor calcula las referencias cargadas del GRH a partir de animaciones, índices direccionales y FX.
+- La cifra se actualiza al seleccionar un GRH, una dirección o un FX, sustituyendo los textos fijos anteriores.
+- Issue #5 sigue abierto para completar la cobertura de referencias entre todos los índices y las pruebas visuales.
+
 ## [0.0.14-beta] - 2026-10-26
 
 ### En progreso — Issue #5

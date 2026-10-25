@@ -289,7 +289,7 @@ public partial class MainForm : Form
         _animationFrame = 0;
         grhText.Text = _selectedRecord.Id.ToString(); bmpText.Text = _selectedRecord.FileNumber.ToString(); xText.Text = _selectedRecord.X.ToString(); yText.Text = _selectedRecord.Y.ToString();
         widthText.Text = _selectedRecord.Width.ToString(); heightText.Text = _selectedRecord.Height.ToString(); speedText.Text = _selectedRecord.Speed.ToString();
-        framesText.Text = _selectedRecord.IsAnimation ? string.Join("-", _selectedRecord.Frames) : ""; frameText.Text = _selectedRecord.IsAnimation ? "1" : ""; referencesText.Text = "0";
+        framesText.Text = _selectedRecord.IsAnimation ? string.Join("-", _selectedRecord.Frames) : ""; frameText.Text = _selectedRecord.IsAnimation ? "1" : ""; referencesText.Text = CountReferences(_selectedRecord.Id).ToString();
         _drawTimer.Enabled = _selectedRecord.IsAnimation;
         ConfigureAnimationTimer(_selectedRecord);
         previewPanel.Invalidate();
@@ -312,6 +312,17 @@ public partial class MainForm : Form
         var separator = text.IndexOf(' ');
         if (separator >= 0) text = text[..separator];
         return int.TryParse(text, out var id) ? _file.Records.FirstOrDefault(x => x.Id == id) : null;
+    }
+
+    private int CountReferences(int grhId)
+    {
+        if (grhId <= 0) return 0;
+
+        var count = _file?.Records.Count(record =>
+            record.Id != grhId && record.Frames.Contains(grhId)) ?? 0;
+        count += _directionalRecords.Count(record => record.Directions.Contains(grhId));
+        count += _fxRecords.Count(record => record.Animation == grhId);
+        return count;
     }
 
     private void ClearMemory()
@@ -1032,7 +1043,7 @@ public partial class MainForm : Form
         widthText.Text = item.Directions[1].ToString();
         heightText.Text = item.Directions[2].ToString();
         framesText.Text = string.Join("-", item.Directions);
-        referencesText.Text = "4 direcciones";
+        referencesText.Text = CountReferences(item.Directions[direction]).ToString();
         _selectedRecord = _file?.Records.FirstOrDefault(x => x.Id == item.Directions[direction]);
         frameText.Text = "1";
         if (_selectedRecord is not null) ConfigureAnimationTimer(_selectedRecord);
@@ -1056,7 +1067,7 @@ public partial class MainForm : Form
         xText.Text = item.OffsetX.ToString();
         yText.Text = item.OffsetY.ToString();
         framesText.Text = "";
-        referencesText.Text = "FX";
+        referencesText.Text = CountReferences(item.Animation).ToString();
         _selectedRecord = _file?.Records.FirstOrDefault(x => x.Id == item.Animation);
         if (_selectedRecord is not null) ConfigureAnimationTimer(_selectedRecord);
         previewPanel.Invalidate();
