@@ -2,6 +2,16 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.24-beta] - 2026-10-26
+
+### En progreso — Issue #6
+
+- Se implementan `Mover`, `Copiar` y `Clonar...` para registros GRH.
+- Se validan los límites del índice y se confirma antes de sobrescribir un GRH existente.
+- El destino se selecciona automáticamente y se conserva la edición en memoria hasta guardar.
+- Los estados auxiliares permanecen protegidos hasta disponer de sus escritores específicos.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.23-beta] - 2026-10-26
 
 ### En progreso — Issue #5

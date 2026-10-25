@@ -62,10 +62,10 @@ public partial class MainForm : Form
         archivoMenu.DropDownItems.Add(MenuItem("Salir", (_, _) => Close()));
 
         edicionMenu.DropDownItems.Add(MenuItem("Nuevo/Ir A", newSearchButton_Click, Keys.Control | Keys.F));
-        edicionMenu.DropDownItems.Add(MenuItem("Mover", (_, _) => ShowPending("Mover")));
-        edicionMenu.DropDownItems.Add(MenuItem("Copiar", (_, _) => ShowPending("Copiar")));
+        edicionMenu.DropDownItems.Add(MenuItem("Mover", (_, _) => MoveOrCopySelectedGrh(deleteOriginal: true)));
+        edicionMenu.DropDownItems.Add(MenuItem("Copiar", (_, _) => MoveOrCopySelectedGrh(deleteOriginal: false)));
         edicionMenu.DropDownItems.Add(MenuItem("Suprimir", deleteButton_Click, Keys.Delete));
-        edicionMenu.DropDownItems.Add(MenuItem("Clonar...", (_, _) => ShowPending("Clonar")));
+        edicionMenu.DropDownItems.Add(MenuItem("Clonar...", (_, _) => CloneSelectedGrh()));
         edicionMenu.DropDownItems.Add(MenuItem("Color de fondo...", (_, _) => ShowPending("Color de fondo")));
 
         herramientasMenu.DropDownItems.Add(MenuItem("Buscar Grh con bmp...", (_, _) => SearchGrhWithBmp()));
@@ -439,6 +439,129 @@ public partial class MainForm : Form
         if (record is null) return;
         _file.Records.Remove(record);
         RefreshGrid();
+    }
+
+    private void MoveOrCopySelectedGrh(bool deleteOriginal)
+    {
+        if (!_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase) || _file is null)
+        {
+            SetUtilError($"{(deleteOriginal ? "Mover" : "Copiar")} solo está disponible actualmente para Gráficos.");
+            return;
+        }
+
+        var source = SelectedGrhRecord();
+        if (source is null)
+        {
+            SetUtilError("Selecciona primero un GRH.");
+            return;
+        }
+
+        var targetText = Microsoft.VisualBasic.Interaction.InputBox(
+            $"Introduzca número de GRH al que quieres {(deleteOriginal ? "mover" : "copiar")} el gráfico {source.Id}.",
+            deleteOriginal ? "Mover gráfico" : "Copiar gráfico", source.Id.ToString());
+        if (string.IsNullOrWhiteSpace(targetText)) return;
+        if (!int.TryParse(targetText, out var targetId) || targetId <= 0 || targetId > ParseInt(maxGrhText.Text))
+        {
+            SetUtilError("Introduzca un número de GRH válido.");
+            return;
+        }
+        if (targetId == source.Id)
+        {
+            SetUtilError("El GRH de destino debe ser diferente del origen.");
+            return;
+        }
+
+        var existing = _file.Records.FirstOrDefault(record => record.Id == targetId);
+        if (existing is not null)
+        {
+            var answer = MessageBox.Show(this, $"El gráfico {targetId} ya existe. ¿Deseas sobrescribirlo?", "Aviso", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (answer != DialogResult.Yes) return;
+            _file.Records.Remove(existing);
+        }
+
+        var copy = CloneGrh(source, targetId);
+        _file.Records.Add(copy);
+        if (deleteOriginal) _file.Records.Remove(source);
+
+        RefreshGrid();
+        SelectGrhById(targetId);
+        ClearUtilError();
+        statusLabel.Text = $"GRH {source.Id} {(deleteOriginal ? "movido" : "copiado")} a {targetId}. Guarda los cambios para escribir el índice.";
+    }
+
+    private void CloneSelectedGrh()
+    {
+        if (!_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase) || _file is null)
+        {
+            SetUtilError("Clonar solo está disponible actualmente para Gráficos.");
+            return;
+        }
+
+        var source = SelectedGrhRecord();
+        if (source is null)
+        {
+            SetUtilError("Selecciona primero un GRH.");
+            return;
+        }
+
+        var firstText = Microsoft.VisualBasic.Interaction.InputBox(
+            $"Introduzca el primer número de GRH para clonar {source.Id}.", "Clonar gráfico", (source.Id + 1).ToString());
+        if (string.IsNullOrWhiteSpace(firstText)) return;
+        var countText = Microsoft.VisualBasic.Interaction.InputBox(
+            $"Introduzca la cantidad de copias de {source.Id}.", "Clonar gráfico", "1");
+        if (string.IsNullOrWhiteSpace(countText)) return;
+        if (!int.TryParse(firstText, out var firstId) || !int.TryParse(countText, out var count) || firstId <= 0 || count <= 0)
+        {
+            SetUtilError("Introduzca un número inicial y una cantidad válidos.");
+            return;
+        }
+        if (firstId > ParseInt(maxGrhText.Text) || count > ParseInt(maxGrhText.Text) - firstId + 1)
+        {
+            SetUtilError("El rango de clonación está fuera de los límites del índice.");
+            return;
+        }
+
+        var targets = Enumerable.Range(firstId, count).ToList();
+        var occupied = targets.Where(target => _file.Records.Any(record => record.Id == target)).ToList();
+        if (occupied.Count > 0)
+        {
+            var answer = MessageBox.Show(this, $"Ya existen los GRH: {string.Join(", ", occupied)}. ¿Deseas sobrescribirlos?", "Aviso", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (answer != DialogResult.Yes) return;
+            _file.Records.RemoveAll(record => occupied.Contains(record.Id));
+        }
+
+        foreach (var targetId in targets)
+            _file.Records.Add(CloneGrh(source, targetId));
+
+        RefreshGrid();
+        SelectGrhById(firstId);
+        ClearUtilError();
+        statusLabel.Text = $"Se clonó el GRH {source.Id} {count} vez/veces desde {firstId}. Guarda los cambios para escribir el índice.";
+    }
+
+    private static GrhRecord CloneGrh(GrhRecord source, int id) => new()
+    {
+        Id = id,
+        FileNumber = source.FileNumber,
+        X = source.X,
+        Y = source.Y,
+        Width = source.Width,
+        Height = source.Height,
+        Speed = source.Speed,
+        Frames = new List<int>(source.Frames)
+    };
+
+    private void SelectGrhById(int id)
+    {
+        for (var i = 0; i < indexList.Items.Count; i++)
+        {
+            var item = indexList.Items[i]?.ToString() ?? string.Empty;
+            var separator = item.IndexOf(' ');
+            var idText = separator >= 0 ? item[..separator] : item;
+            if (!int.TryParse(idText, out var itemId) || itemId != id) continue;
+            indexList.SelectedIndex = i;
+            return;
+        }
     }
 
     private GrhRecord? SelectedGrhRecord()
