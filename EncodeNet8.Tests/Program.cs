@@ -19,6 +19,17 @@ try
         return;
     }
 
+    if (args.Length > 0 && args[0].Equals("--additional", StringComparison.OrdinalIgnoreCase))
+    {
+        var fx = FxIndexFile.LoadAuto(args[1]);
+        var weapons = IniDirectionalIndexFile.Load(args[2], "Armas");
+        var shields = IniDirectionalIndexFile.Load(args[3], "Escudos");
+        Console.WriteLine($"{args[1]}: {fx.Count} FX ocupados");
+        Console.WriteLine($"{args[2]}: {weapons.Count} armas ocupadas");
+        Console.WriteLine($"{args[3]}: {shields.Count} escudos ocupados");
+        return;
+    }
+
     if (args.Length > 0)
     {
         foreach (var path in args)
@@ -63,7 +74,8 @@ try
     ExpectInvalid(() => GraficosIndFile.Load(invalid, GrhStorageFormat.LegacyInteger));
     TestStateSlotReaders(root);
     TestDirectionalReader(root);
-    Console.WriteLine("Graficos.ind y lectores direccionales: Integer/Long OK; truncado rechazado.");
+    TestAdditionalReaders(root);
+    Console.WriteLine("Graficos.ind, lectores direccionales y adicionales: Integer/Long OK; truncado rechazado.");
 }
 finally
 {
@@ -149,4 +161,28 @@ static void WriteIndex(BinaryWriter writer, int value, GrhStorageFormat format)
 {
     if (format == GrhStorageFormat.LongIndexes) writer.Write(value);
     else writer.Write((short)value);
+}
+
+static void TestAdditionalReaders(string root)
+{
+    var fxPath = Path.Combine(root, "Fxs.ind");
+    using (var stream = File.Create(fxPath))
+    using (var writer = new BinaryWriter(stream))
+    {
+        writer.Write(new byte[263]);
+        writer.Write((short)2);
+        writer.Write((short)20);
+        writer.Write((short)1);
+        writer.Write((short)-2);
+        writer.Write((short)0);
+        writer.Write((short)0);
+        writer.Write((short)0);
+    }
+    var fx = FxIndexFile.Load(fxPath, GrhStorageFormat.LegacyInteger);
+    Assert(fx.Count == 1 && fx[0].Animation == 20 && fx[0].OffsetX == 1, "lector FX");
+
+    var weaponPath = Path.Combine(root, "Armas.dat");
+    File.WriteAllText(weaponPath, "[INIT]\nNumArmas=3\n\n[ARMA1]\nDir1=10\nDir2=11\nDir3=12\nDir4=13\n\n[ARMA3]\nDir1=20\nDir2=21\nDir3=22\nDir4=23\n");
+    var weapons = IniDirectionalIndexFile.Load(weaponPath, "Armas");
+    Assert(weapons.Count == 2 && weapons[1].Directions[3] == 23, "lector de armas INI");
 }

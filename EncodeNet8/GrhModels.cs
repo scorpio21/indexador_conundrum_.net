@@ -37,3 +37,11 @@ public sealed class DirectionalIndexRecord
     public short OffsetX { get; init; }
     public short OffsetY { get; init; }
 }
+
+public sealed class FxIndexRecord
+{
+    public int Id { get; init; }
+    public int Animation { get; init; }
+    public short OffsetX { get; init; }
+    public short OffsetY { get; init; }
+}

@@ -12,6 +12,7 @@ public partial class MainForm : Form
     private readonly Dictionary<string, int> _lastIndexByState = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<BodyIndexRecord> _bodyRecords = new();
     private readonly List<DirectionalIndexRecord> _directionalRecords = new();
+    private readonly List<FxIndexRecord> _fxRecords = new();
 
     private static readonly string[] AllStates = { "Grh", "Body", "Cabezas", "Cascos", "Escudos", "Armas", "Alas", "Capas", "Fx", "Resource", "Botas" };
 
@@ -254,6 +255,16 @@ public partial class MainForm : Form
             ClickDirectionalEnLista();
             return;
         }
+        if (_indexerState is "Armas" or "Escudos")
+        {
+            ClickDirectionalEnLista();
+            return;
+        }
+        if (_indexerState.Equals("Fx", StringComparison.OrdinalIgnoreCase))
+        {
+            ClickFxEnLista();
+            return;
+        }
         if (!_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase))
         {
             _lastIndexByState[_indexerState] = indexList.SelectedIndex;
@@ -334,6 +345,20 @@ public partial class MainForm : Form
             LoadDirectionalState(_indexerState);
             RefreshDirectionalList();
             statusLabel.Text = $"Estado {StateCaption(_indexerState)} seleccionado. {_directionalRecords.Count} índices cargados.";
+        }
+        else if (_indexerState is "Armas" or "Escudos")
+        {
+            LoadIniDirectionalState(_indexerState);
+            RefreshDirectionalList();
+            statusLabel.Text = $"Estado {StateCaption(_indexerState)} seleccionado. {_directionalRecords.Count} índices cargados.";
+        }
+        else if (_indexerState.Equals("Fx", StringComparison.OrdinalIgnoreCase))
+        {
+            LoadFxState();
+            indexList.Items.Clear();
+            foreach (var item in _fxRecords) indexList.Items.Add(item.Id);
+            ComprobarIndexLista();
+            statusLabel.Text = $"Estado FX seleccionado. {_fxRecords.Count} índices cargados.";
         }
         else
         {
@@ -659,6 +684,35 @@ public partial class MainForm : Form
         catch (InvalidDataException ex) { statusLabel.Text = $"No se pudo cargar {StateCaption(state)}: {ex.Message}"; }
     }
 
+    private void LoadIniDirectionalState(string state)
+    {
+        _directionalRecords.Clear();
+        var fileName = state == "Armas" ? "Armas.dat" : "Escudos.dat";
+        var path = Path.Combine(ResolvePath(_settings.InitPath), fileName);
+        if (!File.Exists(path)) { statusLabel.Text = $"No se encontró: {path}"; return; }
+        try { _directionalRecords.AddRange(IniDirectionalIndexFile.Load(path, state)); }
+        catch (InvalidDataException ex) { statusLabel.Text = $"No se pudo cargar {StateCaption(state)}: {ex.Message}"; }
+    }
+
+    private void LoadFxState()
+    {
+        _fxRecords.Clear();
+        var initPath = ResolvePath(_settings.InitPath);
+        foreach (var fileName in new[] { "Fxs.ind", "Fxsz.ind" })
+        {
+            var path = Path.Combine(initPath, fileName);
+            if (!File.Exists(path)) continue;
+            try
+            {
+                _fxRecords.AddRange(FxIndexFile.LoadAuto(path));
+                if (_fxRecords.Count > 0) return;
+            }
+            catch (InvalidDataException)
+            {
+            }
+        }
+    }
+
     private void RefreshBodyList()
     {
         indexList.Items.Clear();
@@ -690,5 +744,21 @@ public partial class MainForm : Form
         frameText.Text = "1";
         previewPanel.Invalidate();
         statusLabel.Text = $"{StateCaption(_indexerState)} {item.Id} seleccionado.";
+    }
+
+    private void ClickFxEnLista()
+    {
+        if (indexList.SelectedIndex < 0 || indexList.SelectedIndex >= _fxRecords.Count) return;
+        var item = _fxRecords[indexList.SelectedIndex];
+        _lastIndexByState[_indexerState] = indexList.SelectedIndex;
+        grhText.Text = item.Id.ToString();
+        bmpText.Text = item.Animation.ToString();
+        xText.Text = item.OffsetX.ToString();
+        yText.Text = item.OffsetY.ToString();
+        framesText.Text = "";
+        referencesText.Text = "FX";
+        _selectedRecord = _file?.Records.FirstOrDefault(x => x.Id == item.Animation);
+        previewPanel.Invalidate();
+        statusLabel.Text = $"FX {item.Id} seleccionado.";
     }
 }

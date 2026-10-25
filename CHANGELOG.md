@@ -2,7 +2,16 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
-## [0.0.5-beta] - 2026-10-25
+## [0.0.6-beta] - 2026-10-25
+
+### En progreso — Issue #4
+
+- Se añadió el lector `FxIndexFile` para `Fxs.ind` Integer/Long.
+- Se añadió el lector INI `IniDirectionalIndexFile` para `Armas.dat` y `Escudos.dat`, incluyendo comentarios y secciones con huecos.
+- FX, Armas y Escudos ya cargan sus índices ocupados en las listas y muestran sus referencias principales.
+- Validación real: 20 FX, 16 armas y 5 escudos ocupados.
+- Pruebas sintéticas Integer/Long y validación de archivos reales añadidas al proyecto de pruebas.
+- Issue todavía abierto: [#4](https://github.com/scorpio21/indexador_conundrum_.net/issues/4).
 
 ### En progreso — Issue #3
 

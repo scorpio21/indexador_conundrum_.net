@@ -1,4 +1,4 @@
-# EncodeNet8 — v0.0.5-beta
+# EncodeNet8 — v0.0.6-beta
 
 Migración progresiva del indexador de gráficos de Conundrum/AOSpain desde Visual Basic 6 a C# .NET 8 WinForms.
 
@@ -22,7 +22,7 @@ La migración todavía es parcial. Las búsquedas, el autoindexador, la edición
 
 ## Versionado y seguimiento
 
-La versión actual es `v0.0.5-beta`. Cada mejora relevante incrementará la versión y se registrará en `CHANGELOG.md` con la referencia al issue correspondiente.
+La versión actual es `v0.0.6-beta`. Cada mejora relevante incrementará la versión y se registrará en `CHANGELOG.md` con la referencia al issue correspondiente.
 
 - `beta`: etapa de migración y validación, todavía no estable.
 - `patch`: corrección compatible sin añadir una fase nueva.
@@ -38,6 +38,9 @@ dotnet run --project .\\EncodeNet8.Tests\\EncodeNet8.Tests.csproj -c Release
 
 # Validar archivos direccionales reales
 dotnet run --project .\\EncodeNet8.Tests\\EncodeNet8.Tests.csproj -c Release -- --directional "K:\\AO_Aospain\\cli\\Init\\Personajes.ind" "K:\\AO_Aospain\\cli\\Init\\Cabezas.ind" "K:\\AO_Aospain\\cli\\Init\\Cascos.ind"
+
+# Validar FX, armas y escudos reales
+dotnet run --project .\\EncodeNet8.Tests\\EncodeNet8.Tests.csproj -c Release -- --additional "K:\\AO_Aospain\\cli\\Init\\Fxs.ind" "K:\\AO_Aospain\\cli\\Init\\Armas.dat" "K:\\AO_Aospain\\cli\\Init\\Escudos.dat"
 ```
 
 ## Requisitos
