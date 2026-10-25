@@ -41,10 +41,27 @@ public static class IniDirectionalIndexFile
         {
             "Armas" => "NumArmas",
             "Escudos" => "NumEscudos",
+            "Alas" => "NumAlas",
+            "Capas" => "NumCapas",
+            "Botas" => "NumBotas",
             _ => throw new InvalidDataException($"Estado INI no soportado: {state}")
         };
-        var sectionPrefix = state == "Armas" ? "ARMA" : "ESC";
-        var keyPrefix = state == "Armas" ? "Dir" : "Dir";
+        var sectionPrefix = state switch
+        {
+            "Armas" => "ARMA",
+            "Escudos" => "ESC",
+            "Alas" => "ALAS",
+            "Capas" => "CAPA",
+            "Botas" => "BOTA",
+            _ => string.Empty
+        };
+        var keyPrefix = state switch
+        {
+            "Alas" => "ALAS",
+            "Capas" => "Capa",
+            "Botas" => "Bota",
+            _ => "Dir"
+        };
         var count = 0;
         var sections = new Dictionary<int, int[]>( );
         var current = 0;

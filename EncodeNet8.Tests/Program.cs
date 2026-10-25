@@ -185,4 +185,9 @@ static void TestAdditionalReaders(string root)
     File.WriteAllText(weaponPath, "[INIT]\nNumArmas=3\n\n[ARMA1]\nDir1=10\nDir2=11\nDir3=12\nDir4=13\n\n[ARMA3]\nDir1=20\nDir2=21\nDir3=22\nDir4=23\n");
     var weapons = IniDirectionalIndexFile.Load(weaponPath, "Armas");
     Assert(weapons.Count == 2 && weapons[1].Directions[3] == 23, "lector de armas INI");
+
+    var bootsPath = Path.Combine(root, "Botas.dat");
+    File.WriteAllText(bootsPath, "[INIT]\nNumBotas=2\n\n[Bota1]\nBota1=30\nBota2=31\nBota3=32\nBota4=33\n");
+    var boots = IniDirectionalIndexFile.Load(bootsPath, "Botas");
+    Assert(boots.Count == 1 && boots[0].Directions[2] == 32, "lector de botas INI");
 }

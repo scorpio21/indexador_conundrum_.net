@@ -813,19 +813,28 @@ public partial class MainForm : Form
     private void LoadDirectionalState(string state)
     {
         _directionalRecords.Clear();
-        var fileName = state switch
+        var baseName = state switch
         {
-            "Cabezas" => "Cabezas.ind",
-            "Cascos" => "Cascos.ind",
-            "Alas" => "Alas.ind",
-            "Capas" => "Capas.ind",
-            "Botas" => "Botas.ind",
+            "Cabezas" => "Cabezas",
+            "Cascos" => "Cascos",
+            "Alas" => "Alas",
+            "Capas" => "Capas",
+            "Botas" => "Botas",
             _ => string.Empty
         };
-        if (string.IsNullOrEmpty(fileName)) return;
-        var path = Path.Combine(ResolvePath(_settings.InitPath), fileName);
-        if (!File.Exists(path)) { statusLabel.Text = $"No se encontró: {path}"; return; }
-        try { _directionalRecords.AddRange(DirectionalIndexFile.LoadAuto(path, includesOffsets: state is "Alas" or "Botas")); }
+        if (string.IsNullOrEmpty(baseName)) return;
+        var initPath = ResolvePath(_settings.InitPath);
+        var binaryPath = Path.Combine(initPath, baseName + ".ind");
+        var iniPath = Path.Combine(initPath, baseName + ".dat");
+        try
+        {
+            if (File.Exists(binaryPath))
+                _directionalRecords.AddRange(DirectionalIndexFile.LoadAuto(binaryPath, includesOffsets: state is "Alas" or "Botas"));
+            else if (File.Exists(iniPath))
+                _directionalRecords.AddRange(IniDirectionalIndexFile.Load(iniPath, state));
+            else
+                statusLabel.Text = $"No se encontró {baseName}.ind ni {baseName}.dat en {initPath}.";
+        }
         catch (InvalidDataException ex) { statusLabel.Text = $"No se pudo cargar {StateCaption(state)}: {ex.Message}"; }
     }
 

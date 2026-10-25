@@ -2,7 +2,14 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
-## [0.0.9-beta] - 2026-10-25
+## [0.0.10-beta] - 2026-10-25
+
+### En progreso — Issue #3
+
+- Capas, Alas y Botas aceptan ahora tanto `.ind` binario como `.dat` INI cuando el cliente los proporciona.
+- El lector INI direccional soporta `ALAS1`, `Capa1`, `Bota1` y sus cuatro direcciones.
+- Se añadieron pruebas sintéticas para Botas y los formatos INI direccionales.
+- El Issue #3 sigue abierto hasta completar edición y guardado de estos índices.
 
 ### En progreso — Issue #7
 
