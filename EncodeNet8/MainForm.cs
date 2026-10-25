@@ -253,6 +253,110 @@ public partial class MainForm : Form
 
     private static short ParseShort(object? value) => short.TryParse(Convert.ToString(value), out var result) ? result : (short)0;
 
+    private void ResetGrhValidationColors()
+    {
+        foreach (var textBox in new[] { bmpText, frameText, framesText, heightText, widthText, speedText, xText, yText, tileHeightText, tileWidthText })
+            textBox.BackColor = Color.White;
+    }
+
+    private static void MarkValidation(TextBox textBox, Color color) => textBox.BackColor = color;
+
+    private void ValidateSelectedGrh(GrhRecord record)
+    {
+        ResetGrhValidationColors();
+        var errors = new List<string>();
+        var graphicsFolder = ResolvePath(_settings.GraphicsPath);
+
+        if (record.Frames.Count <= 0)
+        {
+            MarkValidation(framesText, Color.Red);
+            errors.Add("Nº de frames incorrecto.");
+            SetUtilError(string.Join(" ", errors));
+            return;
+        }
+
+        if (record.IsAnimation)
+        {
+            var firstFrame = _file?.Records.FirstOrDefault(item => item.Id == record.Frames[0]);
+            var firstSize = firstFrame is null ? (Width: 0, Height: 0) : (firstFrame.Width, firstFrame.Height);
+            var invalidFrame = false;
+            var differentSize = false;
+
+            for (var i = 0; i < record.Frames.Count; i++)
+            {
+                var frameId = record.Frames[i];
+                var frame = _file?.Records.FirstOrDefault(item => item.Id == frameId);
+                var frameIsValid = frame is not null && !frame.IsAnimation && frame.Width > 0 && frame.Height > 0;
+                if (!frameIsValid)
+                {
+                    invalidFrame = true;
+                    errors.Add($"El frame nº {i + 1} es incorrecto.");
+                    continue;
+                }
+
+                if (i > 0 && (frame!.Width != firstSize.Width || frame.Height != firstSize.Height))
+                {
+                    differentSize = true;
+                    errors.Add($"El frame nº {i + 1} tiene distintas dimensiones.");
+                }
+
+                var framePath = Path.Combine(graphicsFolder, $"{frame!.FileNumber}.bmp");
+                if (!File.Exists(framePath))
+                {
+                    invalidFrame = true;
+                    errors.Add($"Falta el BMP del frame nº {i + 1} ({frame.FileNumber}.bmp).");
+                }
+            }
+
+            if (invalidFrame) MarkValidation(frameText, Color.Red);
+            else if (differentSize) MarkValidation(frameText, Color.Yellow);
+
+            SetUtilError(string.Join(Environment.NewLine, errors));
+            return;
+        }
+
+        var bitmapPath = Path.Combine(graphicsFolder, $"{record.FileNumber}.bmp");
+        if (!File.Exists(bitmapPath))
+        {
+            MarkValidation(bmpText, Color.Red);
+            errors.Add($"El archivo {record.FileNumber}.bmp no existe.");
+        }
+        else
+        {
+            try
+            {
+                var bitmap = GetCachedBitmap(bitmapPath);
+                if (record.X < 0 || record.X > bitmap.Width)
+                {
+                    MarkValidation(xText, Color.Red);
+                    errors.Add("Posición X fuera del BMP.");
+                }
+                if (record.Y < 0 || record.Y > bitmap.Height)
+                {
+                    MarkValidation(yText, Color.Red);
+                    errors.Add("Posición Y fuera del BMP.");
+                }
+                if (record.Y >= 0 && record.Y + record.Height > bitmap.Height)
+                {
+                    MarkValidation(heightText, Color.Yellow);
+                    errors.Add("Alto fuera del BMP.");
+                }
+                if (record.X >= 0 && record.X + record.Width > bitmap.Width)
+                {
+                    MarkValidation(widthText, Color.Yellow);
+                    errors.Add("Ancho fuera del BMP.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MarkValidation(bmpText, Color.Red);
+                errors.Add($"No se pudo comprobar el BMP: {ex.Message}");
+            }
+        }
+
+        SetUtilError(string.Join(" ", errors));
+    }
+
     private void UpdateUi()
     {
         var canSaveState = _indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase)
@@ -321,6 +425,7 @@ public partial class MainForm : Form
         tileHeightText.Text = frameData.Height > 0 ? (frameData.Height / 32).ToString() : "";
         tileWidthText.Text = frameData.Width > 0 ? (frameData.Width / 32).ToString() : "";
         referencesText.Text = CountReferences(_selectedRecord.Id).ToString();
+        ValidateSelectedGrh(_selectedRecord);
         _drawTimer.Enabled = _selectedRecord.IsAnimation;
         ConfigureAnimationTimer(_selectedRecord);
         previewPanel.Invalidate();

@@ -2,6 +2,17 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.23-beta] - 2026-10-26
+
+### En progreso — Issue #5
+
+- Se adapta la validación de `GrhCorrectoNormal` del VB6.
+- El campo `Frames:` equivalente a `TextDatos(1)` se marca en rojo cuando falta un frame, es inválido o no tiene BMP.
+- Se marca en amarillo cuando los frames tienen dimensiones diferentes.
+- También se colorean `BMP`, `Alto`, `Ancho`, `Posición X` y `Posición Y` según el tipo de error.
+- Los mensajes detallados se muestran en `LUlitError`.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.22-beta] - 2026-10-26
 
 ### En progreso — Issue #5
