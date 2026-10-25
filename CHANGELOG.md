@@ -2,6 +2,15 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.18-beta] - 2026-10-26
+
+### En progreso — Issue #5
+
+- Los frames de una animación se precargan al seleccionarla para evitar tirones en el primer ciclo.
+- El avance usa `Stopwatch` y un timer de 15 ms para corregir retrasos acumulados del timer de WinForms.
+- El ritmo almacenado del GRH se conserva como duración de cada frame.
+- Issue #5 sigue abierto para validar fluidez con recursos reales y completar pruebas visuales automatizadas.
+
 ## [0.0.17-beta] - 2026-10-26
 
 ### En progreso — Issue #5

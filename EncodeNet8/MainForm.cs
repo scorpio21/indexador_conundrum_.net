@@ -7,6 +7,9 @@ public partial class MainForm : Form
     private readonly IndexerSettings _settings;
     private readonly System.Windows.Forms.Timer _drawTimer = new() { Interval = 150 };
     private readonly Dictionary<string, Bitmap> _bitmapCache = new(StringComparer.OrdinalIgnoreCase);
+    private readonly System.Diagnostics.Stopwatch _animationClock = System.Diagnostics.Stopwatch.StartNew();
+    private long _animationElapsed;
+    private int _animationIntervalMs = 150;
     private GrhRecord? _selectedRecord;
     private int _animationFrame;
     private string _indexerState = "Grh";
@@ -882,7 +885,13 @@ public partial class MainForm : Form
             _drawTimer.Stop();
             return;
         }
-        _animationFrame = (_animationFrame + 1) % _selectedRecord.Frames.Count;
+        var elapsed = _animationClock.ElapsedMilliseconds;
+        var elapsedSinceFrame = elapsed - _animationElapsed;
+        if (elapsedSinceFrame < _animationIntervalMs) return;
+
+        var framesToAdvance = (int)Math.Min(elapsedSinceFrame / _animationIntervalMs, _selectedRecord.Frames.Count);
+        _animationFrame = (_animationFrame + framesToAdvance) % _selectedRecord.Frames.Count;
+        _animationElapsed += (long)framesToAdvance * _animationIntervalMs;
         frameText.Text = (_animationFrame + 1).ToString();
         previewPanel.Invalidate();
     }
@@ -894,8 +903,25 @@ public partial class MainForm : Form
             _drawTimer.Stop();
             return;
         }
-        _drawTimer.Interval = Math.Clamp(record.Speed * 25, 25, 1000);
+        _animationFrame = 0;
+        _animationIntervalMs = Math.Clamp(record.Speed * 25, 25, 1000);
+        _drawTimer.Interval = Math.Min(15, _animationIntervalMs);
+        WarmAnimationBitmaps(record);
+        _animationClock.Restart();
+        _animationElapsed = 0;
         _drawTimer.Start();
+    }
+
+    private void WarmAnimationBitmaps(GrhRecord animation)
+    {
+        var graphicsFolder = ResolvePath(_settings.GraphicsPath);
+        foreach (var frameId in animation.Frames)
+        {
+            var frame = _file?.Records.FirstOrDefault(x => x.Id == frameId);
+            if (frame is null) continue;
+            var bitmapPath = Path.Combine(graphicsFolder, $"{frame.FileNumber}.bmp");
+            if (File.Exists(bitmapPath)) _ = GetCachedBitmap(bitmapPath);
+        }
     }
 
     private GrhRecord? GetPreviewRecord(out string? error)
