@@ -1,4 +1,5 @@
 using EncodeNet8;
+using System.Reflection;
 
 var root = Path.Combine(Path.GetTempPath(), "EncodeNet8.Tests", Guid.NewGuid().ToString("N"));
 Directory.CreateDirectory(root);
@@ -46,6 +47,7 @@ try
     var invalid = Path.Combine(root, "truncado.ind");
     File.WriteAllBytes(invalid, new byte[273]);
     ExpectInvalid(() => GraficosIndFile.Load(invalid, GrhStorageFormat.LegacyInteger));
+    TestStateSlotReaders(root);
     Console.WriteLine("Graficos.ind: Integer y Long OK; truncado rechazado.");
 }
 finally
@@ -68,4 +70,32 @@ static void ExpectInvalid(Action action)
     catch (InvalidDataException)
     {
     }
+}
+
+static void TestStateSlotReaders(string root)
+{
+    var binaryPath = Path.Combine(root, "Cabezas.ind");
+    using (var stream = File.Create(binaryPath))
+    using (var writer = new BinaryWriter(stream))
+    {
+        writer.Write(new byte[263]);
+        writer.Write((short)2);
+        writer.Write((short)10);
+        writer.Write((short)0);
+        writer.Write((short)0);
+        writer.Write((short)0);
+        writer.Write((short)0);
+        writer.Write((short)0);
+        writer.Write((short)0);
+        writer.Write((short)0);
+    }
+
+    var iniPath = Path.Combine(root, "Armas.dat");
+    File.WriteAllText(iniPath, "[INIT]\nNumArmas=3\n\n[Arma1]\nDir1=4719\n\n[ARMA2]\nDir1=0\n\n[ARMA3]\nDir1=4723 'norte\n");
+    var method = typeof(MainForm).GetMethod("ReadOccupiedBinarySlots", BindingFlags.NonPublic | BindingFlags.Static)!;
+    var binary = (List<int>)method.Invoke(null, new object[] { binaryPath, new[] { 8 } })!;
+    Assert(binary.SequenceEqual(new[] { 1 }), "lista binaria de índices ocupados");
+    var iniMethod = typeof(MainForm).GetMethod("ReadOccupiedIniSlots", BindingFlags.NonPublic | BindingFlags.Static)!;
+    var ini = (List<int>)iniMethod.Invoke(null, new object[] { iniPath, "Armas" })!;
+    Assert(ini.SequenceEqual(new[] { 1, 3 }), "lista INI de índices ocupados");
 }

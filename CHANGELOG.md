@@ -2,16 +2,19 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
-## [0.0.3-beta] - 2026-10-25
+## [0.0.4-beta] - 2026-10-25
 
-### En progreso — Issue #2
+### Completado — Issue #2
 
 - Se implementó el flujo de estados equivalente a `CambiarEstado` y `ComprobarIndexLista`.
 - Los botones de Gráficos, Bodies, Cabezas, Cascos, Escudos, Armas y FX ya no son acciones vacías.
 - Se añadieron los estados Alas, Capas, Recursos y Botas, con restauración de selección independiente.
-- Las listas de estados con archivos disponibles muestran sus slots; los detalles binarios específicos quedan en los Issues #3 y #4.
+- Las listas filtran entradas ocupadas en archivos binarios y `.dat`, igual que las rutinas `RenuevaLista...` del VB6.
+- Los `.dat` aceptan comentarios de línea y se validan las secciones y el primer GRH de cada índice.
+- Recursos carga los BMP numerados disponibles de la carpeta de gráficos.
 - La selección de estados pendientes limpia el visor y evita interpretar un slot como si fuera un GRH.
-- Issue relacionado todavía abierto: [#2](https://github.com/scorpio21/indexador_conundrum_.net/issues/2).
+- Se añadieron pruebas sintéticas para listas binarias e INI.
+- Issue cerrado: [#2](https://github.com/scorpio21/indexador_conundrum_.net/issues/2).
 
 ### Completado — Issue #1
 

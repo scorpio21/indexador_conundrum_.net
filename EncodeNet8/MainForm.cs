@@ -435,26 +435,55 @@ public partial class MainForm : Form
         {
             var path = Path.Combine(initPath, candidate);
             if (!File.Exists(path)) continue;
-            var count = Path.GetExtension(path).Equals(".ind", StringComparison.OrdinalIgnoreCase)
-                ? ReadBinaryIndexCount(path)
-                : ReadIniIndexCount(path, state);
-            for (var i = 1; i <= count; i++) indexList.Items.Add(i);
-            if (count > 0) return;
+            var occupied = Path.GetExtension(path).Equals(".ind", StringComparison.OrdinalIgnoreCase)
+                ? ReadOccupiedBinarySlots(path, new[] { 6, 8, 12, 16, 20 })
+                : ReadOccupiedIniSlots(path, state);
+            foreach (var index in occupied) indexList.Items.Add(index);
+            if (occupied.Count > 0) return;
+        }
+
+        if (state.Equals("Resource", StringComparison.OrdinalIgnoreCase))
+        {
+            var graphicsPath = ResolvePath(_settings.GraphicsPath);
+            if (Directory.Exists(graphicsPath))
+            {
+                foreach (var file in Directory.EnumerateFiles(graphicsPath, "*.bmp"))
+                {
+                    var name = Path.GetFileNameWithoutExtension(file);
+                    if (int.TryParse(name, out var index) && index > 0) indexList.Items.Add(index);
+                }
+            }
+            var sorted = indexList.Items.Cast<int>().OrderBy(x => x).ToArray();
+            indexList.Items.Clear();
+            foreach (var index in sorted) indexList.Items.Add(index);
         }
     }
 
-    private static int ReadBinaryIndexCount(string path)
+    private static List<int> ReadOccupiedBinarySlots(string path, int[] possibleRecordSizes)
     {
+        var result = new List<int>();
         using var stream = File.OpenRead(path);
-        if (stream.Length < 265) return 0;
+        if (stream.Length < 265) return result;
         stream.Position = 263;
         using var reader = new BinaryReader(stream);
         var count = reader.ReadInt16();
-        return count > 0 ? count : 0;
+        if (count <= 0) return result;
+        var remaining = stream.Length - stream.Position;
+        var recordSize = possibleRecordSizes.FirstOrDefault(size => remaining == count * (long)size);
+        if (recordSize == 0) return result;
+        var indexSize = recordSize >= 12 ? 4 : 2;
+        for (var i = 1; i <= count; i++)
+        {
+            var first = indexSize == 4 ? reader.ReadInt32() : reader.ReadInt16();
+            if (first > 0) result.Add(i);
+            stream.Position += recordSize - indexSize;
+        }
+        return result;
     }
 
-    private static int ReadIniIndexCount(string path, string state)
+    private static List<int> ReadOccupiedIniSlots(string path, string state)
     {
+        var result = new List<int>();
         var key = state switch
         {
             "Armas" => "NumArmas",
@@ -464,22 +493,54 @@ public partial class MainForm : Form
             "Botas" => "NumBotas",
             _ => "NumFxs"
         };
+        var sectionPrefix = state switch
+        {
+            "Armas" => "ARMA",
+            "Escudos" => "ESC",
+            "Alas" => "ALAS",
+            "Capas" => "CAPA",
+            "Botas" => "BOTA",
+            _ => "FX"
+        };
+        var firstField = state switch
+        {
+            "Armas" or "Escudos" => "Dir1",
+            "Alas" => "ALAS1",
+            "Capas" => "Capa1",
+            "Botas" => "Bota1",
+            _ => "Animacion"
+        };
         var inInit = false;
+        var currentIndex = 0;
+        var currentOccupied = false;
         foreach (var rawLine in File.ReadLines(path))
         {
-            var line = rawLine.Trim();
+            var line = rawLine.Split('\'', 2)[0].Trim();
             if (line.StartsWith("["))
             {
                 inInit = line.Equals("[INIT]", StringComparison.OrdinalIgnoreCase);
+                if (currentIndex > 0 && currentOccupied) result.Add(currentIndex);
+                currentIndex = 0;
+                currentOccupied = false;
+                var section = line.Trim('[', ']');
+                if (section.StartsWith(sectionPrefix, StringComparison.OrdinalIgnoreCase))
+                    int.TryParse(section[sectionPrefix.Length..], out currentIndex);
                 continue;
             }
-            if (!inInit) continue;
             var separator = line.IndexOf('=');
             if (separator <= 0) continue;
-            if (!line[..separator].Trim().Equals(key, StringComparison.OrdinalIgnoreCase)) continue;
-            return int.TryParse(line[(separator + 1)..].Trim(), out var count) && count > 0 ? count : 0;
+            var name = line[..separator].Trim();
+            var value = line[(separator + 1)..].Trim();
+            if (inInit && name.Equals(key, StringComparison.OrdinalIgnoreCase))
+            {
+                if (!int.TryParse(value, out var count) || count <= 0) return result;
+                inInit = false;
+            }
+            if (name.Equals(firstField, StringComparison.OrdinalIgnoreCase) && int.TryParse(value, out var first) && first > 0)
+                currentOccupied = true;
         }
-        return 0;
+        if (currentIndex > 0 && currentOccupied) result.Add(currentIndex);
+        return result.OrderBy(x => x).ToList();
     }
 
     private void drawTimer_Tick(object? sender, EventArgs e)
