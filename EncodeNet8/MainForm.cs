@@ -922,7 +922,7 @@ public partial class MainForm : Form
             return;
         }
         _animationFrame = 0;
-        _animationIntervalMs = Math.Clamp(record.Speed * 25, 25, 1000);
+        _animationIntervalMs = Math.Clamp((int)Math.Round(record.Speed * (1000D / 60D)), 16, 1000);
         _drawTimer.Interval = Math.Min(15, _animationIntervalMs);
         WarmAnimationBitmaps(record);
         _animationClock.Restart();

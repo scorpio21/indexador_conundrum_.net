@@ -2,6 +2,15 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.21-beta] - 2026-10-26
+
+### En progreso — Issue #5
+
+- El intervalo del visor se ajusta a la lógica VB6: un ciclo de render de aproximadamente 60 FPS por unidad de `Speed`.
+- Se corrige la conversión anterior de `Speed × 25 ms`, que hacía las animaciones más lentas y menos fluidas que el cliente original.
+- El loop continúa reiniciando en el primer frame al superar el último.
+- Issue #5 sigue abierto para validar fluidez visual con recursos reales.
+
 ## [0.0.20-beta] - 2026-10-26
 
 ### En progreso — Issue #5
