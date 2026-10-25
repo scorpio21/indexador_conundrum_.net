@@ -2,6 +2,16 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.20-beta] - 2026-10-26
+
+### En progreso — Issue #5
+
+- La ficha del GRH muestra la lista completa de frames en el campo `Frames`.
+- `Número Frames` muestra ahora la cantidad de frames, como en el indexador VB6.
+- Para animaciones se muestran las dimensiones y los títulos del primer frame; el GRH raíz conserva su BMP, offsets y velocidad.
+- El timer deja de sobrescribir la lista de frames con el número del frame actual.
+- Issue #5 sigue abierto para validar visualmente errores de recursos ausentes.
+
 ## [0.0.19-beta] - 2026-10-26
 
 ### En progreso — Issue #5

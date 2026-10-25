@@ -297,9 +297,21 @@ public partial class MainForm : Form
         if (_selectedRecord is null) return;
         _lastIndexByState[_indexerState] = indexList.SelectedIndex;
         _animationFrame = 0;
-        grhText.Text = _selectedRecord.Id.ToString(); bmpText.Text = _selectedRecord.FileNumber.ToString(); xText.Text = _selectedRecord.X.ToString(); yText.Text = _selectedRecord.Y.ToString();
-        widthText.Text = _selectedRecord.Width.ToString(); heightText.Text = _selectedRecord.Height.ToString(); speedText.Text = _selectedRecord.Speed.ToString();
-        framesText.Text = _selectedRecord.IsAnimation ? string.Join("-", _selectedRecord.Frames) : ""; frameText.Text = _selectedRecord.IsAnimation ? "1" : ""; referencesText.Text = CountReferences(_selectedRecord.Id).ToString();
+        var frameData = _selectedRecord.IsAnimation
+            ? _file.Records.FirstOrDefault(x => x.Id == _selectedRecord.Frames[0]) ?? _selectedRecord
+            : _selectedRecord;
+        grhText.Text = _selectedRecord.Id.ToString();
+        bmpText.Text = _selectedRecord.FileNumber.ToString();
+        xText.Text = _selectedRecord.X.ToString();
+        yText.Text = _selectedRecord.Y.ToString();
+        widthText.Text = frameData.Width.ToString();
+        heightText.Text = frameData.Height.ToString();
+        speedText.Text = _selectedRecord.Speed.ToString();
+        framesText.Text = _selectedRecord.Frames.Count.ToString();
+        frameText.Text = _selectedRecord.IsAnimation ? string.Join("-", _selectedRecord.Frames) : "";
+        tileHeightText.Text = frameData.Height > 0 ? (frameData.Height / 32).ToString() : "";
+        tileWidthText.Text = frameData.Width > 0 ? (frameData.Width / 32).ToString() : "";
+        referencesText.Text = CountReferences(_selectedRecord.Id).ToString();
         _drawTimer.Enabled = _selectedRecord.IsAnimation;
         ConfigureAnimationTimer(_selectedRecord);
         previewPanel.Invalidate();
@@ -899,7 +911,6 @@ public partial class MainForm : Form
         var framesToAdvance = (int)Math.Min(elapsedSinceFrame / _animationIntervalMs, _selectedRecord.Frames.Count);
         _animationFrame = (_animationFrame + framesToAdvance) % _selectedRecord.Frames.Count;
         _animationElapsed += (long)framesToAdvance * _animationIntervalMs;
-        frameText.Text = (_animationFrame + 1).ToString();
         previewPanel.Invalidate();
     }
 
