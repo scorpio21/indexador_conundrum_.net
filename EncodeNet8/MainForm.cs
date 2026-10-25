@@ -291,6 +291,7 @@ public partial class MainForm : Form
         widthText.Text = _selectedRecord.Width.ToString(); heightText.Text = _selectedRecord.Height.ToString(); speedText.Text = _selectedRecord.Speed.ToString();
         framesText.Text = _selectedRecord.IsAnimation ? string.Join("-", _selectedRecord.Frames) : ""; frameText.Text = _selectedRecord.IsAnimation ? "1" : ""; referencesText.Text = "0";
         _drawTimer.Enabled = _selectedRecord.IsAnimation;
+        ConfigureAnimationTimer(_selectedRecord);
         previewPanel.Invalidate();
         statusLabel.Text = $"GRH {_selectedRecord.Id} seleccionado ({_indexerState}).";
     }
@@ -786,6 +787,17 @@ public partial class MainForm : Form
         previewPanel.Invalidate();
     }
 
+    private void ConfigureAnimationTimer(GrhRecord record)
+    {
+        if (!record.IsAnimation || record.Speed <= 0)
+        {
+            _drawTimer.Stop();
+            return;
+        }
+        _drawTimer.Interval = Math.Clamp(record.Speed * 25, 25, 1000);
+        _drawTimer.Start();
+    }
+
     private GrhRecord? GetPreviewRecord(out string? error)
     {
         error = null;
@@ -832,7 +844,8 @@ public partial class MainForm : Form
 
         try
         {
-            using var bitmap = Image.FromFile(bitmapPath);
+            using var bitmap = new Bitmap(bitmapPath);
+            bitmap.MakeTransparent(Color.Black);
             var source = new Rectangle(record.X, record.Y, record.Width, record.Height);
             if (source.Width <= 0 || source.Height <= 0)
             {
@@ -1022,6 +1035,7 @@ public partial class MainForm : Form
         referencesText.Text = "4 direcciones";
         _selectedRecord = _file?.Records.FirstOrDefault(x => x.Id == item.Directions[direction]);
         frameText.Text = "1";
+        if (_selectedRecord is not null) ConfigureAnimationTimer(_selectedRecord);
         previewPanel.Invalidate();
         statusLabel.Text = $"{StateCaption(_indexerState)} {item.Id} seleccionado.";
     }
@@ -1044,6 +1058,7 @@ public partial class MainForm : Form
         framesText.Text = "";
         referencesText.Text = "FX";
         _selectedRecord = _file?.Records.FirstOrDefault(x => x.Id == item.Animation);
+        if (_selectedRecord is not null) ConfigureAnimationTimer(_selectedRecord);
         previewPanel.Invalidate();
         statusLabel.Text = $"FX {item.Id} seleccionado.";
     }

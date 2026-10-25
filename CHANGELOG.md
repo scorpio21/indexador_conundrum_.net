@@ -2,7 +2,14 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
-## [0.0.13-beta] - 2026-10-25
+## [0.0.14-beta] - 2026-10-26
+
+### En progreso — Issue #5
+
+- El timer del visor usa la velocidad almacenada en el GRH para calcular el intervalo de animación.
+- El render GDI+ aplica transparencia negra para aproximar la clave de color del cliente original.
+- Se mantienen validaciones explícitas para frames inexistentes, dimensiones inválidas y recortes fuera del BMP.
+- Issue #5 sigue abierto para referencias y pruebas visuales completas.
 
 ### En progreso — Issue #5
 
