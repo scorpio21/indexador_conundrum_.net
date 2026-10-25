@@ -2,7 +2,15 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
-## [0.0.1-beta] - 2026-10-25
+## [0.0.2-beta] - 2026-10-25
+
+### Completado — Issue #1
+
+- Se endureció la lectura de `Graficos.ind`: cabecera, registros incompletos, IDs duplicados/desordenados, frames inválidos y datos posteriores al terminador ahora se detectan explícitamente.
+- El escritor conserva la cabecera original y respeta el formato VB6, que finaliza al terminar el último registro.
+- Se añadieron pruebas reproducibles para Integer, Long, GRH superiores a `32767` y archivos truncados.
+- Se validaron archivos reales: `K:\\AO_Aospain\\cli\\Init\\Graficos.ind` (12.597 GRH) y `K:\\AO_Aospain\\utilidades\\init\\Graficos.ind` (12.620 GRH).
+- Issue cerrado: [#1](https://github.com/scorpio21/indexador_conundrum_.net/issues/1).
 
 ### Añadido
 
@@ -13,7 +21,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Soporte inicial para IDs GRH y frames en formato Integer y Long.
 - Cambio de estado y visor inicial para GRH y Bodies.
 - Menús principales compatibles con la organización del indexador VB6.
-- Issues de implantación [#1](https://github.com/scorpio21/indexador_conundrum_.net/issues/1) a [#9](https://github.com/scorpio21/indexador_conundrum_.net/issues/9).
+- Issues de implantación [#2](https://github.com/scorpio21/indexador_conundrum_.net/issues/2) a [#9](https://github.com/scorpio21/indexador_conundrum_.net/issues/9).
 
 ### Pendiente
 
