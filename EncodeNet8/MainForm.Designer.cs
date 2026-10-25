@@ -21,6 +21,7 @@ partial class MainForm
     private Label referencesLabel = null!;
     private StatusStrip statusStrip = null!;
     private ToolStripStatusLabel statusLabel = null!;
+    private Label LUlitError = null!;
 
     protected override void Dispose(bool disposing)
     { if (disposing && components != null) components.Dispose(); base.Dispose(disposing); }
@@ -87,6 +88,7 @@ partial class MainForm
         graphicsText = new TextBox();
         maxGrhText = new TextBox();
         previewPanel = new BufferedPreviewPanel();
+        LUlitError = new Label();
         statusStrip = new StatusStrip();
         statusLabel = new ToolStripStatusLabel();
         menuStrip.SuspendLayout();
@@ -94,9 +96,9 @@ partial class MainForm
         foldersGroup.SuspendLayout();
         statusStrip.SuspendLayout();
         SuspendLayout();
-        // 
+        //
         // menuStrip
-        // 
+        //
         menuStrip.Items.AddRange(new ToolStripItem[] { archivoMenu, edicionMenu, herramientasMenu, indexarMenu, ayudaMenu });
         menuStrip.Location = new Point(0, 0);
         menuStrip.Name = "menuStrip";
@@ -631,13 +633,26 @@ partial class MainForm
         previewPanel.TabIndex = 19;
         previewPanel.Paint += previewPanel_Paint;
         // 
+        // LUlitError
+        // 
+        LUlitError.AutoEllipsis = false;
+        LUlitError.BackColor = SystemColors.Control;
+        LUlitError.BorderStyle = BorderStyle.FixedSingle;
+        LUlitError.ForeColor = Color.DarkRed;
+        LUlitError.Location = new Point(0, 610);
+        LUlitError.Name = "LUlitError";
+        LUlitError.Size = new Size(1142, 58);
+        LUlitError.TabIndex = 20;
+        LUlitError.TextAlign = ContentAlignment.TopLeft;
+        LUlitError.Visible = true;
+        // 
         // statusStrip
         // 
         statusStrip.Items.AddRange(new ToolStripItem[] { statusLabel });
         statusStrip.Location = new Point(0, 668);
         statusStrip.Name = "statusStrip";
         statusStrip.Size = new Size(1142, 22);
-        statusStrip.TabIndex = 20;
+        statusStrip.TabIndex = 21;
         // 
         // statusLabel
         // 
@@ -673,6 +688,7 @@ partial class MainForm
         Controls.Add(dataGroup);
         Controls.Add(foldersGroup);
         Controls.Add(previewPanel);
+        Controls.Add(LUlitError);
         Controls.Add(statusStrip);
         MainMenuStrip = menuStrip;
         MinimumSize = new Size(1000, 600);

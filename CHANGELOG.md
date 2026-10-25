@@ -2,6 +2,16 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.22-beta] - 2026-10-26
+
+### En progreso — Issue #5
+
+- Se adapta el label VB6 `LUlitError` como un label inferior editable desde el diseñador WinForms.
+- Se limpia al cambiar de estado, seleccionar otro índice o vaciar la memoria.
+- Muestra errores persistentes de frames, BMP ausentes, dimensiones inválidas y recortes fuera de rango sin depender de un `MessageBox`.
+- Las búsquedas muestran en ese mismo área los mensajes equivalentes a “F3 para continuar la búsqueda” y “Se terminó la búsqueda”.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.21-beta] - 2026-10-26
 
 ### En progreso — Issue #5

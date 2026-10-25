@@ -89,6 +89,14 @@ public partial class MainForm : Form
     private void SelectSavedIndex(int slot) => statusLabel.Text = $"Índice de guardado seleccionado: {slot}.";
     private void ShowPending(string action) => MessageBox.Show(this, $"La acción «{action}» está preparada en el menú y se conectará al módulo correspondiente.", "AOSpain");
 
+    private void SetUtilError(string? message)
+    {
+        LUlitError.Text = message ?? string.Empty;
+        LUlitError.ForeColor = string.IsNullOrWhiteSpace(message) ? Color.Black : Color.DarkRed;
+    }
+
+    private void ClearUtilError() => SetUtilError(string.Empty);
+
     private void configuracionMenu_Click(object? sender, EventArgs e)
     {
         using var dialog = new SettingsForm(_settings);
@@ -261,6 +269,7 @@ public partial class MainForm : Form
 
     private void ClickEnLista()
     {
+        ClearUtilError();
         if (_indexerState.Equals("Body", StringComparison.OrdinalIgnoreCase))
         {
             ClickDirectionalEnLista();
@@ -419,6 +428,7 @@ public partial class MainForm : Form
     {
         _file = null; _loadedPath = null; _selectedRecord = null; _drawTimer.Stop(); indexList.Items.Clear(); previewPanel.Invalidate();
         foreach (var box in new[] { grhText, bmpText, framesText, heightText, widthText, speedText, xText, yText, tileHeightText, tileWidthText, referencesText }) box.Clear();
+        ClearUtilError();
         UpdateUi();
     }
 
@@ -565,9 +575,13 @@ public partial class MainForm : Form
 
     private void SearchNext()
     {
-        if (_searchResults.Count == 0) { statusLabel.Text = "No hay una búsqueda activa."; return; }
+        if (_searchResults.Count == 0) { SetUtilError("No hay una búsqueda activa."); statusLabel.Text = "Buscar siguiente: sin búsqueda activa."; return; }
         _searchCursor = (_searchCursor + 1) % _searchResults.Count;
         indexList.SelectedIndex = _searchCursor;
+        if (_searchCursor == 0 && _searchResults.Count > 1)
+            SetUtilError("Se terminó la búsqueda; se ha vuelto al primer resultado.");
+        else
+            SetUtilError("F3 para continuar la búsqueda.");
         statusLabel.Text = $"Resultado {_searchCursor + 1}/{_searchResults.Count}.";
     }
 
@@ -629,6 +643,7 @@ public partial class MainForm : Form
         _indexerState = NormalizeState(state);
         _drawTimer.Stop();
         _selectedRecord = null;
+        ClearUtilError();
         previewPanel.Invalidate();
         ConfigureStateFields(_indexerState);
 
@@ -966,11 +981,16 @@ public partial class MainForm : Form
     private void previewPanel_Paint(object? sender, PaintEventArgs e)
     {
         e.Graphics.Clear(previewPanel.BackColor);
-        if (_selectedRecord is null) return;
+        if (_selectedRecord is null)
+        {
+            ClearUtilError();
+            return;
+        }
 
         var record = GetPreviewRecord(out var frameError);
         if (record is null)
         {
+            SetUtilError(frameError ?? "No hay un recurso seleccionado.");
             using var errorBrush = new SolidBrush(Color.DarkRed);
             e.Graphics.DrawString(frameError ?? "No hay un recurso seleccionado.", Font, errorBrush, new PointF(12, 12));
             return;
@@ -980,6 +1000,7 @@ public partial class MainForm : Form
         var bitmapPath = Path.Combine(graphicsFolder, $"{record.FileNumber}.bmp");
         if (!File.Exists(bitmapPath))
         {
+            SetUtilError($"BMP {record.FileNumber} no encontrado: {bitmapPath}");
             using var brush = new SolidBrush(Color.DimGray);
             using var font = new Font(Font.FontFamily, 10F);
             e.Graphics.DrawString($"BMP {record.FileNumber} no encontrado\n{bitmapPath}", font, brush, new PointF(12, 12));
@@ -992,12 +1013,14 @@ public partial class MainForm : Form
             var source = new Rectangle(record.X, record.Y, record.Width, record.Height);
             if (source.Width <= 0 || source.Height <= 0)
             {
+                SetUtilError($"GRH {record.Id}: dimensiones inválidas ({source.Width}x{source.Height}).");
                 using var invalidBrush = new SolidBrush(Color.DarkRed);
                 e.Graphics.DrawString($"GRH {record.Id}: dimensiones inválidas ({source.Width}x{source.Height}).", Font, invalidBrush, new PointF(12, 12));
                 return;
             }
             if (source.X < 0 || source.Y < 0 || source.Right > bitmap.Width || source.Bottom > bitmap.Height)
             {
+                SetUtilError($"GRH {record.Id}: recorte fuera de BMP {record.FileNumber} ({bitmap.Width}x{bitmap.Height}).");
                 using var invalidBrush = new SolidBrush(Color.DarkRed);
                 e.Graphics.DrawString($"GRH {record.Id}: recorte fuera de BMP {record.FileNumber} ({bitmap.Width}x{bitmap.Height}).", Font, invalidBrush, new PointF(12, 12));
                 return;
@@ -1008,9 +1031,11 @@ public partial class MainForm : Form
             e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
             e.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Half;
             e.Graphics.DrawImage(bitmap, dest, source, GraphicsUnit.Pixel);
+            ClearUtilError();
         }
         catch (Exception ex)
         {
+            SetUtilError($"No se pudo dibujar el BMP: {ex.Message}");
             using var brush = new SolidBrush(Color.DarkRed);
             e.Graphics.DrawString($"No se pudo dibujar el BMP: {ex.Message}", Font, brush, new PointF(12, 12));
         }
