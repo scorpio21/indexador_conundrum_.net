@@ -2,7 +2,14 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
-## [0.0.8-beta] - 2026-10-25
+## [0.0.9-beta] - 2026-10-25
+
+### En progreso — Issue #7
+
+- Se conectaron las búsquedas de GRH con BMP, BMP sin indexar, siguiente resultado y GRH repetidos.
+- Las búsquedas mantienen IDs reales, por lo que seleccionar o borrar un resultado filtrado no usa una posición incorrecta.
+- El autoindexador y la generación para WE siguen pendientes de sus módulos específicos.
+- Issue todavía abierto: [#7](https://github.com/scorpio21/indexador_conundrum_.net/issues/7).
 
 ### En progreso — Issue #6
 

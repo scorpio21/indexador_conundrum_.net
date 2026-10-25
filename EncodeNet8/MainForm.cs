@@ -13,6 +13,8 @@ public partial class MainForm : Form
     private readonly List<BodyIndexRecord> _bodyRecords = new();
     private readonly List<DirectionalIndexRecord> _directionalRecords = new();
     private readonly List<FxIndexRecord> _fxRecords = new();
+    private List<int> _searchResults = new();
+    private int _searchCursor;
 
     private static readonly string[] AllStates = { "Grh", "Body", "Cabezas", "Cascos", "Escudos", "Armas", "Alas", "Capas", "Fx", "Resource", "Botas" };
 
@@ -55,11 +57,11 @@ public partial class MainForm : Form
         edicionMenu.DropDownItems.Add(MenuItem("Clonar...", (_, _) => ShowPending("Clonar")));
         edicionMenu.DropDownItems.Add(MenuItem("Color de fondo...", (_, _) => ShowPending("Color de fondo")));
 
-        herramientasMenu.DropDownItems.Add(MenuItem("Buscar Grh con bmp...", (_, _) => ShowPending("Buscar GRH con BMP")));
-        herramientasMenu.DropDownItems.Add(MenuItem("Buscar Bmps sin indexar (Cry)", (_, _) => ShowPending("Buscar BMPs sin indexar")));
-        herramientasMenu.DropDownItems.Add(MenuItem("Buscar siguiente", (_, _) => ShowPending("Buscar siguiente"), Keys.F3));
+        herramientasMenu.DropDownItems.Add(MenuItem("Buscar Grh con bmp...", (_, _) => SearchGrhWithBmp()));
+        herramientasMenu.DropDownItems.Add(MenuItem("Buscar Bmps sin indexar (Cry)", (_, _) => SearchUnindexedBmps()));
+        herramientasMenu.DropDownItems.Add(MenuItem("Buscar siguiente", (_, _) => SearchNext(), Keys.F3));
         herramientasMenu.DropDownItems.Add(MenuItem("Autoindexador", (_, _) => ShowPending("Autoindexador")));
-        herramientasMenu.DropDownItems.Add(MenuItem("Buscar Grh Repetidos", (_, _) => ShowPending("Buscar GRH repetidos")));
+        herramientasMenu.DropDownItems.Add(MenuItem("Buscar Grh Repetidos", (_, _) => SearchRepeatedGrh()));
 
         indexarMenu.DropDownItems.Add(MenuItem("Generar Índices Para WE", (_, _) => ShowPending("Generar índices para WE")));
         ayudaMenu.DropDownItems.Add(MenuItem("Acerca de...", (_, _) => MessageBox.Show(this, "AOSpain - Indexador de gráficos .NET 8\nBasado en Encode.frm de Conundrum.", "Ayuda")));
@@ -218,7 +220,8 @@ public partial class MainForm : Form
     private void ApplyGridToModel()
     {
         if (_file is null || indexList.SelectedIndex < 0) return;
-        var record = _file.Records[indexList.SelectedIndex];
+        var record = SelectedGrhRecord();
+        if (record is null) return;
         record.FileNumber = ParseShort(bmpText.Text); record.X = ParseShort(xText.Text); record.Y = ParseShort(yText.Text);
         record.Width = ParseShort(widthText.Text); record.Height = ParseShort(heightText.Text); record.Speed = ParseShort(speedText.Text);
         var frameText = framesText.Text.Trim();
@@ -273,7 +276,8 @@ public partial class MainForm : Form
             return;
         }
         if (_file is null || indexList.SelectedIndex < 0) return;
-        _selectedRecord = _file.Records[indexList.SelectedIndex];
+        _selectedRecord = SelectedGrhRecord();
+        if (_selectedRecord is null) return;
         _lastIndexByState[_indexerState] = indexList.SelectedIndex;
         _animationFrame = 0;
         grhText.Text = _selectedRecord.Id.ToString(); bmpText.Text = _selectedRecord.FileNumber.ToString(); xText.Text = _selectedRecord.X.ToString(); yText.Text = _selectedRecord.Y.ToString();
@@ -287,7 +291,19 @@ public partial class MainForm : Form
     private void DeleteSelected()
     {
         if (_file is null || indexList.SelectedIndex < 0) return;
-        _file.Records.RemoveAt(indexList.SelectedIndex); RefreshGrid();
+        var record = SelectedGrhRecord();
+        if (record is null) return;
+        _file.Records.Remove(record);
+        RefreshGrid();
+    }
+
+    private GrhRecord? SelectedGrhRecord()
+    {
+        if (_file is null || indexList.SelectedIndex < 0) return null;
+        var text = indexList.SelectedItem?.ToString() ?? string.Empty;
+        var separator = text.IndexOf(' ');
+        if (separator >= 0) text = text[..separator];
+        return int.TryParse(text, out var id) ? _file.Records.FirstOrDefault(x => x.Id == id) : null;
     }
 
     private void ClearMemory()
@@ -340,6 +356,69 @@ public partial class MainForm : Form
     {
         if (_file is null) return;
         previewPanel.Invalidate(); statusLabel.Text = $"Mostrando {_file.Records.Count} GRH en memoria.";
+    }
+
+    private void SearchGrhWithBmp()
+    {
+        if (_file is null) { ShowPending("Buscar GRH con BMP: no hay Graficos.ind cargado"); return; }
+        var graphicsPath = ResolvePath(_settings.GraphicsPath);
+        _searchResults = _file.Records
+            .Where(record => File.Exists(Path.Combine(graphicsPath, $"{record.FileNumber}.bmp")))
+            .Select(record => record.Id)
+            .ToList();
+        _searchCursor = 0;
+        ReplaceGrhList(_searchResults);
+        statusLabel.Text = $"Búsqueda: {_searchResults.Count} GRH con BMP.";
+    }
+
+    private void SearchNext()
+    {
+        if (_searchResults.Count == 0) { statusLabel.Text = "No hay una búsqueda activa."; return; }
+        _searchCursor = (_searchCursor + 1) % _searchResults.Count;
+        indexList.SelectedIndex = _searchCursor;
+        statusLabel.Text = $"Resultado {_searchCursor + 1}/{_searchResults.Count}.";
+    }
+
+    private void SearchUnindexedBmps()
+    {
+        if (_file is null) { ShowPending("Buscar BMPs sin indexar: no hay Graficos.ind cargado"); return; }
+        var indexed = _file.Records.Select(record => (int)record.FileNumber).ToHashSet();
+        var graphicsPath = ResolvePath(_settings.GraphicsPath);
+        var unindexed = Directory.Exists(graphicsPath)
+            ? Directory.EnumerateFiles(graphicsPath, "*.bmp")
+                .Select(path => Path.GetFileNameWithoutExtension(path))
+                .Where(name => int.TryParse(name, out _))
+                .Select(int.Parse)
+                .Where(fileNumber => !indexed.Contains(fileNumber))
+                .OrderBy(fileNumber => fileNumber)
+                .ToList()
+            : new List<int>();
+        indexList.Items.Clear();
+        foreach (var fileNumber in unindexed) indexList.Items.Add(fileNumber);
+        statusLabel.Text = $"BMP sin GRH indexado: {unindexed.Count}.";
+    }
+
+    private void SearchRepeatedGrh()
+    {
+        if (_file is null) { ShowPending("Buscar GRH repetidos: no hay Graficos.ind cargado"); return; }
+        var repeated = _file.Records
+            .GroupBy(record => (record.FileNumber, record.X, record.Y, record.Width, record.Height))
+            .Where(group => group.Count() > 1)
+            .SelectMany(group => group.Select(record => record.Id))
+            .OrderBy(id => id)
+            .ToList();
+        _searchResults = repeated;
+        _searchCursor = 0;
+        ReplaceGrhList(repeated);
+        statusLabel.Text = $"GRH repetidos por recorte: {repeated.Count}.";
+    }
+
+    private void ReplaceGrhList(IEnumerable<int> ids)
+    {
+        indexList.Items.Clear();
+        foreach (var id in ids) indexList.Items.Add(id);
+        _lastIndexByState[_indexerState] = 0;
+        ComprobarIndexLista();
     }
 
     private void graphicsButton_Click(object? sender, EventArgs e)
