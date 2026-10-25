@@ -2,7 +2,14 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
-## [0.0.12-beta] - 2026-10-25
+## [0.0.13-beta] - 2026-10-25
+
+### En progreso — Issue #5
+
+- Se añadió al diseñador el selector de dirección Subir, Derecha, Abajo e Izquierda.
+- El visor resuelve el GRH de la dirección seleccionada para Bodies, Cabezas, Cascos, Capas, Alas y Botas.
+- El selector se integra con la edición y el guardado de índices direccionales.
+- Issue #5 sigue abierto para completar referencias, velocidad y pruebas visuales de todos los estados.
 
 ### Completado — Issues #3 y #4
 

@@ -572,6 +572,9 @@ public partial class MainForm : Form
 
     private void ConfigureStateFields(string state)
     {
+        directionCombo.Visible = false;
+        frameText.Visible = true;
+        frameLabel.Visible = true;
         var textBoxes = new[] { bmpText, framesText, heightText, widthText, speedText, xText, yText, tileHeightText, tileWidthText, referencesText };
         var labels = new[] { bmpLabel, framesLabel, heightLabel, widthLabel, speedLabel, xLabel, yLabel, tileHeightLabel, tileWidthLabel, referencesLabel };
         foreach (var control in textBoxes) control.Visible = true;
@@ -598,6 +601,8 @@ public partial class MainForm : Form
             grhLabel.Text = "Fx:";
             bmpLabel.Text = "NumGrh:";
             framesLabel.Text = "Offset:";
+            frameText.Visible = false;
+            frameLabel.Visible = false;
             HideStateFields(3);
             return;
         }
@@ -608,6 +613,9 @@ public partial class MainForm : Form
         heightLabel.Text = "Abajo:";
         widthLabel.Text = "Izquierda:";
         speedLabel.Text = state == "Body" || state == "Alas" ? "Offset:" : "";
+        directionCombo.Visible = true;
+        frameText.Visible = false;
+        frameLabel.Visible = false;
         HideStateFields(state == "Body" || state == "Alas" ? 6 : 5);
     }
 
@@ -1002,18 +1010,26 @@ public partial class MainForm : Form
         if (indexList.SelectedIndex < 0 || indexList.SelectedIndex >= _directionalRecords.Count) return;
         var item = _directionalRecords[indexList.SelectedIndex];
         _lastIndexByState[_indexerState] = indexList.SelectedIndex;
+        directionCombo.SelectedIndex = Math.Clamp(directionCombo.SelectedIndex, 0, 3);
+        var direction = directionCombo.SelectedIndex;
         grhText.Text = item.Id.ToString();
-        bmpText.Text = item.Directions[0].ToString();
+        bmpText.Text = item.Directions[direction].ToString();
         xText.Text = item.OffsetX.ToString();
         yText.Text = item.OffsetY.ToString();
         widthText.Text = item.Directions[1].ToString();
         heightText.Text = item.Directions[2].ToString();
         framesText.Text = string.Join("-", item.Directions);
         referencesText.Text = "4 direcciones";
-        _selectedRecord = _file?.Records.FirstOrDefault(x => x.Id == item.Directions[0]);
+        _selectedRecord = _file?.Records.FirstOrDefault(x => x.Id == item.Directions[direction]);
         frameText.Text = "1";
         previewPanel.Invalidate();
         statusLabel.Text = $"{StateCaption(_indexerState)} {item.Id} seleccionado.";
+    }
+
+    private void directionCombo_SelectedIndexChanged(object? sender, EventArgs e)
+    {
+        if (_indexerState is "Body" or "Cabezas" or "Cascos" or "Alas" or "Capas" or "Botas")
+            ClickDirectionalEnLista();
     }
 
     private void ClickFxEnLista()

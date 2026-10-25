@@ -17,6 +17,7 @@ partial class MainForm
     private GroupBox dataGroup = null!, foldersGroup = null!;
     private Panel previewPanel = null!;
     private TextBox grhText = null!, bmpText = null!, framesText = null!, heightText = null!, widthText = null!, speedText = null!, xText = null!, yText = null!, tileHeightText = null!, tileWidthText = null!, indsText = null!, graphicsText = null!, maxGrhText = null!, referencesText = null!;
+    private ComboBox directionCombo = null!;
     private Label referencesLabel = null!;
     private StatusStrip statusStrip = null!;
     private ToolStripStatusLabel statusLabel = null!;
@@ -53,6 +54,7 @@ partial class MainForm
         formatLabel = new Label();
         frameLabel = new Label();
         frameText = new TextBox();
+        directionCombo = new ComboBox();
         indexList = new ListBox();
         dataGroup = new GroupBox();
         grhLabel = new Label();
@@ -316,6 +318,18 @@ partial class MainForm
         frameText.Size = new Size(135, 23);
         frameText.TabIndex = 24;
         // 
+        // directionCombo
+        // 
+        directionCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+        directionCombo.FormattingEnabled = true;
+        directionCombo.Items.AddRange(new object[] { "Subir", "Derecha", "Abajo", "Izquierda" });
+        directionCombo.Location = new Point(64, 16);
+        directionCombo.Name = "directionCombo";
+        directionCombo.Size = new Size(135, 23);
+        directionCombo.TabIndex = 25;
+        directionCombo.Visible = false;
+        directionCombo.SelectedIndexChanged += directionCombo_SelectedIndexChanged;
+        // 
         // indexList
         // 
         indexList.ItemHeight = 15;
@@ -347,6 +361,7 @@ partial class MainForm
         dataGroup.Controls.Add(xText);
         dataGroup.Controls.Add(yText);
         dataGroup.Controls.Add(frameText);
+        dataGroup.Controls.Add(directionCombo);
         dataGroup.Controls.Add(frameLabel);
         dataGroup.Controls.Add(tileHeightText);
         dataGroup.Controls.Add(tileWidthText);
