@@ -434,11 +434,55 @@ public partial class MainForm : Form
 
     private void DeleteSelected()
     {
-        if (_file is null || indexList.SelectedIndex < 0) return;
-        var record = SelectedGrhRecord();
-        if (record is null) return;
-        _file.Records.Remove(record);
-        RefreshGrid();
+        if (indexList.SelectedIndex < 0) return;
+
+        if (_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase))
+        {
+            if (_file is null) return;
+            var record = SelectedGrhRecord();
+            if (record is null) return;
+            var answer = MessageBox.Show(this, $"¿Borrar el GRH {record.Id}?", "Advertencia", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (answer != DialogResult.Yes) return;
+            _file.Records.Remove(record);
+            RefreshGrid();
+            ClearUtilError();
+            statusLabel.Text = $"GRH {record.Id} eliminado de la memoria. Guarda los cambios para escribir el índice.";
+            return;
+        }
+
+        if (_indexerState.Equals("Resource", StringComparison.OrdinalIgnoreCase))
+        {
+            SetUtilError("Los recursos no se pueden borrar desde el índice gráfico.");
+            return;
+        }
+
+        var selectedId = indexList.SelectedItem?.ToString() ?? string.Empty;
+        var answerAux = MessageBox.Show(this, $"¿Borrar {StateCaption(_indexerState)} {selectedId}?", "Advertencia", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+        if (answerAux != DialogResult.Yes) return;
+
+        if (_indexerState.Equals("Fx", StringComparison.OrdinalIgnoreCase))
+        {
+            if (indexList.SelectedIndex >= _fxRecords.Count) return;
+            _fxRecords.RemoveAt(indexList.SelectedIndex);
+            RefreshFxList();
+        }
+        else
+        {
+            if (indexList.SelectedIndex >= _directionalRecords.Count) return;
+            var id = _directionalRecords[indexList.SelectedIndex].Id;
+            _directionalRecords.RemoveAt(indexList.SelectedIndex);
+            if (_indexerState.Equals("Body", StringComparison.OrdinalIgnoreCase))
+                _bodyRecords.RemoveAll(record => record.Id == id);
+            if (_indexerState.Equals("Body", StringComparison.OrdinalIgnoreCase)) RefreshBodyList();
+            else RefreshDirectionalList();
+        }
+
+        RebuildReferenceCounts();
+        _selectedRecord = null;
+        _drawTimer.Stop();
+        previewPanel.Invalidate();
+        ClearUtilError();
+        statusLabel.Text = $"{StateCaption(_indexerState)} {selectedId} eliminado de la memoria. Guarda los cambios para escribir el índice.";
     }
 
     private void MoveOrCopySelectedGrh(bool deleteOriginal)
@@ -1411,6 +1455,13 @@ public partial class MainForm : Form
     {
         indexList.Items.Clear();
         foreach (var item in _directionalRecords) indexList.Items.Add(item.Id);
+        ComprobarIndexLista();
+    }
+
+    private void RefreshFxList()
+    {
+        indexList.Items.Clear();
+        foreach (var item in _fxRecords) indexList.Items.Add(item.Id);
         ComprobarIndexLista();
     }
 

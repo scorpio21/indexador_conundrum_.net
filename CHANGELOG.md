@@ -2,6 +2,16 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.25-beta] - 2026-10-26
+
+### En progreso — Issue #6
+
+- `Suprimir` ahora funciona para GRH, Bodies, Cabezas, Cascos, Alas, Capas, Botas, Armas, Escudos y FX cuando el lector/escritor del estado está disponible.
+- Se confirma la eliminación, se actualiza la lista, se detiene el visor y se reconstruyen las referencias.
+- Los huecos se conservan para que los escritores binarios/INI los persistan como registros vacíos, igual que el VB6.
+- Los recursos quedan protegidos porque no son registros editables del índice.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.24-beta] - 2026-10-26
 
 ### En progreso — Issue #6
