@@ -2,7 +2,13 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
-## [0.0.10-beta] - 2026-10-25
+## [0.0.11-beta] - 2026-10-25
+
+### Corrección — Issue #6
+
+- El guardado queda bloqueado fuera del estado Gráficos para evitar modificar `Graficos.ind` accidentalmente desde Bodies, Cabezas, FX u otros estados.
+- La interfaz actualiza el estado habilitado del botón Guardar al cambiar de sección.
+- Issue #6 continúa abierto para los escritores específicos y operaciones de edición restantes.
 
 ### En progreso — Issue #3
 

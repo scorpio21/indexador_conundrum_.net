@@ -232,7 +232,7 @@ public partial class MainForm : Form
 
     private void UpdateUi()
     {
-        saveButton.Enabled = _file is not null;
+        saveButton.Enabled = _file is not null && _indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase);
         statusLabel.Text = _file is null ? "Abre un Graficos.ind para comenzar." : $"GRH: {_file.Records.Count}";
     }
 
@@ -320,7 +320,11 @@ public partial class MainForm : Form
 
     private void SaveCurrentIndex()
     {
-        if (_file is null) return;
+        if (_file is null || !_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase))
+        {
+            statusLabel.Text = $"Guardar para {StateCaption(_indexerState)} se habilitará con su escritor específico.";
+            return;
+        }
         if (string.IsNullOrWhiteSpace(_loadedPath))
         {
             SaveIndexAs();
@@ -339,7 +343,11 @@ public partial class MainForm : Form
 
     private void SaveIndexAs()
     {
-        if (_file is null) return;
+        if (_file is null || !_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase))
+        {
+            statusLabel.Text = $"Guardar para {StateCaption(_indexerState)} se habilitará con su escritor específico.";
+            return;
+        }
         using var dialog = new SaveFileDialog { Filter = "Índice gráfico (*.ind)|*.ind|Todos los archivos (*.*)|*.*", FileName = Path.GetFileName(_loadedPath ?? "Graficos.ind") };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
         try
@@ -475,6 +483,7 @@ public partial class MainForm : Form
             statusLabel.Text = $"Estado {StateCaption(_indexerState)} seleccionado. {indexList.Items.Count} índices disponibles.";
         }
 
+        UpdateUi();
         ComprobarIndexLista();
     }
 
