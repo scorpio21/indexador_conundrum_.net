@@ -2,6 +2,15 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.32-beta] - 2026-10-26
+
+### En progreso — Issue #6
+
+- Los slots `Índice de guardado` se amplían a índices auxiliares.
+- Se conservan las extensiones: `Cabezas1.ind`, `Armas1.dat`, `Fxs1.ind`, etc.
+- Se confirma la escritura y se actualizan las rutas activas tras guardar la copia.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.31-beta] - 2026-10-26
 
 ### En progreso — Issue #6

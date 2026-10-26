@@ -985,11 +985,6 @@ public partial class MainForm : Form
         }
         if (!_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase))
         {
-            if (_savedIndexSlot != 0)
-            {
-                SetUtilError("Los slots numerados se han habilitado primero para Gráficos; usa Guardar como en los índices auxiliares.");
-                return;
-            }
             SaveCurrentNonGrh();
             return;
         }
@@ -1068,22 +1063,36 @@ public partial class MainForm : Form
 
     private void SaveCurrentNonGrh()
     {
-        var path = _directionalPath ?? _iniDirectionalPath ?? _fxPath;
-        if (string.IsNullOrWhiteSpace(path))
+        var sourcePath = _directionalPath ?? _iniDirectionalPath ?? _fxPath;
+        if (string.IsNullOrWhiteSpace(sourcePath))
         {
             statusLabel.Text = $"No hay archivo de {StateCaption(_indexerState)} cargado para guardar.";
             return;
         }
-        var answer = MessageBox.Show(this, $"¿Sobrescribir el índice actual?\n{path}", "Guardar índice", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+        var path = GetSavedAuxiliaryPath(sourcePath);
+        var isCopySlot = _savedIndexSlot != 0;
+        var answer = MessageBox.Show(this,
+            isCopySlot ? $"¿Guardar una copia en el slot {_savedIndexSlot}?\n{path}" : $"¿Sobrescribir el índice actual?\n{path}",
+            "Guardar índice", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
         if (answer != DialogResult.Yes) return;
         try
         {
             ApplyNonGrhToModel();
             SaveNonGrhToPath(path);
             RebuildReferenceCounts();
-            statusLabel.Text = $"Guardado: {path}";
+            statusLabel.Text = isCopySlot ? $"Copia guardada en: {path}" : $"Guardado: {path}";
+            SetUtilError(string.Empty);
         }
         catch (Exception ex) { MessageBox.Show(this, ex.Message, "No se pudo guardar el índice", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+    }
+
+    private string GetSavedAuxiliaryPath(string sourcePath)
+    {
+        if (_savedIndexSlot == 0) return sourcePath;
+        var directory = Path.GetDirectoryName(sourcePath) ?? ResolvePath(_settings.InitPath);
+        var name = Path.GetFileNameWithoutExtension(sourcePath);
+        var extension = Path.GetExtension(sourcePath);
+        return Path.Combine(directory, $"{name}{_savedIndexSlot}{extension}");
     }
 
     private void SaveNonGrhToPath(string path)
