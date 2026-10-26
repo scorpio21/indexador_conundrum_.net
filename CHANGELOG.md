@@ -2,6 +2,15 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.42-beta] - 2026-10-27
+
+### En progreso — Issue #7
+
+- `AutoIndexerForm.Designer.cs` ya no usa métodos auxiliares ni lambdas dentro de `InitializeComponent`.
+- Los controles se inicializan directamente, siguiendo el código que genera Visual Studio.
+- Se corrige el error del diseñador en la línea 24.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.41-beta] - 2026-10-26
 
 ### En progreso — Issue #7

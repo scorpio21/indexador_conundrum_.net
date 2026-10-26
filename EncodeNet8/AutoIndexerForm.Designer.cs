@@ -21,42 +21,43 @@ partial class AutoIndexerForm
     private void InitializeComponent()
     {
         components = new System.ComponentModel.Container();
-        normalButton = Button("Animacion normal", 32, 8, 105, 23, (_, _) => ShowMode(normalFrame));
-        advancedButton = Button("Animacion Avanzada", 152, 8, 185, 23, (_, _) => ShowMode(advancedFrame));
-        simpleButton = Button("simple", 352, 8, 65, 23, (_, _) => ShowMode(simpleFrame));
+        normalButton = new Button { Text = "Animacion normal", Location = new Point(32, 8), Size = new Size(105, 23) };
+        advancedButton = new Button { Text = "Animacion Avanzada", Location = new Point(152, 8), Size = new Size(185, 23) };
+        simpleButton = new Button { Text = "simple", Location = new Point(352, 8), Size = new Size(65, 23) };
+        normalButton.Click += normalButton_Click; advancedButton.Click += advancedButton_Click; simpleButton.Click += simpleButton_Click;
         normalFrame = new GroupBox { Text = "Animacion normal", Location = new Point(0, 32), Size = new Size(425, 365) };
         advancedFrame = new GroupBox { Text = "Animacion Especial", Location = new Point(0, 32), Size = new Size(425, 365), Visible = false };
         simpleFrame = new GroupBox { Text = "Indexacion simple", Location = new Point(0, 32), Size = new Size(425, 365), Visible = false };
 
-        normalFrames = TextBoxControl("1", 128, 104, 45); normalColumns = TextBoxControl("1", 128, 104, 45); normalRows = TextBoxControl("1", 128, 104, 45); normalTotal = TextBoxControl("1", 256, 104, 45);
-        normalFirstIndex = TextBoxControl("", 128, 136, 75); normalHeight = TextBoxControl("", 128, 168, 75); normalWidth = TextBoxControl("", 128, 200, 75); normalBmp = TextBoxControl("", 128, 232, 75);
+        normalFrames = new TextBox { Text = "1", Location = new Point(128, 104), Size = new Size(45, 23) };
+        normalColumns = new TextBox { Text = "1", Location = new Point(224, 104), Size = new Size(45, 23) };
+        normalRows = new TextBox { Text = "1", Location = new Point(288, 104), Size = new Size(45, 23) };
+        normalTotal = new TextBox { Text = "1", Location = new Point(352, 104), Size = new Size(45, 23) };
+        normalFirstIndex = new TextBox { Location = new Point(128, 136), Size = new Size(75, 23) };
+        normalHeight = new TextBox { Location = new Point(128, 168), Size = new Size(75, 23) };
+        normalWidth = new TextBox { Location = new Point(128, 200), Size = new Size(75, 23) };
+        normalBmp = new TextBox { Location = new Point(128, 232), Size = new Size(75, 23) };
         sameBitmapOption = new RadioButton { Text = "Mismo BMP", Location = new Point(48, 45), AutoSize = true, Checked = true };
         consecutiveBitmapOption = new RadioButton { Text = "BMP consecutivos", Location = new Point(220, 45), AutoSize = true };
-        normalSearchButton = Button("Buscar", 216, 136, 55, 23, BrowseBitmap_Click); normalCalculateButton = Button("AutoCalcular", 224, 200, 80, 23, (_, _) => CalculateNormal());
-        var normalCreate = Button("Crear", 112, 264, 75, 23, Create_Click);
-        Add(normalFrame, sameBitmapOption, consecutiveBitmapOption, Label("nºframes:", 48, 104), normalFrames, Label("A lo ancho", 112, 80), normalColumns, Label("A lo alto", 200, 80), normalRows, Label("Totales", 256, 80), normalTotal, Label("Primer indice:", 48, 136), normalFirstIndex, normalSearchButton, Label("Alto:", 48, 168), normalHeight, Label("Ancho:", 48, 200), normalWidth, normalCalculateButton, Label("BMP:", 48, 232), normalBmp, normalCreate);
+        normalSearchButton = new Button { Text = "Buscar", Location = new Point(216, 136), Size = new Size(55, 23) };
+        normalCalculateButton = new Button { Text = "AutoCalcular", Location = new Point(224, 200), Size = new Size(80, 23) };
+        createButton = new Button { Text = "Crear", Location = new Point(112, 264), Size = new Size(75, 23) };
+        normalSearchButton.Click += BrowseBitmap_Click; normalCalculateButton.Click += normalCalculateButton_Click; createButton.Click += Create_Click;
+        normalFrame.Controls.AddRange(new Control[] { sameBitmapOption, consecutiveBitmapOption, new Label { Text = "nºframes:", Location = new Point(48, 107), AutoSize = true }, normalFrames, new Label { Text = "A lo ancho", Location = new Point(112, 83), AutoSize = true }, normalColumns, new Label { Text = "A lo alto", Location = new Point(200, 83), AutoSize = true }, normalRows, new Label { Text = "Totales", Location = new Point(256, 83), AutoSize = true }, normalTotal, new Label { Text = "Primer indice:", Location = new Point(48, 139), AutoSize = true }, normalFirstIndex, normalSearchButton, new Label { Text = "Alto:", Location = new Point(48, 171), AutoSize = true }, normalHeight, new Label { Text = "Ancho:", Location = new Point(48, 203), AutoSize = true }, normalWidth, normalCalculateButton, new Label { Text = "BMP:", Location = new Point(48, 235), AutoSize = true }, normalBmp, createButton });
 
         advancedType = new ComboBox { Location = new Point(56, 32), Size = new Size(155, 23), DropDownStyle = ComboBoxStyle.DropDownList };
         advancedType.Items.AddRange(new object[] { "Animacion normal", "Animacion por grilla" }); advancedType.SelectedIndex = 0;
-        advancedFrames = TextBoxControl("6", 128, 104, 45); advancedColumns = TextBoxControl("6", 224, 104, 45); advancedRows = TextBoxControl("4", 288, 104, 45); advancedTotal = TextBoxControl("22", 352, 104, 45);
-        advancedFirstIndex = TextBoxControl("", 128, 136, 75); advancedHeight = TextBoxControl("", 128, 168, 75); advancedWidth = TextBoxControl("", 128, 200, 75); advancedBmp = TextBoxControl("", 128, 232, 75);
-        advancedSearchButton = Button("Buscar", 216, 136, 55, 23, BrowseBitmap_Click); advancedCalculateButton = Button("AutoCalcular", 224, 200, 80, 23, (_, _) => CalculateNormal());
-        var advancedCreate = Button("Crear", 112, 296, 75, 23, Create_Click);
-        Add(advancedFrame, advancedType, Label("nºframes:", 48, 104), advancedFrames, Label("A lo ancho", 112, 80), advancedColumns, Label("A lo alto", 200, 80), advancedRows, Label("Totales", 320, 80), advancedTotal, Label("Primer indice:", 48, 136), advancedFirstIndex, advancedSearchButton, Label("Alto:", 48, 168), advancedHeight, Label("Ancho:", 48, 200), advancedWidth, advancedCalculateButton, Label("BMP:", 48, 232), advancedBmp, advancedCreate, new RadioButton { Text = "(pj) alkon", Location = new Point(304, 185), AutoSize = true }, new RadioButton { Text = "(pj) clasico", Location = new Point(304, 208), AutoSize = true }, new RadioButton { Text = "Normal(NPC)", Location = new Point(304, 231), AutoSize = true }, new CheckBox { Text = "Autodindexar", Location = new Point(24, 256), AutoSize = true });
+        advancedFrames = new TextBox { Text = "6", Location = new Point(128, 104), Size = new Size(45, 23) }; advancedColumns = new TextBox { Text = "6", Location = new Point(224, 104), Size = new Size(45, 23) }; advancedRows = new TextBox { Text = "4", Location = new Point(288, 104), Size = new Size(45, 23) }; advancedTotal = new TextBox { Text = "22", Location = new Point(352, 104), Size = new Size(45, 23) };
+        advancedFirstIndex = new TextBox { Location = new Point(128, 136), Size = new Size(75, 23) }; advancedHeight = new TextBox { Location = new Point(128, 168), Size = new Size(75, 23) }; advancedWidth = new TextBox { Location = new Point(128, 200), Size = new Size(75, 23) }; advancedBmp = new TextBox { Location = new Point(128, 232), Size = new Size(75, 23) };
+        advancedSearchButton = new Button { Text = "Buscar", Location = new Point(216, 136), Size = new Size(55, 23) }; advancedCalculateButton = new Button { Text = "AutoCalcular", Location = new Point(224, 200), Size = new Size(80, 23) }; advancedSearchButton.Click += BrowseBitmap_Click; advancedCalculateButton.Click += normalCalculateButton_Click;
+        var advancedCreate = new Button { Text = "Crear", Location = new Point(112, 296), Size = new Size(75, 23) }; advancedCreate.Click += Create_Click;
+        advancedFrame.Controls.AddRange(new Control[] { advancedType, new Label { Text = "nºframes:", Location = new Point(48, 107), AutoSize = true }, advancedFrames, new Label { Text = "A lo ancho", Location = new Point(112, 83), AutoSize = true }, advancedColumns, new Label { Text = "A lo alto", Location = new Point(200, 83), AutoSize = true }, advancedRows, new Label { Text = "Totales", Location = new Point(320, 83), AutoSize = true }, advancedTotal, new Label { Text = "Primer indice:", Location = new Point(48, 139), AutoSize = true }, advancedFirstIndex, advancedSearchButton, new Label { Text = "Alto:", Location = new Point(48, 171), AutoSize = true }, advancedHeight, new Label { Text = "Ancho:", Location = new Point(48, 203), AutoSize = true }, advancedWidth, advancedCalculateButton, new Label { Text = "BMP:", Location = new Point(48, 235), AutoSize = true }, advancedBmp, advancedCreate, new RadioButton { Text = "(pj) alkon", Location = new Point(304, 185), AutoSize = true }, new RadioButton { Text = "(pj) clasico", Location = new Point(304, 208), AutoSize = true }, new RadioButton { Text = "Normal(NPC)", Location = new Point(304, 231), AutoSize = true }, new CheckBox { Text = "Autodindexar", Location = new Point(24, 256), AutoSize = true } });
 
-        simpleBmp = TextBoxControl("", 120, 40, 115); simpleGrh = TextBoxControl("", 120, 80, 115); simpleSearchButton = Button("buscar", 264, 40, 55, 23, BrowseBitmap_Click); simpleIndexButton = Button("indexar", 144, 128, 95, 23, Create_Click);
-        Add(simpleFrame, Label("Bmp:", 56, 40), simpleBmp, Label("Numero Grh:", 40, 80), simpleGrh, simpleSearchButton, simpleIndexButton);
+        simpleBmp = new TextBox { Location = new Point(120, 40), Size = new Size(115, 23) }; simpleGrh = new TextBox { Location = new Point(120, 80), Size = new Size(115, 23) }; simpleSearchButton = new Button { Text = "buscar", Location = new Point(264, 40), Size = new Size(55, 23) }; simpleIndexButton = new Button { Text = "indexar", Location = new Point(144, 128), Size = new Size(95, 23) }; simpleSearchButton.Click += BrowseBitmap_Click; simpleIndexButton.Click += Create_Click;
+        simpleFrame.Controls.AddRange(new Control[] { new Label { Text = "Bmp:", Location = new Point(56, 43), AutoSize = true }, simpleBmp, new Label { Text = "Numero Grh:", Location = new Point(40, 83), AutoSize = true }, simpleGrh, simpleSearchButton, simpleIndexButton });
 
-        bitmapText = normalBmp; startGrh = normalFirstIndex; columns = normalColumns; rows = normalRows; cellWidth = normalWidth; cellHeight = normalHeight; speed = normalFrames; createAnimation = new CheckBox { Text = "Crear animación", Visible = false };
-        browseBitmapButton = normalSearchButton; createButton = normalCreate;
+        bitmapText = normalBmp; startGrh = normalFirstIndex; columns = normalColumns; rows = normalRows; cellWidth = normalWidth; cellHeight = normalHeight; speed = normalFrames; createAnimation = new CheckBox { Text = "Crear animación", Visible = false }; browseBitmapButton = normalSearchButton;
         Controls.AddRange(new Control[] { normalButton, advancedButton, simpleButton, normalFrame, advancedFrame, simpleFrame });
         ClientSize = new Size(425, 405); StartPosition = FormStartPosition.CenterScreen; FormBorderStyle = FormBorderStyle.FixedDialog; MaximizeBox = false; MinimizeBox = false; Text = "Indexador automatico";
     }
-
-    private static Button Button(string text, int x, int y, int w, int h, EventHandler handler) { var b = new Button { Text = text, Location = new Point(x, y), Size = new Size(w, h) }; b.Click += handler; return b; }
-    private static TextBox TextBoxControl(string text, int x, int y, int w) => new() { Text = text, Location = new Point(x, y), Size = new Size(w, 23) };
-    private static Label Label(string text, int x, int y) => new() { Text = text, Location = new Point(x, y + 3), AutoSize = true };
-    private static void Add(Control parent, params Control[] controls) { parent.Controls.AddRange(controls); }
-    private void ShowMode(Control active) { normalFrame.Visible = advancedFrame.Visible = simpleFrame.Visible = false; active.Visible = true; }
-    private void CalculateNormal() { }
 }

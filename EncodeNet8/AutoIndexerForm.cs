@@ -37,4 +37,16 @@ public partial class AutoIndexerForm : Form
     }
 
     private static int ParseField(TextBox field, int fallback) => int.TryParse(field.Text, out var value) && value > 0 ? value : fallback;
+
+    private void normalButton_Click(object? sender, EventArgs e) => ShowMode(normalFrame);
+    private void advancedButton_Click(object? sender, EventArgs e) => ShowMode(advancedFrame);
+    private void simpleButton_Click(object? sender, EventArgs e) => ShowMode(simpleFrame);
+    private void normalCalculateButton_Click(object? sender, EventArgs e) { }
+    private void ShowMode(Control active)
+    {
+        normalFrame.Visible = false;
+        advancedFrame.Visible = false;
+        simpleFrame.Visible = false;
+        active.Visible = true;
+    }
 }
