@@ -2,6 +2,16 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.28-beta] - 2026-10-26
+
+### En progreso — Issue #6
+
+- Se implementan los slots `Índice de guardado` para `Graficos.ind`.
+- El slot 0 conserva el guardado normal y los slots 1–9 crean copias numeradas junto al índice cargado.
+- Se confirma la escritura antes de sobrescribir o crear una copia.
+- Los slots numerados de índices auxiliares quedan pendientes de sus diálogos Guardar como específicos.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.27-beta] - 2026-10-26
 
 ### En progreso — Issue #6

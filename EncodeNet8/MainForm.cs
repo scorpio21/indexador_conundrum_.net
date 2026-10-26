@@ -25,6 +25,7 @@ public partial class MainForm : Form
     private GrhStorageFormat _fxFormat;
     private List<int> _searchResults = new();
     private int _searchCursor;
+    private int _savedIndexSlot;
 
     private static readonly string[] AllStates = { "Grh", "Body", "Cabezas", "Cascos", "Escudos", "Armas", "Alas", "Capas", "Fx", "Resource", "Botas" };
 
@@ -86,7 +87,26 @@ public partial class MainForm : Form
         return item;
     }
 
-    private void SelectSavedIndex(int slot) => statusLabel.Text = $"Índice de guardado seleccionado: {slot}.";
+    private void SelectSavedIndex(int slot)
+    {
+        _savedIndexSlot = Math.Clamp(slot, 0, 9);
+        statusLabel.Text = $"Índice de guardado seleccionado: {_savedIndexSlot}.";
+        SetUtilError(_savedIndexSlot == 0
+            ? "El guardado sobrescribirá el índice cargado."
+            : $"El guardado creará una copia numerada ({_savedIndexSlot}) junto al índice cargado.");
+    }
+
+    private string GetSavedGrhPath()
+    {
+        var basePath = _loadedPath;
+        if (string.IsNullOrWhiteSpace(basePath))
+            basePath = Path.Combine(ResolvePath(_settings.InitPath), "Graficos.ind");
+        if (_savedIndexSlot == 0) return basePath;
+
+        var directory = Path.GetDirectoryName(basePath) ?? ResolvePath(_settings.InitPath);
+        var name = Path.GetFileNameWithoutExtension(basePath);
+        return Path.Combine(directory, $"{name}{_savedIndexSlot}.ind");
+    }
     private void ShowPending(string action) => MessageBox.Show(this, $"La acción «{action}» está preparada en el menú y se conectará al módulo correspondiente.", "AOSpain");
 
     private void SetUtilError(string? message)
@@ -891,21 +911,31 @@ public partial class MainForm : Form
         }
         if (!_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase))
         {
+            if (_savedIndexSlot != 0)
+            {
+                SetUtilError("Los slots numerados se han habilitado primero para Gráficos; usa Guardar como en los índices auxiliares.");
+                return;
+            }
             SaveCurrentNonGrh();
             return;
         }
-        if (string.IsNullOrWhiteSpace(_loadedPath))
+        var targetPath = GetSavedGrhPath();
+        var isCopySlot = _savedIndexSlot != 0;
+        if (string.IsNullOrWhiteSpace(_loadedPath) && !isCopySlot)
         {
             SaveIndexAs();
             return;
         }
-        var answer = MessageBox.Show(this, $"¿Sobrescribir el índice actual?\n{_loadedPath}", "Guardar índice", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+        var answer = MessageBox.Show(this,
+            isCopySlot ? $"¿Guardar una copia en el slot {_savedIndexSlot}?\n{targetPath}" : $"¿Sobrescribir el índice actual?\n{targetPath}",
+            "Guardar índice", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
         if (answer != DialogResult.Yes) return;
         try
         {
             ApplyGridToModel();
-            _file.Save(_loadedPath, SelectedFormat);
-            statusLabel.Text = $"Guardado: {_loadedPath}";
+            _file.Save(targetPath, SelectedFormat);
+            statusLabel.Text = isCopySlot ? $"Copia guardada en: {targetPath}" : $"Guardado: {targetPath}";
+            SetUtilError(string.Empty);
         }
         catch (Exception ex) { MessageBox.Show(this, ex.Message, "No se pudo guardar el índice", MessageBoxButtons.OK, MessageBoxIcon.Error); }
     }
