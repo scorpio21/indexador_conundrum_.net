@@ -2,6 +2,14 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.39-beta] - 2026-10-26
+
+### En progreso — Issue #7
+
+- Se añadió metadata `SubType=Form` y la relación `AutoIndexerForm.Designer.cs` en el proyecto.
+- Visual Studio identifica ahora el autoindexador como formulario WinForms y habilita `Ver diseñador`.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.38-beta] - 2026-10-26
 
 ### En progreso — Issue #7

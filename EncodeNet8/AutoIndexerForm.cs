@@ -12,6 +12,7 @@ public sealed class AutoIndexerOptions
     public int AnimationSpeed { get; init; } = 1;
 }
 
+[System.ComponentModel.DesignerCategory("Form")]
 public partial class AutoIndexerForm : Form
 {
     private readonly string _graphicsFolder;
