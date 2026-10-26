@@ -1,4 +1,5 @@
 using EncodeNet8;
+using System.Drawing;
 using System.Reflection;
 
 var root = Path.Combine(Path.GetTempPath(), "EncodeNet8.Tests", Guid.NewGuid().ToString("N"));
@@ -75,6 +76,7 @@ try
     TestStateSlotReaders(root);
     TestDirectionalReader(root);
     TestAdditionalReaders(root);
+    TestAutoIndexer(root);
     Console.WriteLine("Graficos.ind, lectores direccionales y adicionales: Integer/Long OK; truncado rechazado.");
 }
 finally
@@ -200,4 +202,25 @@ static void TestAdditionalReaders(string root)
     var bootsRoundtrip = Path.Combine(root, "Botas-roundtrip.dat");
     IniDirectionalIndexFile.Save(bootsRoundtrip, boots, "Botas");
     Assert(IniDirectionalIndexFile.Load(bootsRoundtrip, "Botas").Count == 1, "guardado INI direccional");
+}
+
+static void TestAutoIndexer(string root)
+{
+    var bmpPath = Path.Combine(root, "700.bmp");
+    using (var bitmap = new Bitmap(64, 32)) bitmap.Save(bmpPath);
+    var options = new AutoIndexerOptions
+    {
+        BitmapPath = bmpPath,
+        StartGrh = 10,
+        Columns = 2,
+        Rows = 1,
+        CellWidth = 32,
+        CellHeight = 32,
+        CreateAnimation = true,
+        AnimationSpeed = 2
+    };
+    var records = AutoIndexer.CreateGrid(options, 100);
+    Assert(records.Count == 3, "autoindexador: cantidad de GRH");
+    Assert(records[0].FileNumber == 700 && records[1].X == 32, "autoindexador: recortes");
+    Assert(records[2].IsAnimation && records[2].Frames.SequenceEqual(new[] { 10, 11 }), "autoindexador: animación");
 }

@@ -74,7 +74,7 @@ public partial class MainForm : Form
         herramientasMenu.DropDownItems.Add(MenuItem("Buscar Grh con bmp...", (_, _) => SearchGrhWithBmp()));
         herramientasMenu.DropDownItems.Add(MenuItem("Buscar Bmps sin indexar (Cry)", (_, _) => SearchUnindexedBmps()));
         herramientasMenu.DropDownItems.Add(MenuItem("Buscar siguiente", (_, _) => SearchNext(), Keys.F3));
-        herramientasMenu.DropDownItems.Add(MenuItem("Autoindexador", (_, _) => ShowPending("Autoindexador")));
+        herramientasMenu.DropDownItems.Add(MenuItem("Autoindexador", (_, _) => OpenAutoIndexer()));
         herramientasMenu.DropDownItems.Add(MenuItem("Buscar Grh Repetidos", (_, _) => SearchRepeatedGrh()));
 
         indexarMenu.DropDownItems.Add(MenuItem("Generar Índices Para WE", (_, _) => ShowPending("Generar índices para WE")));
@@ -1303,6 +1303,35 @@ public partial class MainForm : Form
         _searchCursor = 0;
         ReplaceGrhList(repeated);
         statusLabel.Text = $"GRH repetidos por recorte: {repeated.Count}.";
+    }
+
+    private void OpenAutoIndexer()
+    {
+        if (_file is null)
+        {
+            SetUtilError("Carga primero Graficos.ind para autoindexar.");
+            return;
+        }
+
+        using var dialog = new AutoIndexerForm(ResolvePath(_settings.GraphicsPath));
+        if (dialog.ShowDialog(this) != DialogResult.OK || dialog.Options is null) return;
+        try
+        {
+            var records = AutoIndexer.CreateGrid(dialog.Options, ParseInt(maxGrhText.Text));
+            var ids = records.Select(record => record.Id).ToHashSet();
+            if (_file.Records.Any(record => ids.Contains(record.Id)))
+                throw new InvalidDataException("Uno o más GRH de destino ya existen.");
+            _file.Records.AddRange(records);
+            RebuildReferenceCounts();
+            RefreshGrid();
+            SelectGrhById(records[0].Id);
+            statusLabel.Text = $"Autoindexados {records.Count} GRH en memoria. Guarda Graficos.ind para conservarlos.";
+            SetUtilError(null);
+        }
+        catch (Exception ex)
+        {
+            SetUtilError($"Autoindexador: {ex.Message}");
+        }
     }
 
     private void ReplaceGrhList(IEnumerable<int> ids)

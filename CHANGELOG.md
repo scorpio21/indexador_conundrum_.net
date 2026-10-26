@@ -2,6 +2,17 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.37-beta] - 2026-10-26
+
+### En progreso — Issue #7
+
+- El menú `Herramientas > Autoindexador` ya abre un formulario WinForms editable.
+- Se puede seleccionar un BMP, indicar cuadrícula, primer GRH, tamaño de celda y velocidad.
+- Se generan GRH individuales y, opcionalmente, una animación con esos frames en memoria.
+- Se validan dimensiones, máximo de GRH y colisiones antes de agregar datos.
+- Se añadió una prueba de generación de cuadrícula y animación.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.36-beta] - 2026-10-26
 
 ### En progreso — Issue #7
