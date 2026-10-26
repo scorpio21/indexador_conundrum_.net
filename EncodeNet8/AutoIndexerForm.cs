@@ -30,9 +30,11 @@ public partial class AutoIndexerForm : Form
         }
         Options = new AutoIndexerOptions
         {
-            BitmapPath = bitmapText.Text, StartGrh = (int)startGrh.Value, Columns = (int)columns.Value,
-            Rows = (int)rows.Value, CellWidth = (int)cellWidth.Value, CellHeight = (int)cellHeight.Value,
-            CreateAnimation = createAnimation.Checked, AnimationSpeed = (int)speed.Value
+            BitmapPath = bitmapText.Text, StartGrh = ParseField(startGrh, 1), Columns = ParseField(columns, 1),
+            Rows = ParseField(rows, 1), CellWidth = ParseField(cellWidth, 32), CellHeight = ParseField(cellHeight, 32),
+            CreateAnimation = createAnimation.Checked, AnimationSpeed = ParseField(speed, 1)
         };
     }
+
+    private static int ParseField(TextBox field, int fallback) => int.TryParse(field.Text, out var value) && value > 0 ? value : fallback;
 }

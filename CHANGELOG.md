@@ -2,6 +2,15 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.41-beta] - 2026-10-26
+
+### En progreso — Issue #7
+
+- El diseñador del autoindexador se rehízo tomando como referencia `FormAuto.frm`.
+- Se añadieron los tres modos visibles del original: `Animacion normal`, `Animacion Avanzada` e `Indexacion simple`.
+- Se incorporaron los campos, radios, botones y grupos principales del formulario VB6.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.40-beta] - 2026-10-26
 
 ### En progreso — Issue #7
