@@ -2,6 +2,14 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.33-beta] - 2026-10-26
+
+### En progreso — Issue #6
+
+- El botón de guardado actualiza su texto según el estado activo.
+- Se muestran nombres y extensiones coherentes: `Graficos.ind`, `Personajes.ind`, `Alas.ind`, `Fxs.ind`, `Armas.dat`, etc.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.32-beta] - 2026-10-26
 
 ### En progreso — Issue #6

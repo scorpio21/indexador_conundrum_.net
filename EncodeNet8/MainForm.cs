@@ -141,7 +141,7 @@ public partial class MainForm : Form
         var buttonIcons = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
             ["Bodies"] = "Bodys.ico", ["Cascos"] = "Cascos.ico", ["Escudos"] = "escudos.ico", ["Armas"] = "Armas.ico",
-            ["Fx"] = "Alas.ico"
+            ["Alas"] = "Alas.ico"
         };
 
         foreach (var button in Controls.OfType<Button>())
@@ -456,7 +456,28 @@ public partial class MainForm : Form
         var canSaveState = _indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase)
             || _directionalPath is not null || _iniDirectionalPath is not null || _fxPath is not null;
         saveButton.Enabled = _file is not null && canSaveState;
+        UpdateSaveCaption();
         statusLabel.Text = _file is null ? "Abre un Graficos.ind para comenzar." : $"GRH: {_file.Records.Count}";
+    }
+
+    private void UpdateSaveCaption()
+    {
+        var baseName = _indexerState switch
+        {
+            "Grh" => "Graficos",
+            "Body" => "Personajes",
+            "Cabezas" => "Cabezas",
+            "Cascos" => "Cascos",
+            "Escudos" => "Escudos",
+            "Armas" => "Armas",
+            "Alas" => "Alas",
+            "Capas" => "Capas",
+            "Fx" => "Fxs",
+            "Botas" => "Botas",
+            _ => "Índice"
+        };
+        var extension = _indexerState is "Armas" or "Escudos" ? ".dat" : ".ind";
+        saveIndexButton.Text = $"Guardar {baseName}{extension}";
     }
 
     private void indexList_SelectedIndexChanged(object? sender, EventArgs e)
