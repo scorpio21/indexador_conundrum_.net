@@ -949,7 +949,35 @@ public partial class MainForm : Form
         }
         if (!_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase))
         {
-            statusLabel.Text = $"Guardar como para {StateCaption(_indexerState)} se habilitará con su escritor específico.";
+            if (_indexerState.Equals("Resource", StringComparison.OrdinalIgnoreCase))
+            {
+                SetUtilError("Resource no tiene un índice editable para guardar.");
+                return;
+            }
+
+            var isIni = _indexerState is "Armas" or "Escudos";
+            var extension = isIni ? ".dat" : ".ind";
+            var filter = isIni
+                ? "Archivo de datos (*.dat)|*.dat|Todos los archivos (*.*)|*.*"
+                : "Índice binario (*.ind)|*.ind|Todos los archivos (*.*)|*.*";
+            var currentPath = _directionalPath ?? _iniDirectionalPath ?? _fxPath;
+            using var auxiliaryDialog = new SaveFileDialog
+            {
+                Filter = filter,
+                DefaultExt = extension.TrimStart('.'),
+                AddExtension = true,
+                FileName = Path.GetFileName(currentPath ?? $"{StateCaption(_indexerState)}{extension}")
+            };
+            if (auxiliaryDialog.ShowDialog(this) != DialogResult.OK) return;
+            try
+            {
+                ApplyNonGrhToModel();
+                SaveNonGrhToPath(auxiliaryDialog.FileName);
+                RebuildReferenceCounts();
+                statusLabel.Text = $"Guardado: {auxiliaryDialog.FileName}";
+                SetUtilError(string.Empty);
+            }
+            catch (Exception ex) { MessageBox.Show(this, ex.Message, "No se pudo guardar el índice", MessageBoxButtons.OK, MessageBoxIcon.Error); }
             return;
         }
         using var dialog = new SaveFileDialog { Filter = "Índice gráfico (*.ind)|*.ind|Todos los archivos (*.*)|*.*", FileName = Path.GetFileName(_loadedPath ?? "Graficos.ind") };
@@ -977,16 +1005,36 @@ public partial class MainForm : Form
         try
         {
             ApplyNonGrhToModel();
-            if (_directionalPath is not null)
-                DirectionalIndexFile.Save(_directionalPath, _directionalRecords, _directionalFormat, _indexerState is "Body" or "Alas" or "Botas");
-            else if (_iniDirectionalPath is not null)
-                IniDirectionalIndexFile.Save(_iniDirectionalPath, _directionalRecords, _indexerState);
-            else if (_fxPath is not null)
-                FxIndexFile.Save(_fxPath, _fxRecords, _fxFormat);
+            SaveNonGrhToPath(path);
             RebuildReferenceCounts();
             statusLabel.Text = $"Guardado: {path}";
         }
         catch (Exception ex) { MessageBox.Show(this, ex.Message, "No se pudo guardar el índice", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+    }
+
+    private void SaveNonGrhToPath(string path)
+    {
+        if (_indexerState.Equals("Fx", StringComparison.OrdinalIgnoreCase))
+        {
+            FxIndexFile.Save(path, _fxRecords, _fxFormat);
+            _fxPath = path;
+            _directionalPath = null;
+            _iniDirectionalPath = null;
+            return;
+        }
+        if (_indexerState is "Armas" or "Escudos" || _iniDirectionalPath is not null)
+        {
+            IniDirectionalIndexFile.Save(path, _directionalRecords, _indexerState);
+            _iniDirectionalPath = path;
+            _directionalPath = null;
+            _fxPath = null;
+            return;
+        }
+
+        DirectionalIndexFile.Save(path, _directionalRecords, _directionalFormat, _indexerState is "Body" or "Alas" or "Botas");
+        _directionalPath = path;
+        _iniDirectionalPath = null;
+        _fxPath = null;
     }
 
     private void ApplyNonGrhToModel()

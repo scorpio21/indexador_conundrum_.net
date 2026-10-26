@@ -2,6 +2,16 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.29-beta] - 2026-10-26
+
+### En progreso — Issue #6
+
+- `Archivo > Guardar...` ya permite guardar los índices auxiliares.
+- Se usa formato `.ind` para índices binarios y `.dat` para Armas/Escudos y estados cargados desde INI.
+- Se actualizan las rutas activas y las referencias después de guardar.
+- `Resource` permanece protegido porque no representa un índice editable.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.28-beta] - 2026-10-26
 
 ### En progreso — Issue #6
