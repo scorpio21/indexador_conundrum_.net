@@ -2,6 +2,14 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.44-beta] - 2026-10-27
+
+### En progreso — Issue #7
+
+- Los controles del autoindexador se agregan individualmente al contenedor, sin `AddRange` ni controles anónimos.
+- Se mejora la compatibilidad del árbol de controles con el diseñador visual de Visual Studio.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.43-beta] - 2026-10-27
 
 ### En progreso — Issue #7
