@@ -2,6 +2,14 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.43-beta] - 2026-10-27
+
+### En progreso — Issue #7
+
+- Se sustituyó la inicialización dinámica del autoindexador por inicialización directa de controles en `InitializeComponent`.
+- Se eliminaron llamadas auxiliares y lambdas del archivo del diseñador para mejorar la compatibilidad con Visual Studio.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.42-beta] - 2026-10-27
 
 ### En progreso — Issue #7
