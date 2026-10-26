@@ -234,7 +234,7 @@ public partial class MainForm : Form
     {
         indexList.Items.Clear();
         if (_file is null) return;
-        foreach (var record in _file.Records)
+        foreach (var record in _file.Records.OrderBy(record => record.Id))
             indexList.Items.Add(FormatGrhLabel(record));
         ComprobarIndexLista();
         UpdateUi();
@@ -1476,7 +1476,67 @@ public partial class MainForm : Form
     private void encodeMapsButton_Click(object? sender, EventArgs e) => MessageBox.Show(this, "El módulo de mapas se añadirá en la siguiente fase.", "Encode Mapas");
     private void newSearchButton_Click(object? sender, EventArgs e)
     {
-        indexList.Items.Clear(); statusLabel.Text = "Nuevo índice / búsqueda preparada.";
+        NewOrGoToIndex();
+    }
+
+    private void NewOrGoToIndex()
+    {
+        if (!_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase) || _file is null)
+        {
+            SetUtilError("Nuevo/Ir A está implementado actualmente para Gráficos.");
+            return;
+        }
+
+        var value = Microsoft.VisualBasic.Interaction.InputBox(
+            "Introduzca el número de GRH (0 para encontrar el primer hueco libre).",
+            "Nuevo gráfico / Ir a", "0");
+        if (string.IsNullOrWhiteSpace(value)) return;
+        if (!int.TryParse(value, out var requestedId) || requestedId < 0 || requestedId > ParseInt(maxGrhText.Text))
+        {
+            SetUtilError("Introduzca un número de GRH válido.");
+            return;
+        }
+
+        var targetId = requestedId == 0 ? FindFirstFreeGrhId() : requestedId;
+        if (targetId <= 0)
+        {
+            SetUtilError("No se encontró hueco libre.");
+            return;
+        }
+
+        if (_file.Records.Any(record => record.Id == targetId))
+        {
+            SelectGrhById(targetId);
+            ClearUtilError();
+            statusLabel.Text = $"GRH {targetId} seleccionado.";
+            return;
+        }
+
+        var answer = MessageBox.Show(this, $"El GRH {targetId} no existe. ¿Quieres crearlo?", "Aviso", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+        if (answer != DialogResult.Yes) return;
+
+        _file.Records.Add(new GrhRecord
+        {
+            Id = targetId,
+            FileNumber = 1,
+            Width = 32,
+            Height = 32,
+            Frames = new List<int> { targetId }
+        });
+        RebuildReferenceCounts();
+        RefreshGrid();
+        SelectGrhById(targetId);
+        ClearUtilError();
+        statusLabel.Text = $"GRH {targetId} creado en memoria. Completa sus datos y guarda el índice.";
+    }
+
+    private int FindFirstFreeGrhId()
+    {
+        var used = _file?.Records.Select(record => record.Id).ToHashSet() ?? new HashSet<int>();
+        var max = ParseInt(maxGrhText.Text);
+        for (var id = 1; id <= max; id++)
+            if (!used.Contains(id)) return id;
+        return 0;
     }
     private void greenButton_Click(object? sender, EventArgs e)
     {

@@ -2,6 +2,15 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.27-beta] - 2026-10-26
+
+### En progreso — Issue #6
+
+- `Nuevo/Ir A` permite seleccionar un GRH existente, buscar el primer hueco libre usando `0` y crear un GRH nuevo en memoria.
+- Los GRH nuevos empiezan con un frame propio, BMP 1 y tamaño 32×32 para poder completar sus datos desde el formulario.
+- La lista de GRH se refresca ordenada por identificador y la selección se sitúa automáticamente en el destino.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.26-beta] - 2026-10-26
 
 ### En progreso — Issue #6
