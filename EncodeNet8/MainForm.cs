@@ -26,6 +26,7 @@ public partial class MainForm : Form
     private List<int> _searchResults = new();
     private int _searchCursor;
     private int _savedIndexSlot;
+    private bool _greenBackground;
 
     private static readonly string[] AllStates = { "Grh", "Body", "Cabezas", "Cascos", "Escudos", "Armas", "Alas", "Capas", "Fx", "Resource", "Botas" };
 
@@ -67,7 +68,7 @@ public partial class MainForm : Form
         edicionMenu.DropDownItems.Add(MenuItem("Copiar", (_, _) => MoveOrCopySelectedIndex(deleteOriginal: false)));
         edicionMenu.DropDownItems.Add(MenuItem("Suprimir", deleteButton_Click, Keys.Delete));
         edicionMenu.DropDownItems.Add(MenuItem("Clonar...", (_, _) => CloneSelectedIndex()));
-        edicionMenu.DropDownItems.Add(MenuItem("Color de fondo...", (_, _) => ShowPending("Color de fondo")));
+        edicionMenu.DropDownItems.Add(MenuItem("Color de fondo...", (_, _) => SelectBackgroundColor()));
 
         herramientasMenu.DropDownItems.Add(MenuItem("Buscar Grh con bmp...", (_, _) => SearchGrhWithBmp()));
         herramientasMenu.DropDownItems.Add(MenuItem("Buscar Bmps sin indexar (Cry)", (_, _) => SearchUnindexedBmps()));
@@ -1722,7 +1723,20 @@ public partial class MainForm : Form
     }
     private void greenButton_Click(object? sender, EventArgs e)
     {
-        statusLabel.Text = "Filtro verde activado.";
+        _greenBackground = !_greenBackground;
+        previewPanel.BackColor = _greenBackground ? Color.Lime : Color.WhiteSmoke;
+        previewPanel.Invalidate();
+        statusLabel.Text = _greenBackground ? "Fondo verde activado." : "Fondo normal activado.";
+    }
+
+    private void SelectBackgroundColor()
+    {
+        using var dialog = new ColorDialog { Color = previewPanel.BackColor, FullOpen = true };
+        if (dialog.ShowDialog(this) != DialogResult.OK) return;
+        _greenBackground = false;
+        previewPanel.BackColor = dialog.Color;
+        previewPanel.Invalidate();
+        statusLabel.Text = "Color de fondo actualizado.";
     }
     private void kindButton_Click(object? sender, EventArgs e)
     {

@@ -2,6 +2,15 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.34-beta] - 2026-10-26
+
+### En progreso — Issue #6
+
+- `f. verde` alterna el fondo verde del visor y el fondo normal.
+- `Edición > Color de fondo...` permite elegir un color personalizado mediante `ColorDialog`.
+- El cambio solo afecta a la previsualización y no modifica los datos del índice.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.33-beta] - 2026-10-26
 
 ### En progreso — Issue #6
