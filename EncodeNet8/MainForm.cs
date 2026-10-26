@@ -27,6 +27,7 @@ public partial class MainForm : Form
     private int _searchCursor;
     private int _savedIndexSlot;
     private bool _greenBackground;
+    private bool _resourceSearchMode;
 
     private static readonly string[] AllStates = { "Grh", "Body", "Cabezas", "Cascos", "Escudos", "Armas", "Alas", "Capas", "Fx", "Resource", "Botas" };
 
@@ -490,6 +491,11 @@ public partial class MainForm : Form
     private void ClickEnLista()
     {
         ClearUtilError();
+        if (_resourceSearchMode)
+        {
+            ClickResourceSearchItem();
+            return;
+        }
         if (_indexerState.Equals("Body", StringComparison.OrdinalIgnoreCase))
         {
             ClickDirectionalEnLista();
@@ -971,7 +977,7 @@ public partial class MainForm : Form
 
     private void ClearMemory()
     {
-        _file = null; _loadedPath = null; _selectedRecord = null; _drawTimer.Stop(); indexList.Items.Clear(); previewPanel.Invalidate();
+        _file = null; _loadedPath = null; _selectedRecord = null; _resourceSearchMode = false; _drawTimer.Stop(); indexList.Items.Clear(); previewPanel.Invalidate();
         foreach (var box in new[] { grhText, bmpText, framesText, heightText, widthText, speedText, xText, yText, tileHeightText, tileWidthText, referencesText }) box.Clear();
         ClearUtilError();
         UpdateUi();
@@ -1175,6 +1181,7 @@ public partial class MainForm : Form
     private void SearchGrhWithBmp()
     {
         if (_file is null) { SetUtilError("No hay Graficos.ind cargado."); return; }
+        _resourceSearchMode = false;
         var value = Microsoft.VisualBasic.Interaction.InputBox("Introduzca número de BMP a buscar.", "Buscar GRH con BMP");
         if (string.IsNullOrWhiteSpace(value)) return;
         if (!int.TryParse(value, out var bmpNumber) || bmpNumber <= 0)
@@ -1212,9 +1219,55 @@ public partial class MainForm : Form
         statusLabel.Text = $"Resultado {_searchCursor + 1}/{_searchResults.Count}.";
     }
 
+    private void ClickResourceSearchItem()
+    {
+        if (indexList.SelectedIndex < 0 || indexList.SelectedIndex >= _searchResults.Count) return;
+        var fileNumber = _searchResults[indexList.SelectedIndex];
+        var bitmapPath = Path.Combine(ResolvePath(_settings.GraphicsPath), $"{fileNumber}.bmp");
+        if (!File.Exists(bitmapPath))
+        {
+            SetUtilError($"BMP {fileNumber} no encontrado: {bitmapPath}");
+            return;
+        }
+
+        try
+        {
+            if (fileNumber > short.MaxValue)
+            {
+                SetUtilError($"BMP {fileNumber} no se puede mostrar como recurso en formato Integer.");
+                return;
+            }
+            var bitmap = GetCachedBitmap(bitmapPath);
+            _selectedRecord = new GrhRecord
+            {
+                Id = fileNumber,
+                FileNumber = checked((short)fileNumber),
+                Width = checked((short)Math.Min(bitmap.Width, short.MaxValue)),
+                Height = checked((short)Math.Min(bitmap.Height, short.MaxValue)),
+                Frames = new List<int> { fileNumber }
+            };
+            grhText.Text = fileNumber.ToString();
+            bmpText.Text = fileNumber.ToString();
+            frameText.Text = string.Empty;
+            framesText.Text = "1";
+            heightText.Text = bitmap.Height.ToString();
+            widthText.Text = bitmap.Width.ToString();
+            speedText.Text = string.Empty;
+            xText.Text = "0";
+            yText.Text = "0";
+            referencesText.Text = "0";
+            previewPanel.Invalidate();
+            statusLabel.Text = $"BMP {fileNumber} seleccionado (recurso sin indexar).";
+        }
+        catch (Exception ex)
+        {
+            SetUtilError($"No se pudo mostrar el BMP {fileNumber}: {ex.Message}");
+        }
+    }
+
     private void SearchUnindexedBmps()
     {
-        if (_file is null) { ShowPending("Buscar BMPs sin indexar: no hay Graficos.ind cargado"); return; }
+        if (_file is null) { SetUtilError("No hay Graficos.ind cargado."); return; }
         var indexed = _file.Records.Select(record => (int)record.FileNumber).ToHashSet();
         var graphicsPath = ResolvePath(_settings.GraphicsPath);
         var unindexed = Directory.Exists(graphicsPath)
@@ -1226,14 +1279,20 @@ public partial class MainForm : Form
                 .OrderBy(fileNumber => fileNumber)
                 .ToList()
             : new List<int>();
+        _resourceSearchMode = true;
+        _searchResults = unindexed;
+        _searchCursor = 0;
         indexList.Items.Clear();
         foreach (var fileNumber in unindexed) indexList.Items.Add(fileNumber);
+        if (unindexed.Count > 0) indexList.SelectedIndex = 0;
+        SetUtilError(unindexed.Count == 0 ? "No hay BMPs sin indexar." : "F3 para continuar la búsqueda.");
         statusLabel.Text = $"BMP sin GRH indexado: {unindexed.Count}.";
     }
 
     private void SearchRepeatedGrh()
     {
         if (_file is null) { ShowPending("Buscar GRH repetidos: no hay Graficos.ind cargado"); return; }
+        _resourceSearchMode = false;
         var repeated = _file.Records
             .GroupBy(record => (record.FileNumber, record.X, record.Y, record.Width, record.Height))
             .Where(group => group.Count() > 1)
@@ -1268,6 +1327,7 @@ public partial class MainForm : Form
     private void CambiarEstado(string state)
     {
         _indexerState = NormalizeState(state);
+        _resourceSearchMode = false;
         _drawTimer.Stop();
         _selectedRecord = null;
         ClearUtilError();

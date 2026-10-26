@@ -2,6 +2,16 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.36-beta] - 2026-10-26
+
+### En progreso — Issue #7
+
+- `Buscar Bmps sin indexar (Cry)` muestra los BMP encontrados directamente en el visor.
+- La selección de un recurso sin GRH indexado ya no se interpreta como un GRH inexistente.
+- `F3` continúa recorriendo los BMP sin indexar y se informa el estado mediante `LUlitError`.
+- Se añadió protección para BMPs fuera del rango del formato Integer.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.35-beta] - 2026-10-26
 
 ### En progreso — Issue #7
