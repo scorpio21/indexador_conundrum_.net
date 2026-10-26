@@ -2,6 +2,15 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.40-beta] - 2026-10-26
+
+### En progreso — Issue #7
+
+- `AutoIndexerOptions` se movió a un archivo independiente.
+- `AutoIndexerForm.cs` contiene ahora como primera clase el formulario diseñable.
+- Se corrige el error del diseñador de Visual Studio sobre la primera clase del archivo.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.39-beta] - 2026-10-26
 
 ### En progreso — Issue #7
