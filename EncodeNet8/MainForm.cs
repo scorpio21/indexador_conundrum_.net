@@ -1174,15 +1174,30 @@ public partial class MainForm : Form
 
     private void SearchGrhWithBmp()
     {
-        if (_file is null) { ShowPending("Buscar GRH con BMP: no hay Graficos.ind cargado"); return; }
-        var graphicsPath = ResolvePath(_settings.GraphicsPath);
+        if (_file is null) { SetUtilError("No hay Graficos.ind cargado."); return; }
+        var value = Microsoft.VisualBasic.Interaction.InputBox("Introduzca número de BMP a buscar.", "Buscar GRH con BMP");
+        if (string.IsNullOrWhiteSpace(value)) return;
+        if (!int.TryParse(value, out var bmpNumber) || bmpNumber <= 0)
+        {
+            SetUtilError("Introduzca un número de BMP válido.");
+            return;
+        }
+
         _searchResults = _file.Records
-            .Where(record => File.Exists(Path.Combine(graphicsPath, $"{record.FileNumber}.bmp")))
+            .Where(record => record.FileNumber == bmpNumber)
             .Select(record => record.Id)
             .ToList();
         _searchCursor = 0;
+        if (_searchResults.Count == 0)
+        {
+            ReplaceGrhList(Array.Empty<int>());
+            SetUtilError($"BMP {bmpNumber} no encontrado en ningún GRH.");
+            statusLabel.Text = "Búsqueda sin resultados.";
+            return;
+        }
         ReplaceGrhList(_searchResults);
-        statusLabel.Text = $"Búsqueda: {_searchResults.Count} GRH con BMP.";
+        SetUtilError("F3 para continuar la búsqueda.");
+        statusLabel.Text = $"BMP {bmpNumber}: {_searchResults.Count} GRH encontrados.";
     }
 
     private void SearchNext()

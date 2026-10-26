@@ -2,6 +2,15 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.35-beta] - 2026-10-26
+
+### En progreso — Issue #7
+
+- `Buscar Grh con bmp...` solicita el número de BMP, como el VB6 original.
+- Se muestran los GRH que usan ese BMP y se activa el flujo de búsqueda siguiente con `F3`.
+- Los BMP sin coincidencias muestran el mensaje en `LUlitError` sin abrir diálogos innecesarios.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.34-beta] - 2026-10-26
 
 ### En progreso — Issue #6
