@@ -167,6 +167,12 @@ public partial class MainForm : Form
 
     private void openButton_Click(object? sender, EventArgs e)
     {
+        if (!_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase))
+        {
+            OpenAuxiliaryIndex();
+            return;
+        }
+
         using var dialog = new OpenFileDialog { Filter = "Índices gráficos (*.ind)|*.ind|Todos los archivos (*.*)|*.*", FileName = "Graficos.ind", InitialDirectory = ResolvePath(_settings.InitPath) };
         if (dialog.ShowDialog(this) != DialogResult.OK) return;
         try
@@ -179,6 +185,74 @@ public partial class MainForm : Form
             statusLabel.Text = $"Cargados {_file.Records.Count} GRH: {dialog.FileName}";
         }
         catch (Exception ex) { MessageBox.Show(this, ex.Message, "No se pudo cargar el índice", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+    }
+
+    private void OpenAuxiliaryIndex()
+    {
+        if (_indexerState.Equals("Resource", StringComparison.OrdinalIgnoreCase))
+        {
+            SetUtilError("Resource no tiene un índice editable para cargar.");
+            return;
+        }
+
+        var isIni = _indexerState is "Armas" or "Escudos";
+        var filter = isIni
+            ? "Archivo de datos (*.dat)|*.dat|Todos los archivos (*.*)|*.*"
+            : "Índices auxiliares (*.ind;*.dat)|*.ind;*.dat|Todos los archivos (*.*)|*.*";
+        using var dialog = new OpenFileDialog
+        {
+            Filter = filter,
+            FileName = isIni ? $"{StateCaption(_indexerState)}.dat" : $"{StateCaption(_indexerState)}.ind",
+            InitialDirectory = ResolvePath(_settings.InitPath)
+        };
+        if (dialog.ShowDialog(this) != DialogResult.OK) return;
+
+        try
+        {
+            _directionalRecords.Clear();
+            _fxRecords.Clear();
+            _bodyRecords.Clear();
+            _directionalPath = null;
+            _iniDirectionalPath = null;
+            _fxPath = null;
+
+            if (_indexerState.Equals("Fx", StringComparison.OrdinalIgnoreCase))
+            {
+                _fxRecords.AddRange(LoadFxAutoWithFormat(dialog.FileName, out _fxFormat));
+                _fxPath = dialog.FileName;
+                RefreshFxList();
+            }
+            else if (isIni || Path.GetExtension(dialog.FileName).Equals(".dat", StringComparison.OrdinalIgnoreCase))
+            {
+                _directionalRecords.AddRange(IniDirectionalIndexFile.Load(dialog.FileName, _indexerState));
+                _iniDirectionalPath = dialog.FileName;
+                if (_indexerState.Equals("Body", StringComparison.OrdinalIgnoreCase)) RefreshBodyList();
+                else RefreshDirectionalList();
+            }
+            else
+            {
+                var includesOffsets = _indexerState is "Body" or "Alas" or "Botas";
+                _directionalRecords.AddRange(LoadDirectionalAutoWithFormat(dialog.FileName, includesOffsets, out _directionalFormat));
+                _directionalPath = dialog.FileName;
+                if (_indexerState.Equals("Body", StringComparison.OrdinalIgnoreCase))
+                {
+                    foreach (var item in _directionalRecords)
+                        _bodyRecords.Add(new BodyIndexRecord { Id = item.Id, Walk1 = item.Directions[0], Walk2 = item.Directions[1], Walk3 = item.Directions[2], Walk4 = item.Directions[3], HeadOffsetX = item.OffsetX, HeadOffsetY = item.OffsetY });
+                    RefreshBodyList();
+                }
+                else RefreshDirectionalList();
+            }
+
+            _lastIndexByState[_indexerState] = -1;
+            RebuildReferenceCounts();
+            ClearUtilError();
+            statusLabel.Text = $"Cargado {StateCaption(_indexerState)}: {dialog.FileName}";
+        }
+        catch (Exception ex)
+        {
+            SetUtilError($"No se pudo cargar {StateCaption(_indexerState)}: {ex.Message}");
+            statusLabel.Text = "Error al cargar el índice auxiliar.";
+        }
     }
 
     private void LoadConfiguredGraphics()

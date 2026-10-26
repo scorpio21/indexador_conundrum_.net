@@ -2,6 +2,16 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.31-beta] - 2026-10-26
+
+### En progreso — Issue #6
+
+- `Archivo > Cargar` ahora respeta el estado seleccionado.
+- Carga `Graficos.ind`, índices auxiliares binarios, archivos INI y FX con sus lectores correspondientes.
+- Los filtros del diálogo se adaptan a `.ind` o `.dat` y se actualizan las listas, referencias y rutas activas.
+- `Resource` permanece protegido porque no es un índice editable.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.30-beta] - 2026-10-26
 
 ### En progreso — Issue #6
