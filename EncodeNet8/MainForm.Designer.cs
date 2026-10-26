@@ -8,14 +8,13 @@ partial class MainForm
     private MenuStrip menuStrip = null!;
     private ToolStripMenuItem archivoMenu = null!, edicionMenu = null!, herramientasMenu = null!, indexarMenu = null!, superficiesMenu = null!, ayudaMenu = null!, configuracionMenu = null!;
     private Button openButton = null!, saveButton = null!, deleteButton = null!, saveIndexButton = null!, clearMemoryButton = null!, viewButton = null!, encodeMapsButton = null!, newSearchButton = null!, greenButton = null!;
-    private Button bodiesButton = null!, headsButton = null!, helmetsButton = null!, shieldsButton = null!, weaponsButton = null!, fxButton = null!;
+    private Button bodiesButton = null!, headsButton = null!, helmetsButton = null!, shieldsButton = null!, weaponsButton = null!, alasButton = null!, bootsButton = null!, fxButton = null!;
     private ComboBox formatCombo = null!;
     private Label formatLabel = null!;
     private Label frameLabel = null!;
     private TextBox frameText = null!;
     private ListBox indexList = null!;
     private GroupBox dataGroup = null!, foldersGroup = null!;
-    private Panel previewPanel = null!;
     private TextBox grhText = null!, bmpText = null!, framesText = null!, heightText = null!, widthText = null!, speedText = null!, xText = null!, yText = null!, tileHeightText = null!, tileWidthText = null!, indsText = null!, graphicsText = null!, maxGrhText = null!, referencesText = null!;
     private ComboBox directionCombo = null!;
     private Label referencesLabel = null!;
@@ -50,6 +49,8 @@ partial class MainForm
         helmetsButton = new Button();
         shieldsButton = new Button();
         weaponsButton = new Button();
+        alasButton = new Button();
+        bootsButton = new Button();
         fxButton = new Button();
         formatCombo = new ComboBox();
         formatLabel = new Label();
@@ -104,15 +105,15 @@ partial class MainForm
         menuStrip.Name = "menuStrip";
         menuStrip.Size = new Size(1142, 24);
         menuStrip.TabIndex = 0;
-        // 
+        //
         // archivoMenu
-        // 
+        //
         archivoMenu.Name = "archivoMenu";
         archivoMenu.Size = new Size(60, 20);
         archivoMenu.Text = "Archivo";
-        // 
+        //
         // edicionMenu
-        // 
+        //
         edicionMenu.Name = "edicionMenu";
         edicionMenu.Size = new Size(58, 20);
         edicionMenu.Text = "Edición";
@@ -127,7 +128,7 @@ partial class MainForm
         // configuracionMenu
         // 
         configuracionMenu.Name = "configuracionMenu";
-        configuracionMenu.Size = new Size(32, 19);
+        configuracionMenu.Size = new Size(150, 22);
         configuracionMenu.Text = "Configuración";
         configuracionMenu.Click += configuracionMenu_Click;
         // 
@@ -180,7 +181,7 @@ partial class MainForm
         // 
         saveIndexButton.Location = new Point(229, 455);
         saveIndexButton.Name = "saveIndexButton";
-        saveIndexButton.Size = new Size(160, 30);
+        saveIndexButton.Size = new Size(125, 30);
         saveIndexButton.TabIndex = 4;
         saveIndexButton.Text = "Guardar Graficos.ind";
         saveIndexButton.Click += saveIndexButton_Click;
@@ -223,7 +224,7 @@ partial class MainForm
         // 
         // greenButton
         // 
-        greenButton.Location = new Point(367, 491);
+        greenButton.Location = new Point(367, 456);
         greenButton.Name = "greenButton";
         greenButton.Size = new Size(60, 28);
         greenButton.TabIndex = 22;
@@ -274,13 +275,31 @@ partial class MainForm
         weaponsButton.TabIndex = 12;
         weaponsButton.Text = "Armas";
         weaponsButton.Click += kindButton_Click;
-        // 
+        //
+        // alasButton
+        //
+        alasButton.Location = new Point(4, 275);
+        alasButton.Name = "alasButton";
+        alasButton.Size = new Size(86, 31);
+        alasButton.TabIndex = 13;
+        alasButton.Text = "Alas";
+        alasButton.Click += kindButton_Click;
+        //
+        // bootsButton
+        //
+        bootsButton.Location = new Point(4, 309);
+        bootsButton.Name = "bootsButton";
+        bootsButton.Size = new Size(86, 31);
+        bootsButton.TabIndex = 14;
+        bootsButton.Text = "Botas";
+        bootsButton.Click += kindButton_Click;
+        //
         // fxButton
-        // 
-        fxButton.Location = new Point(4, 275);
+        //
+        fxButton.Location = new Point(4, 343);
         fxButton.Name = "fxButton";
         fxButton.Size = new Size(86, 31);
-        fxButton.TabIndex = 13;
+        fxButton.TabIndex = 15;
         fxButton.Text = "Fx";
         fxButton.Click += kindButton_Click;
         // 
@@ -317,7 +336,7 @@ partial class MainForm
         // 
         frameText.Location = new Point(64, 16);
         frameText.Name = "frameText";
-        frameText.Size = new Size(135, 23);
+        frameText.Size = new Size(182, 23);
         frameText.TabIndex = 24;
         // 
         // directionCombo
@@ -371,7 +390,7 @@ partial class MainForm
         dataGroup.FlatStyle = FlatStyle.Flat;
         dataGroup.Location = new Point(222, 28);
         dataGroup.Name = "dataGroup";
-        dataGroup.Size = new Size(205, 385);
+        dataGroup.Size = new Size(252, 385);
         dataGroup.TabIndex = 17;
         dataGroup.TabStop = false;
         dataGroup.Text = "Datos del índice elegido";
@@ -501,7 +520,7 @@ partial class MainForm
         // 
         heightText.Location = new Point(112, 137);
         heightText.Name = "heightText";
-        heightText.Size = new Size(55, 23);
+        heightText.Size = new Size(72, 23);
         heightText.TabIndex = 14;
         // 
         // widthText
@@ -522,14 +541,14 @@ partial class MainForm
         // 
         xText.Location = new Point(112, 167);
         xText.Name = "xText";
-        xText.Size = new Size(55, 23);
+        xText.Size = new Size(72, 23);
         xText.TabIndex = 17;
         // 
         // yText
         // 
         yText.Location = new Point(112, 197);
         yText.Name = "yText";
-        yText.Size = new Size(55, 23);
+        yText.Size = new Size(72, 23);
         yText.TabIndex = 18;
         // 
         // tileHeightText
@@ -551,7 +570,7 @@ partial class MainForm
         referencesText.Location = new Point(112, 232);
         referencesText.Name = "referencesText";
         referencesText.ReadOnly = true;
-        referencesText.Size = new Size(55, 23);
+        referencesText.Size = new Size(72, 23);
         referencesText.TabIndex = 21;
         // 
         // foldersGroup
@@ -563,7 +582,7 @@ partial class MainForm
         foldersGroup.Controls.Add(graphicsText);
         foldersGroup.Controls.Add(maxGrhText);
         foldersGroup.FlatStyle = FlatStyle.Flat;
-        foldersGroup.Location = new Point(224, 517);
+        foldersGroup.Location = new Point(222, 483);
         foldersGroup.Name = "foldersGroup";
         foldersGroup.Size = new Size(205, 125);
         foldersGroup.TabIndex = 18;
@@ -627,24 +646,21 @@ partial class MainForm
         // 
         previewPanel.BackColor = Color.WhiteSmoke;
         previewPanel.BorderStyle = BorderStyle.FixedSingle;
-        previewPanel.Location = new Point(433, 33);
+        previewPanel.Location = new Point(480, 33);
         previewPanel.Name = "previewPanel";
-        previewPanel.Size = new Size(700, 575);
+        previewPanel.Size = new Size(653, 575);
         previewPanel.TabIndex = 19;
         previewPanel.Paint += previewPanel_Paint;
         // 
         // LUlitError
         // 
-        LUlitError.AutoEllipsis = false;
         LUlitError.BackColor = SystemColors.Control;
         LUlitError.BorderStyle = BorderStyle.FixedSingle;
         LUlitError.ForeColor = Color.DarkRed;
-        LUlitError.Location = new Point(0, 610);
+        LUlitError.Location = new Point(2, 610);
         LUlitError.Name = "LUlitError";
-        LUlitError.Size = new Size(1142, 58);
+        LUlitError.Size = new Size(1130, 58);
         LUlitError.TabIndex = 20;
-        LUlitError.TextAlign = ContentAlignment.TopLeft;
-        LUlitError.Visible = true;
         // 
         // statusStrip
         // 
@@ -681,6 +697,8 @@ partial class MainForm
         Controls.Add(helmetsButton);
         Controls.Add(shieldsButton);
         Controls.Add(weaponsButton);
+        Controls.Add(alasButton);
+        Controls.Add(bootsButton);
         Controls.Add(fxButton);
         Controls.Add(indexList);
         Controls.Add(formatLabel);
@@ -720,4 +738,5 @@ partial class MainForm
     private Label indsLabel = null!;
     private Label graphicsLabel = null!;
     private Label maxGrhLabel = null!;
+    private BufferedPreviewPanel previewPanel = null!;
 }

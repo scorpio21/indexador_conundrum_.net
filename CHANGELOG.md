@@ -2,6 +2,15 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.30-beta] - 2026-10-26
+
+### En progreso — Issue #6
+
+- Se añaden al formulario los botones `Alas` y `Botas`.
+- Ambos usan el manejador común de cambio de estado y cargan sus índices existentes.
+- Se recoloca `Fx` debajo de los nuevos botones para evitar solapamientos.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.29-beta] - 2026-10-26
 
 ### En progreso — Issue #6
