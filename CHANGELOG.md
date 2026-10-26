@@ -2,6 +2,15 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.45-beta] - 2026-10-27
+
+### En progreso — Issue #7
+
+- Se rehízo `AutoIndexerForm.Designer.cs` con el patrón clásico de Visual Studio.
+- Cada control es un campo, cada propiedad se asigna por separado y cada contenedor usa `Controls.Add` explícito.
+- Se alinearon los controles principales con las posiciones de `FormAuto.frm`.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.44-beta] - 2026-10-27
 
 ### En progreso — Issue #7
