@@ -2,6 +2,15 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.46-beta] - 2026-10-27
+
+### En progreso — Issue #7
+
+- Se ajustaron valores iniciales, colores de validación y fuente al comportamiento visible de `FormAuto.frm`.
+- Se añadieron los controles de autoindexación avanzada: tipo, selector Body/Armas/Escudo, índice automático y offset.
+- Se añadieron los valores iniciales de dimensiones y BMP observados en el original.
+- Build Release correcta con 0 errores y 0 advertencias.
+
 ## [0.0.45-beta] - 2026-10-27
 
 ### En progreso — Issue #7
