@@ -2,6 +2,15 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
+## [0.0.38-beta] - 2026-10-26
+
+### En progreso — Issue #7
+
+- `AutoIndexerForm` queda separado en `AutoIndexerForm.cs` y `AutoIndexerForm.Designer.cs`.
+- El formulario ahora aparece como formulario WinForms editable desde el diseñador de Visual Studio.
+- Se mantiene la lógica de selección de BMP y creación de GRH/animación.
+- Build Release y pruebas pasan con 0 errores y 0 advertencias.
+
 ## [0.0.37-beta] - 2026-10-26
 
 ### En progreso — Issue #7
