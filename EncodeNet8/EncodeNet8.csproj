@@ -18,11 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="AutoIndexerForm.cs">
+    <Compile Update="FormAuto.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="AutoIndexerForm.Designer.cs">
-      <DependentUpon>AutoIndexerForm.cs</DependentUpon>
+    <Compile Update="FormAuto.Designer.cs">
+      <DependentUpon>FormAuto.cs</DependentUpon>
     </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
