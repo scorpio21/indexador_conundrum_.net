@@ -256,6 +256,20 @@ static void TestFormAutoModes(string root)
         graphicsFile.Save(graphicsRoundtrip, GrhStorageFormat.LongIndexes);
         var reopenedGraphics = GraficosIndFile.Load(graphicsRoundtrip, GrhStorageFormat.LongIndexes);
         Assert(reopenedGraphics.Records.Count == 26 && reopenedGraphics.Records[^1].Frames.Count == 5, "FormAuto clásico: guardado de GRH");
+
+        Get<Button>(normal, "Command3").PerformClick();
+        Get<RadioButton>(normal, "radioButton5").PerformClick();
+        Assert(!Get<TextBox>(normal, "textBox21").Enabled && !Get<TextBox>(normal, "textBox20").Enabled,
+            "FormAuto normal: BMP consecutivos deshabilita la cuadrícula");
+        Assert(Get<TextBox>(normal, "textBox21").Text == "1" && Get<TextBox>(normal, "textBox20").Text == "1",
+            "FormAuto normal: BMP consecutivos restablece 1x1");
+        Get<RadioButton>(normal, "radioButton6").PerformClick();
+        Get<TextBox>(normal, "textBox21").Text = "6";
+        Get<TextBox>(normal, "textBox20").Text = "4";
+        Get<TextBox>(normal, "textBox15").Text = "700";
+        Get<Button>(normal, "button4").PerformClick();
+        Assert(Get<TextBox>(normal, "textBox17").Text == "46" && Get<TextBox>(normal, "textBox16").Text == "26",
+            "FormAuto normal: AutoCalcular divide el BMP");
         normal.Close();
 
         using var body = new FormAuto(root, 1000);
@@ -273,6 +287,17 @@ static void TestFormAutoModes(string root)
         DirectionalIndexFile.Save(bodyPath, new[] { bodyIndex }, GrhStorageFormat.LegacyInteger, includesOffsets: true);
         var reopenedBody = DirectionalIndexFile.Load(bodyPath, GrhStorageFormat.LegacyInteger, includesOffsets: true);
         Assert(reopenedBody.Count == 1 && reopenedBody[0].Directions.SequenceEqual(bodyIndex.Directions), "FormAuto Body: guardado direccional");
+
+        Get<RadioButton>(body, "Optiondimension_1").Checked = true;
+        Application.DoEvents();
+        Assert(Get<TextBox>(body, "textDatos2_3").Text == "24" && Get<ComboBox>(body, "combo2").SelectedIndex == 0,
+            $"FormAuto avanzado: plantilla NPC fija 4 direcciones (total={Get<TextBox>(body, "textDatos2_3").Text}, combo={Get<ComboBox>(body, "combo2").SelectedIndex}, npc={Get<RadioButton>(body, "Optiondimension_1").Checked}, clasico={Get<RadioButton>(body, "Optiondimension_0").Checked})");
+        Assert(Get<TextBox>(body, "Text2").Text == "0º0", "FormAuto avanzado: NPC usa offset cero");
+        Get<RadioButton>(body, "Optiondimension_2").Checked = true;
+        Application.DoEvents();
+        Assert(Get<TextBox>(body, "textBox5").Text == "45" && Get<TextBox>(body, "textBox6").Text == "25",
+            "FormAuto avanzado: plantilla Alkon conserva dimensiones");
+        Assert(Get<TextBox>(body, "Text2").Text == "-38º0", "FormAuto avanzado: Alkon conserva offset clásico");
         body.Close();
 
         using var offset = new FormAuto(root, 1000);
@@ -289,6 +314,8 @@ static void TestFormAutoModes(string root)
         Get<TextBox>(offset, "textBox6").Text = "32";
         Get<TextBox>(offset, "TextDatos2_7").Text = "3";
         Get<TextBox>(offset, "TextDatos2_8").Text = "4";
+        Get<TextBox>(offset, "Text2").Text = "999999º-999999";
+        Assert(Get<TextBox>(offset, "Text2").Text == "1000º-1000", "FormAuto offset: normaliza límites");
         Get<Button>(offset, "Command1").PerformClick();
         var offsetRecords = offset.GeneratedRecords ?? throw new InvalidOperationException("Fallo: FormAuto no generó el offset.");
         Assert(offsetRecords.Count == 5 && offsetRecords[0].X == 3 && offsetRecords[0].Y == 4, "FormAuto offset: recortes");

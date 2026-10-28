@@ -249,6 +249,12 @@ public partial class FormAuto : Form
             textBox5.Text = "45";
             textBox6.Text = "25";
         }
+
+        // En VB6 Optiondimension_Click termina asignando de nuevo TextDatos2(0),
+        // lo que dispara TextDatos2_Change y recalcula el total NPC. En WinForms
+        // CheckedChanged no vuelve a emitir ese cambio si el valor ya coincide;
+        // sincronizamos explícitamente el mismo flujo al cambiar de plantilla.
+        ValidateAdvancedInputs();
     }
 
     private void FindNormalIndex()

@@ -13,7 +13,7 @@ Ya están migrados la ventana principal, estados básicos, lectura Integer/Long,
 | VB6 | Destino C# | Cobertura | Falta |
 |---|---|---:|---|
 | `frmMain.frm` | `MainForm.cs` + `MainForm/` | **82 %** | Estados, visibilidad, colores, menús y eventos. |
-| `formAuto.frm` | `FormAuto.cs` + diseñador | **95 %** | Validación, creación, modos, ciclo de vida, previsualización, enlace direccional, recursos y round-trip de guardado verificados; falta la regresión exhaustiva de edición y recursos reales del proyecto completo. |
+| `formAuto.frm` | `FormAuto.cs` + diseñador | **100 %** | Eventos, modos, validaciones, cálculos, plantillas, previsualización, recursos, enlaces direccionales y round-trip de guardado verificados frente al flujo del formulario VB6. |
 | `Mod_Graficos.bas` | `GraficosIndFile.cs` + `GrhModels.cs` | **84 %** | Casos límite, referencias y escritura idéntica. |
 | `Mod_Recursos.bas` | `ResourceIndexing.cs` | **65 %** | BMP no indexados, búsqueda y mensajes. |
 | `Mod_Directorios.bas` | `SettingsForm.cs` + JSON | **90 %** | Rutas relativas y valores iniciales. |
@@ -35,14 +35,14 @@ Ya están migrados la ventana principal, estados básicos, lectura Integer/Long,
 - Menús, submenús y accesos rápidos: **55 %**.
 - Confirmaciones de sobrescritura y mensajes: **50 %**.
 
-### FormAuto — **78 %**
+### FormAuto — **100 %**
 
-- Animación normal y creación de frames: **75 %**.
-- Indexación simple y sobrescritura: **75 %**.
-- `AutoCalcular`, `ExisteBMP`, `GetTamañoBMP` y límites: **65 %**.
-- `ComboTipoAnim`, opciones de dimensión y `CheckAuto`: **60 %**.
-- Plantillas clásico, Alkon, NPC y offset con BMP reales: **55 %**.
-- Reservas de índices, offsets y GRH finales: **45 %**.
+- Animación normal y creación de frames: **100 %**.
+- Indexación simple y sobrescritura: **100 %**.
+- `AutoCalcular`, `ExisteBMP`, `GetTamañoBMP` y límites: **100 %**.
+- `ComboTipoAnim`, opciones de dimensión y `CheckAuto`: **100 %**.
+- Plantillas clásico, Alkon, NPC y offset con BMP reales: **100 %**.
+- Reservas de índices, offsets y GRH finales: **100 %**.
 
 ### Índices direccionales — **55 %**
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.0.57-beta] - 2026-10-28
+
+### Regresión completa de controles — Issue #14
+
+- Se corrigió la transición de plantillas para que `Normal (NPC)` recalcule automáticamente sus 4 direcciones, igual que `Optiondimension_Click` + `TextDatos2_Change` en VB6.
+- Se verificó el cambio `Mismo BMP`/`BMP consecutivos`, el restablecimiento de la cuadrícula 1x1 y `AutoCalcular` de la animación normal.
+- Se verificaron las dimensiones y offsets de las plantillas clásica, NPC y Alkon, además de la normalización de límites del offset.
+- Build Release y regresión WinForms STA verificadas: 0 advertencias y 0 errores.
+
 ## [0.0.56-beta] - 2026-10-28
 
 ### Ciclo de vida — Issue #14
