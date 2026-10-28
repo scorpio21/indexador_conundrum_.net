@@ -88,13 +88,18 @@ public partial class MainForm : Form
     
             private void ConfigureStateFields(string state)
         {
-            directionCombo.Visible = false;
-            frameText.Visible = true;
-            frameLabel.Visible = true;
             var textBoxes = new[] { bmpText, framesText, heightText, widthText, speedText, xText, yText, tileHeightText, tileWidthText };
             var labels = new[] { bmpLabel, framesLabel, heightLabel, widthLabel, speedLabel, xLabel, yLabel, tileHeightLabel, tileWidthLabel };
-            foreach (var control in textBoxes) control.Visible = true;
+            foreach (var control in textBoxes) { control.Visible = true; control.Enabled = true; control.BackColor = Color.White; }
             foreach (var control in labels) control.Visible = true;
+            frameText.Visible = true;
+            frameLabel.Visible = true;
+            directionCombo.Visible = false;
+            DescripcionAyuda.Visible = false;
+            saveIndexButton.Visible = true;
+            deleteButton.Visible = true;
+            herramientasMenu.Visible = state.Equals("Grh", StringComparison.OrdinalIgnoreCase);
+            clonarMenu.Visible = state.Equals("Grh", StringComparison.OrdinalIgnoreCase);
     
             if (state == "Grh")
             {
@@ -110,15 +115,39 @@ public partial class MainForm : Form
                 tileWidthLabel.Text = "Ancho Titles:";
                 return;
             }
+
+            if (state.Equals("Resource", StringComparison.OrdinalIgnoreCase))
+            {
+                ShowStateFields(textBoxes, labels, 0, 2, 3, 4, 5);
+                frameText.Visible = false;
+                frameLabel.Visible = false;
+                directionCombo.Visible = false;
+                grhLabel.Text = "Crypt:";
+                bmpLabel.Text = "Tamaño:";
+                framesLabel.Text = string.Empty;
+                heightLabel.Text = "Alto:";
+                widthLabel.Text = "Ancho:";
+                speedLabel.Text = "Bits:";
+                xLabel.Text = "Situacion:";
+                yLabel.Text = string.Empty;
+                tileHeightLabel.Text = string.Empty;
+                tileWidthLabel.Text = string.Empty;
+                saveIndexButton.Visible = false;
+                deleteButton.Visible = false;
+                DescripcionAyuda.Visible = true;
+                DescripcionAyuda.Text = "N: Si están disponible el BMP y el archivo de recursos, se usa el BMP.";
+                return;
+            }
     
             if (state == "Fx")
             {
                 grhLabel.Text = "Fx:";
                 bmpLabel.Text = "NumGrh:";
-                framesLabel.Text = "Offset:";
+                framesLabel.Text = string.Empty;
+                heightLabel.Text = "Offset:";
                 frameText.Visible = false;
                 frameLabel.Visible = false;
-                HideStateFields(3);
+                ShowStateFields(textBoxes, labels, 0, 2);
                 return;
             }
     
@@ -131,17 +160,19 @@ public partial class MainForm : Form
             directionCombo.Visible = true;
             frameText.Visible = false;
             frameLabel.Visible = false;
-            HideStateFields(state == "Body" || state == "Alas" ? 6 : 5);
+            ShowStateFields(textBoxes, labels, state == "Body" || state == "Alas" ? new[] { 0, 2, 3, 4, 5 } : new[] { 0, 2, 3, 4 });
         }
     
-            private void HideStateFields(int visibleCount)
+            private static void ShowStateFields(TextBox[] textBoxes, Label[] labels, params int[] visibleIndexes)
         {
-            var textBoxes = new[] { bmpText, framesText, heightText, widthText, speedText, xText, yText, tileHeightText, tileWidthText };
-            var labels = new[] { bmpLabel, framesLabel, heightLabel, widthLabel, speedLabel, xLabel, yLabel, tileHeightLabel, tileWidthLabel };
-            for (var i = visibleCount; i < textBoxes.Length; i++)
+            var visible = visibleIndexes.ToHashSet();
+            for (var i = 0; i < textBoxes.Length; i++)
             {
-                textBoxes[i].Visible = false;
-                labels[i].Visible = false;
+                var show = visible.Contains(i);
+                textBoxes[i].Visible = show;
+                textBoxes[i].Enabled = show;
+                labels[i].Visible = show;
+                if (!show) textBoxes[i].BackColor = Color.White;
             }
         }
     

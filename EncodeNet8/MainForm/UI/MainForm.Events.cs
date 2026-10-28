@@ -18,6 +18,16 @@ public partial class MainForm : Form
         {
             NewOrGoToIndex();
         }
+
+        private void textData_DoubleClick(object? sender, EventArgs e)
+        {
+            if (_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase)) return;
+            if (sender is not TextBox textBox || !int.TryParse(textBox.Text.Trim(), out var index)) return;
+            if (index <= 0) return;
+
+            CambiarEstado("Grh");
+            BuscarNuevoF(index);
+        }
     
             private void greenButton_Click(object? sender, EventArgs e)
         {
@@ -53,12 +63,21 @@ public partial class MainForm : Form
             directionCombo.SelectedIndex = Math.Clamp(directionCombo.SelectedIndex, 0, 3);
             var direction = directionCombo.SelectedIndex;
             grhText.Text = item.Id.ToString();
-            bmpText.Text = item.Directions[direction].ToString();
-            xText.Text = item.OffsetX.ToString();
-            yText.Text = item.OffsetY.ToString();
-            widthText.Text = item.Directions[1].ToString();
-            heightText.Text = item.Directions[2].ToString();
-            framesText.Text = string.Join("-", item.Directions);
+            // GetInfoDataIndex del VB6 siempre muestra las cuatro direcciones
+            // en TextDatos(0), (2), (3) y (4); el selector solo cambia el
+            // frame que se previsualiza.
+            bmpText.Text = item.Directions[0].ToString();
+            framesText.Clear();
+            heightText.Text = item.Directions[1].ToString();
+            widthText.Text = item.Directions[2].ToString();
+            speedText.Text = item.Directions[3].ToString();
+            if (_indexerState is "Body" or "Alas")
+                xText.Text = $"{item.OffsetY}º{item.OffsetX}";
+            else
+                xText.Clear();
+            yText.Clear();
+            tileHeightText.Clear();
+            tileWidthText.Clear();
             SetUsageCount(CountReferences(item.Directions[direction]));
             _selectedRecord = _file?.Records.FirstOrDefault(x => x.Id == item.Directions[direction]);
             frameText.Text = "1";
@@ -80,9 +99,14 @@ public partial class MainForm : Form
             _lastIndexByState[_indexerState] = indexList.SelectedIndex;
             grhText.Text = item.Id.ToString();
             bmpText.Text = item.Animation.ToString();
-            xText.Text = item.OffsetX.ToString();
-            yText.Text = item.OffsetY.ToString();
-            framesText.Text = "";
+            framesText.Clear();
+            heightText.Text = $"{item.OffsetY}º{item.OffsetX}";
+            widthText.Text = item.Animation.ToString();
+            speedText.Text = item.Animation.ToString();
+            xText.Clear();
+            yText.Clear();
+            tileHeightText.Clear();
+            tileWidthText.Clear();
             SetUsageCount(CountReferences(item.Animation));
             _selectedRecord = _file?.Records.FirstOrDefault(x => x.Id == item.Animation);
             if (_selectedRecord is not null) ConfigureAnimationTimer(_selectedRecord);

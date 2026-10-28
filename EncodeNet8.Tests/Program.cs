@@ -80,6 +80,7 @@ try
     TestAdditionalReaders(root);
     TestAutoIndexer(root);
     TestFormAutoModes(root);
+    TestMainFormStates();
     Console.WriteLine("Graficos.ind, lectores direccionales y adicionales: Integer/Long OK; truncado rechazado.");
 }
 finally
@@ -338,11 +339,76 @@ static void TestFormAutoModes(string root)
     });
 }
 
+static void TestMainFormStates()
+{
+    RunSta(() =>
+    {
+        using var main = new MainForm();
+        main.Show();
+        Application.DoEvents();
+        var changeState = typeof(MainForm).GetMethod("CambiarEstado", BindingFlags.Instance | BindingFlags.NonPublic)!;
+
+        changeState.Invoke(main, new object[] { "Resource" });
+        Assert(!GetMain<ComboBox>(main, "directionCombo").Visible && !GetMain<TextBox>(main, "framesText").Visible,
+            "MainForm Recursos: oculta frames y selector direccional");
+        Assert(GetMain<Label>(main, "grhLabel").Text == "Crypt:" && GetMain<Label>(main, "bmpLabel").Text == "Tamaño:",
+            "MainForm Recursos: etiquetas VB6");
+        Assert(GetMain<Label>(main, "DescripcionAyuda").Visible && !GetMain<Button>(main, "deleteButton").Visible,
+            "MainForm Recursos: ayuda visible y borrado oculto");
+
+        changeState.Invoke(main, new object[] { "Body" });
+        Assert(GetMain<ComboBox>(main, "directionCombo").Visible && !GetMain<TextBox>(main, "framesText").Visible,
+            "MainForm Body: selector visible y frames oculto");
+        Assert(GetMain<TextBox>(main, "speedText").Visible && !GetMain<TextBox>(main, "yText").Visible,
+            "MainForm Body: offset visible y posición Y oculta");
+
+        var directional = GetMainList<DirectionalIndexRecord>(main, "_directionalRecords");
+        directional.Clear();
+        directional.Add(new DirectionalIndexRecord { Id = 7, Directions = new[] { 10, 11, 12, 13 }, OffsetX = 3, OffsetY = 4 });
+        InvokeMain(main, "RefreshDirectionalList");
+        GetMain<ListBox>(main, "indexList").SelectedIndex = 0;
+        Assert(GetMain<TextBox>(main, "bmpText").Text == "10" && GetMain<TextBox>(main, "heightText").Text == "11"
+            && GetMain<TextBox>(main, "widthText").Text == "12" && GetMain<TextBox>(main, "speedText").Text == "13"
+            && GetMain<TextBox>(main, "xText").Text == "4º3",
+            "MainForm Body: ClickEnLista conserva el mapeo VB6 de direcciones y offset");
+
+        changeState.Invoke(main, new object[] { "Cabezas" });
+        Assert(GetMain<Label>(main, "grhLabel").Text == "Cabezas:" && !GetMain<TextBox>(main, "xText").Visible,
+            "MainForm Cabezas: etiquetas y campos exactos");
+
+        changeState.Invoke(main, new object[] { "Fx" });
+        Assert(GetMain<Label>(main, "heightLabel").Text == "Offset:" && !GetMain<TextBox>(main, "framesText").Visible,
+            "MainForm FX: offset en TextDatos(2)");
+        main.Close();
+    });
+}
+
 static T Get<T>(Form form, string name) where T : Control
 {
     var field = typeof(FormAuto).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)
         ?? throw new InvalidOperationException($"Fallo: no existe el control {name}.");
     return (T)(field.GetValue(form) ?? throw new InvalidOperationException($"Fallo: control {name} no inicializado."));
+}
+
+static T GetMain<T>(MainForm form, string name) where T : Control
+{
+    var field = typeof(MainForm).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)
+        ?? throw new InvalidOperationException($"Fallo: no existe el control MainForm.{name}.");
+    return (T)(field.GetValue(form) ?? throw new InvalidOperationException($"Fallo: control MainForm.{name} no inicializado."));
+}
+
+static List<T> GetMainList<T>(MainForm form, string name)
+{
+    var field = typeof(MainForm).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)
+        ?? throw new InvalidOperationException($"Fallo: no existe la lista MainForm.{name}.");
+    return (List<T>)(field.GetValue(form) ?? throw new InvalidOperationException($"Fallo: lista MainForm.{name} no inicializada."));
+}
+
+static void InvokeMain(MainForm form, string name)
+{
+    var method = typeof(MainForm).GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic)
+        ?? throw new InvalidOperationException($"Fallo: no existe MainForm.{name}.");
+    method.Invoke(form, null);
 }
 
 static void RunSta(Action action)

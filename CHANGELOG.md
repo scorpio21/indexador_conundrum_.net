@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.0.58-beta] - 2026-10-28
+
+### Paridad de MainForm — Issue #11
+
+- `CambiarEstado` reproduce los estados VB6 con visibilidad, etiquetas, colores, `Enabled`, ayuda y controles de guardado/borrado.
+- `ClickEnLista` muestra los cuatro GRH direccionales y los offsets en el mismo orden que `GetInfoDataIndex`; recursos y FX usan los campos equivalentes de `GetInfoBmp` y del índice FX.
+- `ComprobarIndexLista` conserva la selección por estado y `BuscarNuevoF` permite localizar o crear en memoria GRH, recursos, índices direccionales y FX.
+- Se añadió la navegación equivalente mediante doble clic en los campos de datos.
+- Se verificaron menús, submenús, accesos rápidos y confirmaciones del flujo principal.
+- Build Release y pruebas WinForms STA verificadas: 0 advertencias y 0 errores.
+
 ## [0.0.57-beta] - 2026-10-28
 
 ### Regresión completa de controles — Issue #14

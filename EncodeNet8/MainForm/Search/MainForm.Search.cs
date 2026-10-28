@@ -79,14 +79,16 @@ public partial class MainForm : Form
                     Frames = new List<int> { fileNumber }
                 };
                 grhText.Text = fileNumber.ToString();
-                bmpText.Text = fileNumber.ToString();
+                bmpText.Text = new FileInfo(bitmapPath).Length.ToString();
                 frameText.Text = string.Empty;
-                framesText.Text = "1";
+                framesText.Text = string.Empty;
                 heightText.Text = bitmap.Height.ToString();
                 widthText.Text = bitmap.Width.ToString();
-                speedText.Text = string.Empty;
-                xText.Text = "0";
-                yText.Text = "0";
+                speedText.Text = Image.GetPixelFormatSize(bitmap.PixelFormat).ToString();
+                xText.Text = "BMP";
+                yText.Clear();
+                tileHeightText.Clear();
+                tileWidthText.Clear();
                 SetUsageCount(0);
                 previewPanel.Invalidate();
                 statusLabel.Text = $"BMP {fileNumber} seleccionado (recurso sin indexar).";

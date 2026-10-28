@@ -552,15 +552,11 @@ public partial class MainForm : Form
     
             private void NewOrGoToIndex()
         {
-            if (!_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase) || _file is null)
-            {
-                SetUtilError("Nuevo/Ir A está implementado actualmente para Gráficos.");
-                return;
-            }
-    
             var value = Microsoft.VisualBasic.Interaction.InputBox(
-                "Introduzca el número de GRH (0 para encontrar el primer hueco libre).",
-                "Nuevo gráfico / Ir a", "0");
+                _indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase)
+                    ? "Introduzca el número de GRH (0 para encontrar el primer hueco libre)."
+                    : $"Introduzca el número de {StateCaption(_indexerState)}.",
+                _indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase) ? "Nuevo gráfico / Ir a" : $"Ir a {StateCaption(_indexerState)}", "0");
             if (string.IsNullOrWhiteSpace(value)) return;
             if (!int.TryParse(value, out var requestedId) || requestedId < 0 || requestedId > ParseInt(maxGrhText.Text))
             {
@@ -568,6 +564,24 @@ public partial class MainForm : Form
                 return;
             }
     
+            if (!_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase))
+            {
+                if (requestedId <= 0)
+                {
+                    SetUtilError("Introduzca un número de índice válido.");
+                    return;
+                }
+
+                BuscarNuevoF(requestedId);
+                return;
+            }
+
+            if (_file is null)
+            {
+                SetUtilError("Abre primero un Graficos.ind.");
+                return;
+            }
+
             var targetId = requestedId == 0 ? FindFirstFreeGrhId() : requestedId;
             if (targetId <= 0)
             {
@@ -599,6 +613,127 @@ public partial class MainForm : Form
             SelectGrhById(targetId);
             ClearUtilError();
             statusLabel.Text = $"GRH {targetId} creado en memoria. Completa sus datos y guarda el índice.";
+        }
+
+        private void BuscarNuevoF(int index)
+        {
+            if (index <= 0 || index > ParseInt(maxGrhText.Text))
+            {
+                SetUtilError("Valor no válido.");
+                return;
+            }
+
+            if (_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase))
+            {
+                SelectGrhById(index);
+                if (indexList.SelectedIndex >= 0)
+                {
+                    ClickEnLista();
+                    return;
+                }
+
+                if (_file is null)
+                {
+                    SetUtilError("Abre primero un Graficos.ind.");
+                    return;
+                }
+
+                if (MessageBox.Show(this, $"El GRH {index} no existe. ¿Quieres crearlo?", "Aviso", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                    return;
+
+                _file.Records.Add(new GrhRecord { Id = index, FileNumber = 1, Width = 32, Height = 32, Frames = new List<int> { index } });
+                RebuildReferenceCounts();
+                RefreshGrid();
+                SelectGrhById(index);
+                ClickEnLista();
+                statusLabel.Text = $"GRH {index} creado en memoria. Completa sus datos y guarda el índice.";
+                return;
+            }
+
+            if (_indexerState.Equals("Resource", StringComparison.OrdinalIgnoreCase))
+            {
+                for (var i = 0; i < indexList.Items.Count; i++)
+                {
+                    if (!string.Equals(indexList.Items[i]?.ToString(), index.ToString(), StringComparison.OrdinalIgnoreCase)) continue;
+                    indexList.SelectedIndex = i;
+                    ClickEnLista();
+                    return;
+                }
+
+                SetUtilError("BMP no existe.");
+                return;
+            }
+
+            if (_indexerState.Equals("Fx", StringComparison.OrdinalIgnoreCase))
+            {
+                var fx = _fxRecords.FirstOrDefault(item => item.Id == index);
+                if (fx is null)
+                {
+                    if (MessageBox.Show(this, $"El FX {index} no existe. ¿Quieres crearlo?", "Aviso", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                        return;
+                    fx = new FxIndexRecord { Id = index, Animation = 0, OffsetX = 0, OffsetY = 0 };
+                    _fxRecords.Add(fx);
+                    RefreshFxList();
+                }
+
+                SelectListItem(index);
+                ClickEnLista();
+                statusLabel.Text = $"FX {index} seleccionado.";
+                return;
+            }
+
+            var directional = _directionalRecords.FirstOrDefault(item => item.Id == index);
+            if (directional is null)
+            {
+                var caption = StateCaption(_indexerState);
+                if (MessageBox.Show(this, $"El {caption} {index} no existe. ¿Quieres crearlo?", "Aviso", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                    return;
+
+                directional = new DirectionalIndexRecord { Id = index, Directions = new int[4], OffsetX = 0, OffsetY = 0 };
+                AddDirectionalPending(_indexerState, directional);
+                RebuildReferenceCounts();
+                if (_indexerState.Equals("Body", StringComparison.OrdinalIgnoreCase)) RefreshBodyList();
+                else RefreshDirectionalList();
+            }
+
+            SelectListItem(index);
+            ClickEnLista();
+            statusLabel.Text = $"{StateCaption(_indexerState)} {index} seleccionado.";
+        }
+
+        private void AddDirectionalPending(string state, DirectionalIndexRecord record)
+        {
+            if (!_pendingDirectionalRecords.TryGetValue(state, out var pending))
+                _pendingDirectionalRecords[state] = pending = new List<DirectionalIndexRecord>();
+            pending.RemoveAll(item => item.Id == record.Id);
+            pending.Add(record);
+            _directionalRecords.RemoveAll(item => item.Id == record.Id);
+            _directionalRecords.Add(record);
+
+            if (state.Equals("Body", StringComparison.OrdinalIgnoreCase))
+            {
+                _bodyRecords.RemoveAll(item => item.Id == record.Id);
+                _bodyRecords.Add(new BodyIndexRecord
+                {
+                    Id = record.Id,
+                    Walk1 = record.Directions[0],
+                    Walk2 = record.Directions[1],
+                    Walk3 = record.Directions[2],
+                    Walk4 = record.Directions[3],
+                    HeadOffsetX = record.OffsetX,
+                    HeadOffsetY = record.OffsetY
+                });
+            }
+        }
+
+        private void SelectListItem(int id)
+        {
+            for (var i = 0; i < indexList.Items.Count; i++)
+            {
+                if (!string.Equals(indexList.Items[i]?.ToString(), id.ToString(), StringComparison.OrdinalIgnoreCase)) continue;
+                indexList.SelectedIndex = i;
+                return;
+            }
         }
     
             private int FindFirstFreeGrhId()

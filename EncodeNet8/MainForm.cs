@@ -42,6 +42,8 @@ public partial class MainForm : Form
         _drawTimer.Tick += drawTimer_Tick;
         FormClosed += (_, _) => DisposeBitmapCache();
         ConfigureIcons();
+        foreach (var box in new[] { bmpText, framesText, heightText, widthText, speedText, xText, yText, tileHeightText, tileWidthText })
+            box.DoubleClick += textData_DoubleClick;
         indsText.Text = _settings.InitPath;
         graphicsText.Text = _settings.GraphicsPath;
         formatCombo.SelectedIndex = 0;

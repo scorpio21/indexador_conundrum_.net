@@ -12,7 +12,7 @@ Ya están migrados la ventana principal, estados básicos, lectura Integer/Long,
 
 | VB6 | Destino C# | Cobertura | Falta |
 |---|---|---:|---|
-| `frmMain.frm` | `MainForm.cs` + `MainForm/` | **82 %** | Estados, visibilidad, colores, menús y eventos. |
+| `frmMain.frm` | `MainForm.cs` + `MainForm/` | **100 %** | Paridad de estados, selección, datos, preview y `BuscarNuevoF` verificada en el alcance del issue #11. |
 | `formAuto.frm` | `FormAuto.cs` + diseñador | **100 %** | Eventos, modos, validaciones, cálculos, plantillas, previsualización, recursos, enlaces direccionales y round-trip de guardado verificados frente al flujo del formulario VB6. |
 | `Mod_Graficos.bas` | `GraficosIndFile.cs` + `GrhModels.cs` | **84 %** | Casos límite, referencias y escritura idéntica. |
 | `Mod_Recursos.bas` | `ResourceIndexing.cs` | **65 %** | BMP no indexados, búsqueda y mensajes. |
@@ -27,13 +27,13 @@ Ya están migrados la ventana principal, estados básicos, lectura Integer/Long,
 
 ## Pendientes detallados
 
-### MainForm — **82 %**
+### MainForm — **100 %**
 
-- `CambiarEstado` y todos los estados: **70 %**.
-- Visibilidad, textos, colores y controles: **60 %**.
-- `ComprobarIndexLista`, `ClickEnLista`, `BuscarNuevoF`: **65 %**.
-- Menús, submenús y accesos rápidos: **55 %**.
-- Confirmaciones de sobrescritura y mensajes: **50 %**.
+- `CambiarEstado` y todos los estados: **100 %** — campos, etiquetas, `Enabled`, colores, ayudas, selector direccional y controles de borrado/guardado.
+- Visibilidad, textos, colores y controles: **100 %** — incluidos `Resource`, `Fx`, Body/Alas y los índices direccionales.
+- `ComprobarIndexLista`, `ClickEnLista`, `BuscarNuevoF`: **100 %** — selección recordada, datos direccionales, recursos, FX, GRH y creación en memoria.
+- Menús, submenús y accesos rápidos: **100 %** — Archivo, Edición, Herramientas, Índice de guardado, Indexar Superficies y Ayuda.
+- Confirmaciones de sobrescritura y mensajes: **100 %** en las operaciones cubiertas por MainForm.
 
 ### FormAuto — **100 %**
 
@@ -109,7 +109,7 @@ Falta validar en cada tipo las cuatro direcciones, offsets, GRH utilizados y esc
 
 ## Ruta de trabajo pendiente
 
-1. Completar `MainForm` y `CambiarEstado`: objetivo **90 %**.
+1. ~~Completar `MainForm` y `CambiarEstado`~~ — **100 %**, issue **#11** cerrado.
 2. Comparar el autoindexador con VB6: objetivo **90 %**.
 3. Completar índices direccionales: objetivo **85 %**.
 4. Terminar recursos, visor y errores: objetivo **90 %**.
@@ -125,7 +125,7 @@ dotnet build .\\EncodeNet8.slnx -c Release
 dotnet run --project .\\EncodeNet8.Tests\\EncodeNet8.Tests.csproj -c Release
 ```
 
-Última versión documentada: **0.0.47-beta**.
+Última versión documentada: **0.0.58-beta**.
 
 ## Issues de seguimiento
 
