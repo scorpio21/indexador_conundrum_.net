@@ -144,6 +144,10 @@ public partial class MainForm : Form
                 SetUtilError("Carga primero Graficos.ind para autoindexar.");
                 return;
             }
+
+            // Equivalente a Form_Load de formAuto.frm: el visor pasa a
+            // Recursos desde la apertura del autoindexador.
+            CambiarEstado("Resource");
     
             using var dialog = new FormAuto(
                 ResolvePath(_settings.GraphicsPath),

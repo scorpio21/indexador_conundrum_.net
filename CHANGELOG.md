@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.56-beta] - 2026-10-28
+
+### Ciclo de vida — Issue #14
+
+- Al abrir el Autoindexador, `MainForm` cambia inmediatamente a `Resource`, igual que `Form_Load` del VB6.
+- Se mantiene la previsualización activa durante la edición y se limpia al cerrar el diálogo.
+- Build Release y pruebas verificadas: 0 errores y 0 advertencias.
+
 ## [0.0.55-beta] - 2026-10-28
 
 ### Paridad de previsualización — Issue #14
