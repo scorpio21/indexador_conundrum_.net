@@ -81,6 +81,7 @@ try
     TestAdditionalReaders(root);
     TestAutoIndexer(root);
     TestFormAutoModes(root);
+    TestWeIndexFile(root);
     TestMainFormStates();
     Console.WriteLine("Graficos.ind, lectores direccionales y adicionales: Integer/Long OK; truncado rechazado.");
 }
@@ -448,6 +449,18 @@ static void TestMainFormStates()
         Directory.Delete(graphicsPath, true);
         main.Close();
     });
+}
+
+static void TestWeIndexFile(string root)
+{
+    var path = Path.Combine(root, "Indices.ini");
+    var first = WeIndexFile.Append(path, "Terreno", 115, 32, 32);
+    var second = WeIndexFile.Append(path, "Agua", 116, 64, 32);
+    var content = File.ReadAllText(path);
+    Assert(first == 1 && second == 2 && content.Contains("Referencias=2")
+        && content.Contains("[REFERENCIA1]") && content.Contains("GrhIndice=115")
+        && content.Contains("[REFERENCIA2]") && content.Contains("GrhIndice=116"),
+        "WE: genera y añade referencias compatibles en Indices.ini");
 }
 
 static T Get<T>(Form form, string name) where T : Control

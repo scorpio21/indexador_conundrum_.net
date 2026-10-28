@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.0.64-beta] - 2026-10-28
+
+### Herramientas y superficies — Issue #7
+
+- Se conectó `Generar índices para WE` a la selección actual del visor.
+- Se implementó la escritura compatible de `Indices.ini`, con `INIT/Referencias` y secciones consecutivas `REFERENCIA<n>`.
+- Las referencias existentes se conservan y se solicita confirmación antes de modificar un archivo ya creado.
+- Se añadió una prueba de round-trip que genera dos superficies consecutivas.
+- Las búsquedas por BMP, BMP sin indexar, repetidos y el autoindexador quedan documentados como operativos en esta fase.
+- Build Release y pruebas verificadas: 0 advertencias y 0 errores.
+
 ## [0.0.63-beta] - 2026-10-28
 
 ### Edición y guardado — Issue #6

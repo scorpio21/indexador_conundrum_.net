@@ -14,7 +14,7 @@ public partial class MainForm : Form
         private void buscarSiguienteMenu_Click(object? sender, EventArgs e) => SearchNext();
         private void autoindexadorMenu_Click(object? sender, EventArgs e) => OpenAutoIndexer();
         private void repetidosMenu_Click(object? sender, EventArgs e) => SearchRepeatedGrh();
-        private void generarWeMenu_Click(object? sender, EventArgs e) => ShowPending("Generar índices para WE");
+        private void generarWeMenu_Click(object? sender, EventArgs e) => GenerateWeIndex();
         private void acercaMenu_Click(object? sender, EventArgs e) => MessageBox.Show(this, "AOSpain - Indexador de gráficos .NET 8\nBasado en Encode.frm de Conundrum.", "Ayuda");
         private void SetUsageCount(int count) => usageStatusLabel.Text = $"Veces que el GRH es utilizado: {count}";
     
@@ -40,6 +40,42 @@ public partial class MainForm : Form
         }
     
             private void ShowPending(string action) => MessageBox.Show(this, $"La acción «{action}» está preparada en el menú y se conectará al módulo correspondiente.", "AOSpain");
+
+        private void GenerateWeIndex()
+        {
+            if (_file is null || _selectedRecord is null)
+            {
+                SetUtilError("Selecciona primero un GRH para generar su índice WE.");
+                return;
+            }
+
+            var name = Microsoft.VisualBasic.Interaction.InputBox(
+                "Nombre de la superficie:", "Generar índices para WE", "Superficie").Trim();
+            if (string.IsNullOrWhiteSpace(name)) return;
+
+            var path = Path.Combine(ResolvePath(_settings.InitPath), "Indices.ini");
+            if (File.Exists(path))
+            {
+                var answer = MessageBox.Show(this,
+                    $"El archivo ya existe:\n{path}\n¿Deseas añadir la referencia sin sobrescribir sus datos?",
+                    "Generar índices para WE", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (answer != DialogResult.Yes) return;
+            }
+
+            try
+            {
+                var frame = _file.Records.FirstOrDefault(record => record.Id == _selectedRecord.Frames.FirstOrDefault()) ?? _selectedRecord;
+                var reference = WeIndexFile.Append(path, name, _selectedRecord.Id,
+                    frame.Height > 0 ? frame.Height : _selectedRecord.Height,
+                    frame.Width > 0 ? frame.Width : _selectedRecord.Width);
+                statusLabel.Text = $"Índice WE {reference} generado en {path}.";
+                SetUtilError(null);
+            }
+            catch (Exception ex)
+            {
+                SetUtilError($"No se pudo generar el índice WE: {ex.Message}");
+            }
+        }
     
             private void SetUtilError(string? message)
         {

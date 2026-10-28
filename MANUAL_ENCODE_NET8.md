@@ -18,7 +18,7 @@ Ya están migrados la ventana principal, estados básicos, lectura Integer/Long,
 | `Mod_Recursos.bas` | `MainForm/Search/MainForm.Search.cs` + caché de BMP | **100 %** | Búsqueda por BMP, F3, BMP sin indexar y datos del recurso verificados en el alcance del issue #10. |
 | `Mod_Directorios.bas` | `SettingsForm.cs` + JSON | **90 %** | Rutas relativas y valores iniciales. |
 | `Mod_Indices.bas` | `DirectionalIndexing.cs` | **55 %** | Bodies, cabezas, cascos, alas, capas, botas, armas, escudos y FX. |
-| `Mod_Superficies.bas` | Pendiente | **10 %** | Formulario, lectura y generación para WE. |
+| `Mod_Superficies.bas` | `WeIndexFile.cs` + `MainForm` | **100 %** | Generación de `Indices.ini` para WE, referencias consecutivas y confirmación de modificación verificados en el issue #7. |
 | `Mod_Edicion.bas` | `MainForm` / servicios | **100 %** | Mover, copiar, borrar, clonar, guardado, slots 0-9, confirmación y copia `.bak` verificados en el issue #6. |
 | `Mod_Visor.bas` | `BufferedPreviewPanel.cs` + `MainForm/Rendering/` | **100 %** | Temporización VB6, caché, escalado, transparencia, animación y refresco verificados en el alcance del issue #13. |
 | `Mod_Errores.bas` | `MainForm/IO/MainForm.Saving.cs` + validación en vivo | **100 %** | `LUlitError`, colores, frames, referencias direccionales y mensajes equivalentes verificados en el alcance del issue #12. |
@@ -99,6 +99,14 @@ Falta validar en cada tipo las cuatro direcciones, offsets, GRH utilizados y esc
 - Índice guardado: **100 %** — los slots 0 a 9 generan sus rutas y se pueden volver a seleccionar.
 - Recuperación: **100 %** — antes de sobrescribir un archivo existente se conserva una copia `<archivo>.bak`.
 
+### Herramientas y superficies — **100 %**
+
+- Buscar GRH con BMP: **100 %** — lista de coincidencias y navegación F3.
+- Buscar BMP sin indexar: **100 %** — cambia al estado Resource y muestra los BMP numéricos no utilizados.
+- Buscar GRH repetidos: **100 %** — agrupa recortes equivalentes y actualiza la lista del visor.
+- Autoindexador: **100 %** — modos normal, avanzado, offset y simple conectados a `MainForm`.
+- Generar índices para WE: **100 %** — añade `REFERENCIA<n>` a `Indices.ini`, actualiza `INIT/Referencias` y solicita confirmación si el archivo ya existe.
+
 ## Criterio de finalización
 
 | Objetivo | Cobertura actual |
@@ -110,7 +118,7 @@ Falta validar en cada tipo las cuatro direcciones, offsets, GRH utilizados y esc
 | Integer/Long sin pérdida | **84 %** |
 | Animaciones iguales en frames, tamaño y offsets | **100 %** |
 | Errores equivalentes | **100 %** |
-| `Indexar Superficies` completo | **10 %** |
+| `Indexar Superficies` completo | **100 %** en generación de `Indices.ini` para WE |
 | Release sin errores ni advertencias | **100 %** |
 | Regresión con recursos reales y fixtures de visor | **100 %** en el alcance del issue #13 |
 
@@ -135,7 +143,7 @@ dotnet build .\\EncodeNet8.slnx -c Release
 dotnet run --project .\\EncodeNet8.Tests\\EncodeNet8.Tests.csproj -c Release
 ```
 
-Última versión documentada: **0.0.63-beta**.
+Última versión documentada: **0.0.64-beta**.
 
 ## Issues de seguimiento
 
@@ -146,4 +154,5 @@ dotnet run --project .\\EncodeNet8.Tests\\EncodeNet8.Tests.csproj -c Release
 - ~~**#5**~~ — [Fase 5: completar visor, referencias y animaciones](https://github.com/scorpio21/indexador_conundrum_.net/issues/5) — cerrado.
 - ~~**#14**~~ — [Completar paridad funcional de FormAuto con formAuto.frm](https://github.com/scorpio21/indexador_conundrum_.net/issues/14) — cerrado.
 - ~~**#6**~~ — [Fase 6: completar edición y guardado](https://github.com/scorpio21/indexador_conundrum_.net/issues/6) — cerrado.
+- ~~**#7**~~ — [Fase 7: migrar búsquedas, superficies y autoindexador](https://github.com/scorpio21/indexador_conundrum_.net/issues/7) — cerrado.
 
