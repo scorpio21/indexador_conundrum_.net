@@ -16,6 +16,8 @@ public partial class FormAuto : Form
     public int GeneratedDirectionalKind { get; private set; } = -1;
     public bool OverwriteExisting { get; private set; }
     public event EventHandler? PreviewChanged;
+    public event Action<int>? ResourcePreviewChanged;
+    private int _lastResourcePreviewBmp;
 
     public FormAuto() : this(string.Empty, int.MaxValue, Array.Empty<int>(), Array.Empty<int>()) { }
 
@@ -385,12 +387,23 @@ public partial class FormAuto : Form
 
     private void ValidateSimpleInputs()
     {
-        if (int.TryParse(textBoxBmp.Text, out var bmp) && bmp > 0 && TryGetBitmap(bmp, out var bitmap))
+        Bitmap? bitmap = null;
+        var validBitmap = int.TryParse(textBoxBmp.Text, out var bmp) && bmp > 0 && TryGetBitmap(bmp, out bitmap);
+        if (validBitmap && bitmap is not null)
         {
             bitmap.Dispose();
             textBoxBmp.BackColor = SystemColors.Window;
+            if (groupBox1.Visible && bmp != _lastResourcePreviewBmp)
+            {
+                _lastResourcePreviewBmp = bmp;
+                ResourcePreviewChanged?.Invoke(bmp);
+            }
         }
-        else textBoxBmp.BackColor = Color.Red;
+        else
+        {
+            textBoxBmp.BackColor = Color.Red;
+            _lastResourcePreviewBmp = 0;
+        }
 
         if (int.TryParse(textBoxGrh.Text, out var id) && id > 0 && id <= _maxGrh)
             textBoxGrh.BackColor = HasFreeIndexes(id, 1) ? SystemColors.Window : Color.Yellow;

@@ -296,7 +296,10 @@ static void TestFormAutoModes(string root)
         simple.Show();
         Application.DoEvents();
         Get<Button>(simple, "ISimple").PerformClick();
+        var resourcePreviewBmp = 0;
+        simple.ResourcePreviewChanged += bmp => resourcePreviewBmp = bmp;
         Get<TextBox>(simple, "textBoxBmp").Text = "700";
+        Assert(resourcePreviewBmp == 700, "FormAuto simple: aviso de recurso para MainForm");
         Get<TextBox>(simple, "textBoxGrh").Text = "1";
         Get<Button>(simple, "BtnIndexar").PerformClick();
         var simpleRecords = simple.GeneratedRecords ?? throw new InvalidOperationException("Fallo: FormAuto no generó el índice simple.");

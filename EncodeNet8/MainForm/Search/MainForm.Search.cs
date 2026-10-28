@@ -151,6 +151,7 @@ public partial class MainForm : Form
                 _file.Records.Select(record => record.Id),
                 _directionalRecords.Select(record => record.Id).Concat(_bodyRecords.Select(record => record.Id)));
             dialog.PreviewChanged += AutoIndexerPreviewChanged;
+            dialog.ResourcePreviewChanged += AutoIndexerResourcePreviewChanged;
             try
             {
                 if (dialog.ShowDialog(this) != DialogResult.OK || dialog.GeneratedRecords is null) return;
@@ -158,6 +159,7 @@ public partial class MainForm : Form
             finally
             {
                 dialog.PreviewChanged -= AutoIndexerPreviewChanged;
+                dialog.ResourcePreviewChanged -= AutoIndexerResourcePreviewChanged;
                 _autoPreviewRecords = null;
                 previewPanel.Invalidate();
             }
@@ -191,6 +193,17 @@ public partial class MainForm : Form
             // propietario mientras el diálogo sigue abierto, igual que el
             // Timer Dibujado del formulario VB6.
             previewPanel.Refresh();
+        }
+
+        private void AutoIndexerResourcePreviewChanged(int fileNumber)
+        {
+            CambiarEstado("Resource");
+            _resourceSearchMode = true;
+            _searchResults = new List<int> { fileNumber };
+            indexList.Items.Clear();
+            indexList.Items.Add(fileNumber);
+            indexList.SelectedIndex = 0;
+            ClickResourceSearchItem();
         }
 
         private void ApplyGeneratedDirectionalIndex(DirectionalIndexRecord generated, int generatedKind)

@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.0.54-beta] - 2026-10-28
+
+### Recursos — Issue #14
+
+- El modo `Indexación simple` notifica a `MainForm` cuando se introduce un BMP válido.
+- `MainForm` cambia al estado `Resource`, actualiza la lista y muestra el BMP como recurso sin indexar, igual que `TextDatos3_Change` y `CrearIndexacion(3)` del VB6.
+- Se añadió una prueba que verifica el aviso de recurso y la indexación simple.
+- Build Release y pruebas verificadas: 0 errores y 0 advertencias.
+
 ## [0.0.53-beta] - 2026-10-28
 
 ### Integración y guardado — Issue #14
