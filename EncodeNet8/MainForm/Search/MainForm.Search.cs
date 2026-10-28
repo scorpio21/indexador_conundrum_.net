@@ -148,7 +148,8 @@ public partial class MainForm : Form
             using var dialog = new FormAuto(
                 ResolvePath(_settings.GraphicsPath),
                 ParseInt(maxGrhText.Text),
-                _file.Records.Select(record => record.Id));
+                _file.Records.Select(record => record.Id),
+                _directionalRecords.Select(record => record.Id).Concat(_bodyRecords.Select(record => record.Id)));
             if (dialog.ShowDialog(this) != DialogResult.OK || dialog.GeneratedRecords is null) return;
             try
             {

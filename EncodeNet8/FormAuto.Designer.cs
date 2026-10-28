@@ -500,7 +500,7 @@
             Optiondimension_1.Size = new Size(96, 19);
             Optiondimension_1.TabIndex = 27;
             Optiondimension_1.TabStop = true;
-            Optiondimension_1.Text = "Nomal (NPC)";
+            Optiondimension_1.Text = "Normal (NPC)";
             Optiondimension_1.UseVisualStyleBackColor = true;
             // 
             // Optiondimension_0

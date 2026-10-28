@@ -7,6 +7,7 @@ public partial class FormAuto : Form
     private readonly string _graphicsFolder;
     private readonly int _maxGrh;
     private readonly HashSet<int> _usedGrh;
+    private readonly HashSet<int> _usedDirectional;
     private bool _updatingInputs;
 
     public IReadOnlyList<GrhRecord>? GeneratedRecords { get; private set; }
@@ -14,13 +15,14 @@ public partial class FormAuto : Form
     public int GeneratedDirectionalKind { get; private set; } = -1;
     public bool OverwriteExisting { get; private set; }
 
-    public FormAuto() : this(string.Empty, int.MaxValue, Array.Empty<int>()) { }
+    public FormAuto() : this(string.Empty, int.MaxValue, Array.Empty<int>(), Array.Empty<int>()) { }
 
-    public FormAuto(string graphicsFolder, int maxGrh, IEnumerable<int>? usedGrh = null)
+    public FormAuto(string graphicsFolder, int maxGrh, IEnumerable<int>? usedGrh = null, IEnumerable<int>? usedDirectional = null)
     {
         _graphicsFolder = graphicsFolder;
         _maxGrh = maxGrh > 0 ? maxGrh : int.MaxValue;
         _usedGrh = usedGrh?.ToHashSet() ?? new HashSet<int>();
+        _usedDirectional = usedDirectional?.ToHashSet() ?? new HashSet<int>();
 
         InitializeComponent();
     }
@@ -91,7 +93,7 @@ public partial class FormAuto : Form
         combo2.Items.AddRange(new object[] { "Body", "Arma", "Escudo", "Alas", "Espalda", "Botas" });
         combo2.SelectedIndex = 0;
         text1.Text = "280";
-        Text2.Text = "-38";
+        Text2.Text = "-38º0";
         checkAuto.Checked = false;
         Optiondimension_0.Checked = true;
 
@@ -168,7 +170,7 @@ public partial class FormAuto : Form
             textBox5.Text = "46";
             textBox6.Text = "26";
             text1.Text = "280";
-            Text2.Text = "-38";
+            Text2.Text = "-38º0";
             checkAuto.Checked = false;
             if (combo2.Items.Count > 0)
                 combo2.SelectedIndex = 0;
@@ -226,7 +228,7 @@ public partial class FormAuto : Form
             ComboTipoAnim.Enabled = false;
             ComboTipoAnim.SelectedIndex = 0;
             textDatos2_1.Text = "4";
-            Text2.Text = "0";
+            Text2.Text = "0º0";
         }
         else if (Optiondimension_2.Checked)
         {
@@ -236,7 +238,7 @@ public partial class FormAuto : Form
             textBox5.Enabled = false;
             textBox6.Enabled = false;
             ComboTipoAnim.Enabled = true;
-            Text2.Text = "-38";
+            Text2.Text = "-38º0";
             textDatos2_0.Text = "6";
             textDatos2_1.Text = "4";
             textDatos2_3.Text = "22";
@@ -356,7 +358,7 @@ public partial class FormAuto : Form
 
     private void ValidateAdvancedBodyIndex()
     {
-        if (int.TryParse(text1.Text, out var value) && value > 0 && value <= _maxGrh)
+        if (int.TryParse(text1.Text, out var value) && value > 0 && value <= _maxGrh && !_usedDirectional.Contains(value))
             text1.BackColor = SystemColors.Window;
         else
             text1.BackColor = Color.Red;
@@ -529,6 +531,11 @@ public partial class FormAuto : Form
                 var bodyId = Parse(text1, 0);
                 if (bodyId <= 0 || bodyId > _maxGrh)
                     throw new InvalidDataException("El índice de autoindexación no es válido.");
+                if (_usedDirectional.Contains(bodyId))
+                {
+                    var response = MessageBox.Show(this, $"El índice {bodyId} ya existe, ¿deseas sobrescribirlo?", "Aviso", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (response != DialogResult.Yes) return;
+                }
                 var animationIds = GeneratedRecords.Skip(total).Take(4).Select(record => record.Id).ToArray();
                 var offsetParts = ParseOffset(Text2.Text);
                 GeneratedDirectionalIndex = new DirectionalIndexRecord
