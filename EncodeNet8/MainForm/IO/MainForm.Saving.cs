@@ -65,9 +65,16 @@ public partial class MainForm : Form
             var frames = ParseFrameIds(frameText.Text, _selectedRecord.Id);
             var expectedFrames = int.TryParse(framesText.Text.Trim(), out var parsedFrames) ? parsedFrames : 0;
             var frameCountError = expectedFrames <= 0 || expectedFrames != frames.Count;
-            if (expectedFrames > 1 && frames.Count != expectedFrames)
+            if (expectedFrames > 1 && frames.Count < expectedFrames)
             {
                 frames = frames.Concat(Enumerable.Repeat(0, expectedFrames - frames.Count)).Take(expectedFrames).ToList();
+            }
+            else if (expectedFrames > 1 && frames.Count > expectedFrames)
+            {
+                // ClickEnLista actualiza varios TextBox y TextChanged puede
+                // ejecutarse mientras aún queda la lista de frames anterior.
+                // Nunca se debe pasar una cantidad negativa a Enumerable.Repeat.
+                frames = frames.Take(expectedFrames).ToList();
             }
             var candidate = new GrhRecord
             {

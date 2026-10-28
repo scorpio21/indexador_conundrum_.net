@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.0.68-beta] - 2026-10-28
+
+### Corrección de validación de frames
+
+- Corregido `ArgumentOutOfRangeException` al seleccionar un GRH mientras `ClickEnLista` actualiza los TextBox.
+- La validación ya no solicita una cantidad negativa a `Enumerable.Repeat`; rellena solo frames faltantes y recorta de forma segura los sobrantes.
+- Añadida regresión WinForms para el caso de frames sobrantes.
+- Build Release y pruebas verificadas: 0 advertencias y 0 errores.
+
 ## [0.0.67-beta] - 2026-10-28
 
 ### Auditoría final del indexador

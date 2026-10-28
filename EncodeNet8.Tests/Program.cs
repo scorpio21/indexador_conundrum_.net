@@ -421,6 +421,13 @@ static void TestMainFormStates()
             "MainForm Validación: cantidad de frames incoherente en rojo");
         GetMain<TextBox>(main, "framesText").Text = "1";
 
+        GetMain<TextBox>(main, "frameText").Text = "1-2-3";
+        GetMain<TextBox>(main, "framesText").Text = "2";
+        Assert(GetMain<TextBox>(main, "framesText").BackColor == Color.Red,
+            "MainForm Validación: frames sobrantes no provocan excepción");
+        GetMain<TextBox>(main, "frameText").Text = "1";
+        GetMain<TextBox>(main, "framesText").Text = "1";
+
         var selectedField = typeof(MainForm).GetField("_selectedRecord", BindingFlags.Instance | BindingFlags.NonPublic)!;
         var advance = typeof(MainForm).GetMethod("AdvanceAnimationFrame", BindingFlags.Instance | BindingFlags.NonPublic)!;
         foreach (var frameCount in new[] { 4, 15, 25 })

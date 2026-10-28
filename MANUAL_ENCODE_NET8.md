@@ -145,7 +145,7 @@ dotnet build .\\EncodeNet8.slnx -c Release
 dotnet run --project .\\EncodeNet8.Tests\\EncodeNet8.Tests.csproj -c Release
 ```
 
-Última versión documentada: **0.0.67-beta**.
+Última versión documentada: **0.0.68-beta**.
 
 ## Issues de seguimiento
 
