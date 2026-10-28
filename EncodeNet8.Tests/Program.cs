@@ -247,7 +247,30 @@ static void TestFormAutoModes(string root)
         Assert(classic[0].X == 0 && classic[0].Y == 0 && classic[0].Frames.SequenceEqual(new[] { 1 }), "FormAuto clásico: primer frame VB6");
         Assert(classic[1].X == 25 && classic[6].Y == 45, "FormAuto clásico: posiciones VB6");
         Assert(classic[^4].Frames.Count == 6 && classic[^2].Frames.Count == 5, "FormAuto clásico: grupos direccionales");
+        var graphicsRoundtrip = Path.Combine(root, "FormAuto-Graficos.ind");
+        var graphicsFile = new GraficosIndFile();
+        graphicsFile.Records.AddRange(classic);
+        graphicsFile.Save(graphicsRoundtrip, GrhStorageFormat.LongIndexes);
+        var reopenedGraphics = GraficosIndFile.Load(graphicsRoundtrip, GrhStorageFormat.LongIndexes);
+        Assert(reopenedGraphics.Records.Count == 26 && reopenedGraphics.Records[^1].Frames.Count == 5, "FormAuto clásico: guardado de GRH");
         normal.Close();
+
+        using var body = new FormAuto(root, 1000);
+        body.Show();
+        Application.DoEvents();
+        Get<Button>(body, "Command4").PerformClick();
+        Get<TextBox>(body, "textBox7").Text = "700";
+        Get<TextBox>(body, "textBox4").Text = "1";
+        Get<CheckBox>(body, "checkAuto").Checked = true;
+        Get<TextBox>(body, "text1").Text = "900";
+        Get<Button>(body, "Command1").PerformClick();
+        var bodyIndex = body.GeneratedDirectionalIndex ?? throw new InvalidOperationException("Fallo: FormAuto no generó el enlace direccional.");
+        Assert(bodyIndex.Directions.SequenceEqual(new[] { 24, 26, 23, 25 }), "FormAuto Body: mapeo direccional VB6");
+        var bodyPath = Path.Combine(root, "Personajes-formAuto.ind");
+        DirectionalIndexFile.Save(bodyPath, new[] { bodyIndex }, GrhStorageFormat.LegacyInteger, includesOffsets: true);
+        var reopenedBody = DirectionalIndexFile.Load(bodyPath, GrhStorageFormat.LegacyInteger, includesOffsets: true);
+        Assert(reopenedBody.Count == 1 && reopenedBody[0].Directions.SequenceEqual(bodyIndex.Directions), "FormAuto Body: guardado direccional");
+        body.Close();
 
         using var offset = new FormAuto(root, 1000);
         offset.Show();

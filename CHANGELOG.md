@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.0.53-beta] - 2026-10-28
+
+### Integración y guardado — Issue #14
+
+- Se verificó la generación automática del enlace Body con el orden direccional VB6 `{24, 26, 23, 25}`.
+- Se verificó el guardado y la recarga de los 26 GRH generados en formato Long y del índice direccional `Personajes.ind` en formato Integer.
+- La prueba WinForms ahora cubre generación, integración de enlace y round-trip de archivos.
+- Build Release y pruebas verificadas: 0 errores y 0 advertencias.
+
 ## [0.0.52-beta] - 2026-10-28
 
 ### Pruebas — Issue #14
