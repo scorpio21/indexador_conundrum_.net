@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.0.66-beta] - 2026-10-28
+
+### Arquitectura del visor — Issue #9
+
+- Se documentó la sustitución controlada del visor DirectX7: el indexador mantiene GDI+ con doble búfer, caché de BMP y temporización WinForms.
+- Se documentaron las APIs necesarias, el límite entre preview del indexador y renderer del cliente, y la ruta futura mediante una interfaz aislada si GDI+ dejara de ser suficiente.
+- Se verificó que el código C# no contiene llamadas a `Microsoft.DirectX`, DirectDraw, Direct3D ni DX7.
+- Build Release y pruebas verificadas: 0 advertencias y 0 errores.
+
 ## [0.0.65-beta] - 2026-10-28
 
 ### Regresión y compatibilidad — Issue #8

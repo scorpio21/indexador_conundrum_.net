@@ -6,7 +6,7 @@
 
 **Cobertura global estimada: 74 %.**
 
-Ya están migrados la ventana principal, estados básicos, lectura Integer/Long, visor, rutas JSON, autoindexador, herramientas y regresión no destructiva. Mantiene pendientes el motor de superficies runtime y la sustitución controlada de DirectX7.
+Ya están migrados la ventana principal, estados básicos, lectura Integer/Long, visor GDI+, rutas JSON, autoindexador, herramientas y regresión no destructiva. Solo queda fuera del indexador el gestor de superficies runtime del cliente.
 
 ## Matriz de cobertura
 
@@ -20,9 +20,9 @@ Ya están migrados la ventana principal, estados básicos, lectura Integer/Long,
 | `Mod_Indices.bas` | `DirectionalIndexing.cs` + lectores adicionales | **100 %** en la regresión cubierta | Estados direccionales, offsets, FX, armas, escudos, alas, capas y botas verificados con Integer/Long o INI. |
 | `Mod_Superficies.bas` | `WeIndexFile.cs` + `MainForm` | **100 %** | Generación de `Indices.ini` para WE, referencias consecutivas y confirmación de modificación verificados en el issue #7. |
 | `Mod_Edicion.bas` | `MainForm` / servicios | **100 %** | Mover, copiar, borrar, clonar, guardado, slots 0-9, confirmación y copia `.bak` verificados en el issue #6. |
-| `Mod_Visor.bas` | `BufferedPreviewPanel.cs` + `MainForm/Rendering/` | **100 %** | Temporización VB6, caché, escalado, transparencia, animación y refresco verificados en el alcance del issue #13. |
+| `Mod_Visor.bas` | `BufferedPreviewPanel.cs` + `MainForm/Rendering/` | **100 %** | Temporización VB6, caché, escalado, transparencia, animación y refresco verificados; no se porta DirectX7. |
 | `Mod_Errores.bas` | `MainForm/IO/MainForm.Saving.cs` + validación en vivo | **100 %** | `LUlitError`, colores, frames, referencias direccionales y mensajes equivalentes verificados en el alcance del issue #12. |
-| `clsSurfaceManager.cls` | Pendiente | **0 %** | Gestión de superficies. |
+| `clsSurfaceManager.cls` | Fuera del alcance del indexador | **0 %** | Gestión de superficies runtime del cliente; no es necesaria para la preview GDI+. |
 | APIs Win32/temporizadores | C#/.NET 8 | **100 %** | Temporización y refresco equivalentes verificados en el alcance del issue #13. |
 
 ## Pendientes detallados
@@ -121,6 +121,7 @@ Falta validar en cada tipo las cuatro direcciones, offsets, GRH utilizados y esc
 | `Indexar Superficies` completo | **100 %** en generación de `Indices.ini` para WE |
 | Release sin errores ni advertencias | **100 %** |
 | Regresión con recursos reales y fixtures de visor | **100 %** en el alcance de los issues #5, #8 y #13 |
+| Sustitución controlada del visor DirectX7 | **100 %** | GDI+ documentado y sin llamadas DirectX7 en C#. |
 
 ## Ruta de trabajo pendiente
 
@@ -131,9 +132,10 @@ Falta validar en cada tipo las cuatro direcciones, offsets, GRH utilizados y esc
 5. Completar índices direccionales: objetivo **85 %**.
 6. ~~Terminar errores y `LUlitError`~~ — **100 %**, issue **#12** cerrado.
 7. ~~Completar visor, temporización y regresión~~ — **100 %**, issue **#13** cerrado.
-8. Implementar `Indexar Superficies`: objetivo **100 %**.
+8. ~~Implementar `Indexar Superficies`~~ — **100 %** en generación de `Indices.ini`, issue **#7** cerrado.
 9. ~~Ejecutar regresión Integer/Long~~ — **100 %** en fixtures no destructivos, issue **#8** cerrado.
-10. Publicar versión estable fuera de beta: objetivo **100 %**.
+10. ~~Definir sustitución controlada del visor DirectX7~~ — **100 %**, issue **#9** cerrado.
+11. Publicar versión estable fuera de beta: objetivo **100 %**.
 
 ## Verificación
 
@@ -143,7 +145,7 @@ dotnet build .\\EncodeNet8.slnx -c Release
 dotnet run --project .\\EncodeNet8.Tests\\EncodeNet8.Tests.csproj -c Release
 ```
 
-Última versión documentada: **0.0.65-beta**.
+Última versión documentada: **0.0.66-beta**.
 
 ## Issues de seguimiento
 
@@ -155,5 +157,6 @@ dotnet run --project .\\EncodeNet8.Tests\\EncodeNet8.Tests.csproj -c Release
 - ~~**#14**~~ — [Completar paridad funcional de FormAuto con formAuto.frm](https://github.com/scorpio21/indexador_conundrum_.net/issues/14) — cerrado.
 - ~~**#6**~~ — [Fase 6: completar edición y guardado](https://github.com/scorpio21/indexador_conundrum_.net/issues/6) — cerrado.
 - ~~**#7**~~ — [Fase 7: migrar búsquedas, superficies y autoindexador](https://github.com/scorpio21/indexador_conundrum_.net/issues/7) — cerrado.
+- ~~**#9**~~ — [Diseño: sustitución controlada del visor DirectX 7](https://github.com/scorpio21/indexador_conundrum_.net/issues/9) — cerrado.
 - ~~**#8**~~ — [Fase 8: pruebas de regresión y compatibilidad con archivos reales](https://github.com/scorpio21/indexador_conundrum_.net/issues/8) — cerrado.
 
