@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.51-beta] - 2026-10-28
+
+### Corrección — Issue #14
+
+- Se conserva el texto de desplazamiento VB6 `-38º0` al seleccionar la plantilla `(pj) clásico`, manteniendo también el valor Y en cero.
+- Build Release y pruebas existentes verificadas: 0 errores y 0 advertencias.
+
 ## [0.0.50-beta] - 2026-10-28
 
 ### Avance — Issue #14

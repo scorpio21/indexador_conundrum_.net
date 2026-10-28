@@ -213,7 +213,7 @@ public partial class FormAuto : Form
             textBox5.Enabled = false;
             textBox6.Enabled = false;
             ComboTipoAnim.Enabled = true;
-            Text2.Text = "-38";
+            Text2.Text = "-38º0";
             textDatos2_0.Text = "6";
             textDatos2_1.Text = "4";
             textDatos2_3.Text = "22";
