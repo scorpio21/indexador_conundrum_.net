@@ -44,6 +44,14 @@ public partial class MainForm : Form
         private void ToggleWeMode()
         {
             _weMode = !_weMode;
+            var normalControlsVisible = !_weMode;
+            foldersGroup.Visible = normalControlsVisible;
+            encodeMapsButton.Visible = normalControlsVisible;
+            viewButton.Visible = normalControlsVisible;
+            clearMemoryButton.Visible = normalControlsVisible;
+            saveIndexButton.Visible = normalControlsVisible;
+            greenButton.Visible = normalControlsVisible;
+            deleteButton.Visible = normalControlsVisible;
             surfaceGroup.Visible = _weMode;
             generateSurfaceButton.Visible = _weMode;
             surfaceNameText.Visible = _weMode;
@@ -63,6 +71,7 @@ public partial class MainForm : Form
             }
             else
             {
+                ConfigureStateFields(_indexerState);
                 statusLabel.Text = "Modo superficies WE desactivado.";
             }
         }

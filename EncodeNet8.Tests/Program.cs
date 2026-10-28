@@ -487,10 +487,21 @@ static void TestMainFormStates()
         Assert(!surfaceGroup.Visible && !generateSurfaceButton.Visible,
             "WE: panel y botón de generación empiezan ocultos");
         toggleWeMode.Invoke(main, null);
-        Assert(surfaceGroup.Visible && generateSurfaceButton.Visible && GetMain<TextBox>(main, "surfaceGrhText").Text == "999",
+        Assert(surfaceGroup.Visible && generateSurfaceButton.Visible
+            && !GetMain<GroupBox>(main, "foldersGroup").Visible
+            && !GetMain<Button>(main, "encodeMapsButton").Visible
+            && !GetMain<Button>(main, "viewButton").Visible
+            && !GetMain<Button>(main, "clearMemoryButton").Visible
+            && !GetMain<Button>(main, "saveIndexButton").Visible
+            && !GetMain<Button>(main, "greenButton").Visible
+            && !GetMain<Button>(main, "deleteButton").Visible
+            && GetMain<TextBox>(main, "surfaceGrhText").Text == "999",
             "WE: activar el modo muestra el panel y sincroniza el GRH seleccionado");
         toggleWeMode.Invoke(main, null);
-        Assert(!surfaceGroup.Visible && !generateSurfaceButton.Visible,
+        Assert(!surfaceGroup.Visible && !generateSurfaceButton.Visible && GetMain<GroupBox>(main, "foldersGroup").Visible
+            && GetMain<Button>(main, "encodeMapsButton").Visible && GetMain<Button>(main, "viewButton").Visible
+            && GetMain<Button>(main, "clearMemoryButton").Visible && GetMain<Button>(main, "saveIndexButton").Visible
+            && GetMain<Button>(main, "greenButton").Visible && GetMain<Button>(main, "deleteButton").Visible,
             "WE: desactivar el modo oculta el panel y el botón");
         capasButton.PerformClick();
         Assert(surfaceGroup.Visible, "WE: Capas activa el modo de superficies desde el botón del diseñador");

@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.0.74-beta] - 2026-10-28
+
+### Vista de Indexar Superficies
+
+- El modo WE oculta `foldersGroup`, `Encode Mapas`, `Ver Gráficos`, `Limpiar Memoria`, `Guardar Graficos.ind`, `f. verde` y `borrar`.
+- Al salir del modo WE se restauran los controles según el estado actual.
+- Añadida regresión WinForms para verificar la visibilidad de todos los controles.
+- Build Release y pruebas verificadas: 0 advertencias y 0 errores.
+
 ## [0.0.73-beta] - 2026-10-28
 
 ### Edición segura del offset
