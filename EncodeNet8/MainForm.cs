@@ -44,6 +44,8 @@ public partial class MainForm : Form
         ConfigureIcons();
         foreach (var box in new[] { bmpText, framesText, heightText, widthText, speedText, xText, yText, tileHeightText, tileWidthText })
             box.DoubleClick += textData_DoubleClick;
+        foreach (var box in new[] { bmpText, frameText, framesText, heightText, widthText, speedText, xText, yText, tileHeightText, tileWidthText })
+            box.TextChanged += dataText_TextChanged;
         indsText.Text = _settings.InitPath;
         graphicsText.Text = _settings.GraphicsPath;
         formatCombo.SelectedIndex = 0;

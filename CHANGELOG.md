@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.0.60-beta] - 2026-10-28
+
+### Validación y errores — Issue #12
+
+- Se replicó `TextDatos_Change` del VB6: la validación se ejecuta mientras se editan los campos del GRH.
+- Los errores críticos se marcan en rojo y las advertencias de animación/dimensiones en amarillo; al corregir el dato el campo vuelve a blanco.
+- Se validan número de frames, frames inexistentes, BMP ausente, posiciones fuera del BMP, alto/ancho fuera del BMP y referencias direccionales inválidas.
+- `LUlitError` muestra los mensajes equivalentes y el guardado se bloquea cuando existe un error crítico.
+- Se añadieron pruebas STA para BMP inexistente, frames incoherentes y restauración de color.
+- Build Release y pruebas verificadas: 0 advertencias y 0 errores.
+
 ## [0.0.59-beta] - 2026-10-28
 
 ### Recursos y búsquedas — Issue #10

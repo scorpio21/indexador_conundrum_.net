@@ -398,6 +398,23 @@ static void TestMainFormStates()
         Assert(GetMain<TextBox>(main, "heightText").Text == "4" && GetMain<TextBox>(main, "widthText").Text == "3"
             && GetMain<TextBox>(main, "speedText").Text == "32" && GetMain<TextBox>(main, "xText").Text == "BMP",
             "MainForm Recursos: BMP muestra tamaño, dimensiones, bits y situación");
+
+        var graphicsFile = GetMainValue<GraficosIndFile>(main, "_file");
+        graphicsFile.Records.Clear();
+        graphicsFile.Records.Add(new GrhRecord { Id = 1, FileNumber = 700, Width = 3, Height = 4, Frames = new List<int> { 1 } });
+        changeState.Invoke(main, new object[] { "Grh" });
+        var grhList = GetMain<ListBox>(main, "indexList");
+        grhList.SelectedIndex = 0;
+        GetMain<TextBox>(main, "bmpText").Text = "999";
+        Assert(GetMain<TextBox>(main, "bmpText").BackColor == Color.Red && GetMain<Label>(main, "LUlitError").Text.Length > 0,
+            "MainForm Validación: BMP inexistente en rojo y mensaje LUlitError");
+        GetMain<TextBox>(main, "bmpText").Text = "700";
+        Assert(GetMain<TextBox>(main, "bmpText").BackColor == Color.White,
+            "MainForm Validación: campo restaurado a blanco al corregirse");
+        GetMain<TextBox>(main, "framesText").Text = "2";
+        Assert(GetMain<TextBox>(main, "framesText").BackColor == Color.Red,
+            "MainForm Validación: cantidad de frames incoherente en rojo");
+        GetMain<TextBox>(main, "framesText").Text = "1";
         Directory.Delete(graphicsPath, true);
         main.Close();
     });

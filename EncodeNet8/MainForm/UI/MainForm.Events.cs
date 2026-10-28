@@ -82,6 +82,7 @@ public partial class MainForm : Form
             _selectedRecord = _file?.Records.FirstOrDefault(x => x.Id == item.Directions[direction]);
             frameText.Text = "1";
             if (_selectedRecord is not null) ConfigureAnimationTimer(_selectedRecord);
+            ValidateDirectionalInput();
             previewPanel.Invalidate();
             statusLabel.Text = $"{StateCaption(_indexerState)} {item.Id} seleccionado.";
         }
@@ -110,6 +111,7 @@ public partial class MainForm : Form
             SetUsageCount(CountReferences(item.Animation));
             _selectedRecord = _file?.Records.FirstOrDefault(x => x.Id == item.Animation);
             if (_selectedRecord is not null) ConfigureAnimationTimer(_selectedRecord);
+            ValidateDirectionalInput();
             previewPanel.Invalidate();
             statusLabel.Text = $"FX {item.Id} seleccionado.";
         }

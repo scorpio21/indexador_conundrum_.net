@@ -45,6 +45,111 @@ public partial class MainForm : Form
         }
     
             private static void MarkValidation(TextBox textBox, Color color) => textBox.BackColor = color;
+
+        private void dataText_TextChanged(object? sender, EventArgs e)
+        {
+            if (_indexerState.Equals("Resource", StringComparison.OrdinalIgnoreCase)) return;
+            if (_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase))
+            {
+                if (_selectedRecord is null) return;
+                ValidateCurrentGrhInput();
+                return;
+            }
+
+            ValidateDirectionalInput();
+        }
+
+        private void ValidateCurrentGrhInput()
+        {
+            if (_selectedRecord is null) return;
+            var frames = ParseFrameIds(frameText.Text, _selectedRecord.Id);
+            var expectedFrames = int.TryParse(framesText.Text.Trim(), out var parsedFrames) ? parsedFrames : 0;
+            var frameCountError = expectedFrames <= 0 || expectedFrames != frames.Count;
+            if (expectedFrames > 1 && frames.Count != expectedFrames)
+            {
+                frames = frames.Concat(Enumerable.Repeat(0, expectedFrames - frames.Count)).Take(expectedFrames).ToList();
+            }
+            var candidate = new GrhRecord
+            {
+                Id = _selectedRecord.Id,
+                FileNumber = ParseShort(bmpText.Text),
+                X = ParseShort(xText.Text),
+                Y = ParseShort(yText.Text),
+                Width = ParseShort(widthText.Text),
+                Height = ParseShort(heightText.Text),
+                Speed = ParseShort(speedText.Text),
+                Frames = frames
+            };
+            ValidateSelectedGrh(candidate);
+            if (frameCountError)
+            {
+                MarkValidation(framesText, Color.Red);
+                var message = string.IsNullOrWhiteSpace(LUlitError.Text)
+                    ? "Número de frames incorrecto."
+                    : $"Número de frames incorrecto. {LUlitError.Text}";
+                SetUtilError(message);
+                saveButton.Enabled = false;
+            }
+        }
+
+        private static List<int> ParseFrameIds(string value, int defaultId)
+        {
+            var parts = value.Split('-', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            if (parts.Length == 0) return new List<int> { defaultId };
+            return parts.Select(part => int.TryParse(part, out var id) ? id : 0).ToList();
+        }
+
+        private void ValidateDirectionalInput()
+        {
+            ResetGrhValidationColors();
+            var errors = new List<string>();
+            var critical = false;
+            var values = _indexerState.Equals("Fx", StringComparison.OrdinalIgnoreCase)
+                ? new[] { (bmpText, ParseIndex(bmpText.Text)) }
+                : new[]
+                {
+                    (bmpText, ParseIndex(bmpText.Text)),
+                    (heightText, ParseIndex(heightText.Text)),
+                    (widthText, ParseIndex(widthText.Text)),
+                    (speedText, ParseIndex(speedText.Text))
+                };
+
+            foreach (var (textBox, grhId) in values)
+            {
+                if (!int.TryParse(textBox.Text.Trim(), out var parsed) || parsed < 0 || parsed > ParseInt(maxGrhText.Text))
+                {
+                    MarkValidation(textBox, Color.Red);
+                    errors.Add($"{textBox.Name}: índice inválido.");
+                    critical = true;
+                    continue;
+                }
+                if (grhId <= 1) continue;
+
+                var record = _file?.Records.FirstOrDefault(item => item.Id == grhId);
+                if (record is null || record.Frames.Count == 0)
+                {
+                    MarkValidation(textBox, Color.Red);
+                    errors.Add($"GRH {grhId} no existe o es inválido.");
+                    critical = true;
+                    continue;
+                }
+
+                var requiresAnimation = !_indexerState.Equals("Cabezas", StringComparison.OrdinalIgnoreCase)
+                    && !_indexerState.Equals("Cascos", StringComparison.OrdinalIgnoreCase);
+                if (requiresAnimation != record.IsAnimation)
+                {
+                    MarkValidation(textBox, Color.Yellow);
+                    errors.Add(requiresAnimation
+                        ? $"GRH {grhId} no es una animación."
+                        : $"GRH {grhId} es una animación.");
+                }
+            }
+
+            saveIndexButton.Enabled = !critical;
+            SetUtilError(string.Join(Environment.NewLine, errors));
+        }
+
+        private int ParseIndex(string value) => int.TryParse(value.Trim(), out var result) ? result : -1;
     
             private void ValidateSelectedGrh(GrhRecord record)
         {
@@ -140,6 +245,7 @@ public partial class MainForm : Form
             }
     
             SetUtilError(string.Join(" ", errors));
+            saveButton.Enabled = errors.Count == 0;
         }
     
             private void SaveIndex()
