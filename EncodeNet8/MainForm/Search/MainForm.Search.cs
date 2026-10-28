@@ -150,7 +150,17 @@ public partial class MainForm : Form
                 ParseInt(maxGrhText.Text),
                 _file.Records.Select(record => record.Id),
                 _directionalRecords.Select(record => record.Id).Concat(_bodyRecords.Select(record => record.Id)));
-            if (dialog.ShowDialog(this) != DialogResult.OK || dialog.GeneratedRecords is null) return;
+            dialog.PreviewChanged += AutoIndexerPreviewChanged;
+            try
+            {
+                if (dialog.ShowDialog(this) != DialogResult.OK || dialog.GeneratedRecords is null) return;
+            }
+            finally
+            {
+                dialog.PreviewChanged -= AutoIndexerPreviewChanged;
+                _autoPreviewRecords = null;
+                previewPanel.Invalidate();
+            }
             try
             {
                 var records = dialog.GeneratedRecords.ToList();
@@ -172,6 +182,15 @@ public partial class MainForm : Form
             {
                 SetUtilError($"Autoindexador: {ex.Message}");
             }
+        }
+
+        private void AutoIndexerPreviewChanged(object? sender, EventArgs e)
+        {
+            _autoPreviewRecords = (sender as FormAuto)?.PreviewRecords;
+            // El Autoindexador es modal. Refresh fuerza el repintado del visor
+            // propietario mientras el diálogo sigue abierto, igual que el
+            // Timer Dibujado del formulario VB6.
+            previewPanel.Refresh();
         }
 
         private void ApplyGeneratedDirectionalIndex(DirectionalIndexRecord generated, int generatedKind)

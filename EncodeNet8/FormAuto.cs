@@ -11,9 +11,11 @@ public partial class FormAuto : Form
     private bool _updatingInputs;
 
     public IReadOnlyList<GrhRecord>? GeneratedRecords { get; private set; }
+    public IReadOnlyList<GrhRecord> PreviewRecords { get; private set; } = Array.Empty<GrhRecord>();
     public DirectionalIndexRecord? GeneratedDirectionalIndex { get; private set; }
     public int GeneratedDirectionalKind { get; private set; } = -1;
     public bool OverwriteExisting { get; private set; }
+    public event EventHandler? PreviewChanged;
 
     public FormAuto() : this(string.Empty, int.MaxValue, Array.Empty<int>(), Array.Empty<int>()) { }
 
@@ -292,6 +294,7 @@ public partial class FormAuto : Form
             {
                 textBox15.BackColor = Color.Red;
                 button4.Enabled = false;
+                UpdatePreview();
                 return;
             }
 
@@ -304,6 +307,7 @@ public partial class FormAuto : Form
                 textBox17.BackColor = rows > 0 && rows * Parse(textBox17, 0) > bitmap.Height ? Color.Yellow : SystemColors.Window;
                 textBox16.BackColor = columns > 0 && columns * Parse(textBox16, 0) > bitmap.Width ? Color.Yellow : SystemColors.Window;
             }
+            UpdatePreview();
         }
         finally { _updatingInputs = false; }
     }
@@ -342,6 +346,7 @@ public partial class FormAuto : Form
             {
                 textBox7.BackColor = Color.Red;
                 CommandCalu.Enabled = false;
+                UpdatePreview();
                 return;
             }
 
@@ -352,6 +357,7 @@ public partial class FormAuto : Form
                 textBox5.BackColor = rows > 0 && rows * Parse(textBox5, 0) > bitmap.Height ? Color.Yellow : SystemColors.Window;
                 textBox6.BackColor = columns > 0 && columns * Parse(textBox6, 0) > bitmap.Width ? Color.Yellow : SystemColors.Window;
             }
+            UpdatePreview();
         }
         finally { _updatingInputs = false; }
     }
@@ -390,6 +396,62 @@ public partial class FormAuto : Form
             textBoxGrh.BackColor = HasFreeIndexes(id, 1) ? SystemColors.Window : Color.Yellow;
         else
             textBoxGrh.BackColor = Color.Red;
+        UpdatePreview();
+    }
+
+    private void UpdatePreview()
+    {
+        if (IsDisposed) return;
+        try
+        {
+            if (groupBox2.Visible)
+            {
+                var columns = Parse(textBox21, 0);
+                var rows = Parse(textBox20, 0);
+                var total = Parse(textBox19, 0);
+                PreviewRecords = TryBuildPreview(
+                    Parse(textBox18, 0), total, columns, rows, Parse(textBox15, 0),
+                    Math.Max(1, Parse(textBox16, 16)), Math.Max(1, Parse(textBox17, 16)),
+                    0, 0, radioButton6.Checked, false, null, false);
+            }
+            else if (GroupBox.Visible)
+            {
+                var columns = Math.Max(1, Parse(textDatos2_0, 6));
+                var rows = Math.Max(1, Parse(textDatos2_1, 4));
+                var total = Math.Max(1, Parse(textDatos2_3, columns * rows));
+                var directional = ComboTipoAnim.SelectedIndex == 0;
+                var positions = Optiondimension_2.Checked ? CreateAlkonPositions() : CreateClassicPositions();
+                PreviewRecords = TryBuildPreview(
+                    Parse(textBox4, 0), total, columns, rows, Parse(textBox7, 0),
+                    Math.Max(1, Parse(textBox6, 26)), Math.Max(1, Parse(textBox5, 46)),
+                    ComboTipoAnim.SelectedIndex == 1 ? Parse(TextDatos2_7, 0) : 0,
+                    ComboTipoAnim.SelectedIndex == 1 ? Parse(TextDatos2_8, 0) : 0,
+                    true, false, directional && !Optiondimension_1.Checked ? positions : null,
+                    directional && !Optiondimension_1.Checked);
+            }
+            else
+            {
+                var bmp = Parse(textBoxBmp, 0);
+                PreviewRecords = TryBuildPreview(Parse(textBoxGrh, 0), 1, 1, 1, bmp, 1, 1, 0, 0, true, false, null, false);
+            }
+        }
+        catch
+        {
+            PreviewRecords = Array.Empty<GrhRecord>();
+        }
+        PreviewChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    private List<GrhRecord> TryBuildPreview(
+        int start, int total, int columns, int rows, int bmpNumber, int width, int height,
+        int offsetX, int offsetY, bool sameBitmap, bool directionalAnimations,
+        IReadOnlyList<Point>? legacyPositions, bool legacyFrameReferences)
+    {
+        if (start <= 0 || total <= 0 || columns <= 0 || rows <= 0 || bmpNumber <= 0) return new List<GrhRecord>();
+        return BuildGrid(start, total, columns, rows, bmpNumber, width, height, offsetX, offsetY,
+            sameBitmap, createAnimation: false, directionalAnimations: directionalAnimations,
+            legacyDirectionalPositions: legacyPositions, legacyFrameReferences: legacyFrameReferences,
+            ignoreUsedIndexes: true);
     }
 
     private static int ParseValue(string value, int fallback) => int.TryParse(value, out var result) ? result : fallback;
@@ -633,7 +695,8 @@ public partial class FormAuto : Form
         bool createAnimation = false,
         bool directionalAnimations = false,
         IReadOnlyList<Point>? legacyDirectionalPositions = null,
-        bool legacyFrameReferences = false)
+        bool legacyFrameReferences = false,
+        bool ignoreUsedIndexes = false)
     {
         if (bmpNumber <= 0) throw new InvalidDataException("Indica un número de BMP válido.");
         if (start <= 0 || start > _maxGrh) throw new InvalidDataException("El primer índice no es válido.");
@@ -654,7 +717,7 @@ public partial class FormAuto : Form
         for (var i = 0; i < total; i++)
         {
             var id = checked(start + i);
-            if (id > _maxGrh || _usedGrh.Contains(id)) throw new InvalidDataException($"El GRH {id} ya existe o supera el máximo.");
+            if (id > _maxGrh || (!ignoreUsedIndexes && _usedGrh.Contains(id))) throw new InvalidDataException($"El GRH {id} ya existe o supera el máximo.");
             var column = i % columns;
             var row = i / columns;
             var sourceX = legacyDirectionalPositions is null ? column * width + offsetX : legacyDirectionalPositions[i].X;

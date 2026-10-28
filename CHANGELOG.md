@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.0.50-beta] - 2026-10-28
+
+### Avance — Issue #14
+
+- Se añadió la previsualización en tiempo real del Autoindexador sobre el visor principal.
+- El visor muestra el BMP de trabajo y delimita en rojo los frames temporales mientras se editan los parámetros.
+- Se fuerza el repintado del visor durante el diálogo modal, equivalente al comportamiento de `Dibujado` del VB6.
+- La previsualización no modifica `Graficos.ind` hasta pulsar `Crear`.
+- Build Release y pruebas existentes verificadas: 0 errores y 0 advertencias.
+
 ## [0.0.49-beta] - 2026-10-28
 
 ### Avance — Issue #14

@@ -74,6 +74,11 @@ public partial class MainForm : Form
             private void previewPanel_Paint(object? sender, PaintEventArgs e)
         {
             e.Graphics.Clear(previewPanel.BackColor);
+            if (_autoPreviewRecords is { Count: > 0 })
+            {
+                DrawAutoIndexerPreview(e.Graphics, _autoPreviewRecords);
+                return;
+            }
             if (_selectedRecord is null)
             {
                 ClearUtilError();
@@ -131,6 +136,43 @@ public partial class MainForm : Form
                 SetUtilError($"No se pudo dibujar el BMP: {ex.Message}");
                 using var brush = new SolidBrush(Color.DarkRed);
                 e.Graphics.DrawString($"No se pudo dibujar el BMP: {ex.Message}", Font, brush, new PointF(12, 12));
+            }
+        }
+
+        private void DrawAutoIndexerPreview(Graphics graphics, IReadOnlyList<GrhRecord> records)
+        {
+            var first = records[0];
+            var graphicsFolder = ResolvePath(_settings.GraphicsPath);
+            var bitmapPath = Path.Combine(graphicsFolder, $"{first.FileNumber}.bmp");
+            if (!File.Exists(bitmapPath))
+            {
+                using var brush = new SolidBrush(Color.DarkRed);
+                graphics.DrawString($"BMP {first.FileNumber} no encontrado", Font, brush, new PointF(12, 12));
+                return;
+            }
+            using var bitmap = new Bitmap(bitmapPath);
+            var scale = Math.Min((double)(previewPanel.ClientSize.Width - 20) / bitmap.Width,
+                (double)(previewPanel.ClientSize.Height - 20) / bitmap.Height);
+            scale = Math.Min(scale, 4D);
+            var destination = new Rectangle(
+                (previewPanel.ClientSize.Width - (int)(bitmap.Width * scale)) / 2,
+                (previewPanel.ClientSize.Height - (int)(bitmap.Height * scale)) / 2,
+                (int)(bitmap.Width * scale), (int)(bitmap.Height * scale));
+            graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+            graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Half;
+            graphics.DrawImage(bitmap, destination);
+            using var pen = new Pen(Color.Red, Math.Max(1F, (float)scale));
+            using var textBrush = new SolidBrush(Color.Red);
+            foreach (var record in records)
+            {
+                if (record.FileNumber != first.FileNumber || record.Width <= 0 || record.Height <= 0) continue;
+                var rectangle = new Rectangle(
+                    destination.Left + (int)(record.X * scale),
+                    destination.Top + (int)(record.Y * scale),
+                    Math.Max(1, (int)(record.Width * scale)),
+                    Math.Max(1, (int)(record.Height * scale)));
+                graphics.DrawRectangle(pen, rectangle);
+                graphics.DrawString(record.Id.ToString(), Font, textBrush, rectangle.Location);
             }
         }
 }
