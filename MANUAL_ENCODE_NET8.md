@@ -15,7 +15,7 @@ Ya están migrados la ventana principal, estados básicos, lectura Integer/Long,
 | `frmMain.frm` | `MainForm.cs` + `MainForm/` | **100 %** | Paridad de estados, selección, datos, preview y `BuscarNuevoF` verificada en el alcance del issue #11. |
 | `formAuto.frm` | `FormAuto.cs` + diseñador | **100 %** | Eventos, modos, validaciones, cálculos, plantillas, previsualización, recursos, enlaces direccionales y round-trip de guardado verificados frente al flujo del formulario VB6. |
 | `Mod_Graficos.bas` | `GraficosIndFile.cs` + `GrhModels.cs` | **84 %** | Casos límite, referencias y escritura idéntica. |
-| `Mod_Recursos.bas` | `ResourceIndexing.cs` | **65 %** | BMP no indexados, búsqueda y mensajes. |
+| `Mod_Recursos.bas` | `MainForm/Search/MainForm.Search.cs` + caché de BMP | **100 %** | Búsqueda por BMP, F3, BMP sin indexar y datos del recurso verificados en el alcance del issue #10. |
 | `Mod_Directorios.bas` | `SettingsForm.cs` + JSON | **90 %** | Rutas relativas y valores iniciales. |
 | `Mod_Indices.bas` | `DirectionalIndexing.cs` | **55 %** | Bodies, cabezas, cascos, alas, capas, botas, armas, escudos y FX. |
 | `Mod_Superficies.bas` | Pendiente | **10 %** | Formulario, lectura y generación para WE. |
@@ -60,11 +60,11 @@ Ya están migrados la ventana principal, estados básicos, lectura Integer/Long,
 
 Falta validar en cada tipo las cuatro direcciones, offsets, GRH utilizados y escritura del archivo auxiliar.
 
-### Recursos y visor — **65 % / 75 %**
+### Recursos y visor — **100 % / 75 %**
 
-- Buscar GRH por BMP y continuar con F3: **55 %**.
-- Buscar BMP sin indexar: **45 %**.
-- Validar tamaño, profundidad y situación: **60 %**.
+- Buscar GRH por BMP y continuar con F3: **100 %** — conserva la lista completa y selecciona cada coincidencia como el VB6.
+- Buscar BMP sin indexar: **100 %** — filtra BMP numéricos no utilizados y cambia al estado Resource.
+- Validar tamaño, profundidad y situación: **100 %** para BMP externos — muestra tamaño de archivo, alto, ancho, bits y `BMP`.
 - Comparación pixel a pixel con VB6: **60 %**.
 - Transparencia, fondo verde, centrado y escalado: **55 %**.
 - Ciclo, velocidad y reinicio de animaciones: **50 %**.
@@ -110,12 +110,13 @@ Falta validar en cada tipo las cuatro direcciones, offsets, GRH utilizados y esc
 ## Ruta de trabajo pendiente
 
 1. ~~Completar `MainForm` y `CambiarEstado`~~ — **100 %**, issue **#11** cerrado.
-2. Comparar el autoindexador con VB6: objetivo **90 %**.
-3. Completar índices direccionales: objetivo **85 %**.
-4. Terminar recursos, visor y errores: objetivo **90 %**.
-5. Implementar `Indexar Superficies`: objetivo **100 %**.
-6. Ejecutar regresión Integer/Long: objetivo **100 %**.
-7. Publicar versión estable fuera de beta: objetivo **100 %**.
+2. ~~Comparar el autoindexador con VB6~~ — **100 %**, issue **#14** cerrado.
+3. ~~Completar recursos BMP y búsquedas~~ — **100 %**, issue **#10** cerrado.
+4. Completar índices direccionales: objetivo **85 %**.
+5. Terminar visor y errores: objetivo **90 %**.
+6. Implementar `Indexar Superficies`: objetivo **100 %**.
+7. Ejecutar regresión Integer/Long: objetivo **100 %**.
+8. Publicar versión estable fuera de beta: objetivo **100 %**.
 
 ## Verificación
 
@@ -125,13 +126,13 @@ dotnet build .\\EncodeNet8.slnx -c Release
 dotnet run --project .\\EncodeNet8.Tests\\EncodeNet8.Tests.csproj -c Release
 ```
 
-Última versión documentada: **0.0.58-beta**.
+Última versión documentada: **0.0.59-beta**.
 
 ## Issues de seguimiento
 
-- **#10** — [Completar recursos BMP y búsquedas del indexador](https://github.com/scorpio21/indexador_conundrum_.net/issues/10).
-- **#11** — [Completar equivalencia de MainForm con CambiarEstado](https://github.com/scorpio21/indexador_conundrum_.net/issues/11).
+- ~~**#10**~~ — [Completar recursos BMP y búsquedas del indexador](https://github.com/scorpio21/indexador_conundrum_.net/issues/10) — cerrado.
+- ~~**#11**~~ — [Completar equivalencia de MainForm con CambiarEstado](https://github.com/scorpio21/indexador_conundrum_.net/issues/11) — cerrado.
 - **#12** — [Completar sistema de errores y LUlitError](https://github.com/scorpio21/indexador_conundrum_.net/issues/12).
 - **#13** — [Completar pruebas de rendimiento y regresión del visor](https://github.com/scorpio21/indexador_conundrum_.net/issues/13).
-- **#14** — [Completar paridad funcional de FormAuto con formAuto.frm](https://github.com/scorpio21/indexador_conundrum_.net/issues/14).
+- ~~**#14**~~ — [Completar paridad funcional de FormAuto con formAuto.frm](https://github.com/scorpio21/indexador_conundrum_.net/issues/14) — cerrado.
 

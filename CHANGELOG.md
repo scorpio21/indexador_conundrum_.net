@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.0.59-beta] - 2026-10-28
+
+### Recursos y búsquedas — Issue #10
+
+- La búsqueda de GRH por BMP conserva la lista completa, selecciona la primera coincidencia y permite recorrer las siguientes con F3, igual que `MenuHerramientasBG_Click` y `MenuHerramientasBN_Click` del VB6.
+- El menú Buscar siguiente se muestra únicamente durante una búsqueda activa de GRH.
+- La búsqueda de BMP sin indexar cambia al estado Resource y muestra únicamente BMP numéricos que no están utilizados por un GRH.
+- El visor de recursos muestra tamaño de archivo, alto, ancho, profundidad de bits y situación BMP, sin habilitar edición ni borrado.
+- Se añadió una prueba WinForms STA con BMP real temporal para validar dimensiones, bits, caché y selección.
+- Build Release y pruebas verificadas: 0 advertencias y 0 errores.
+
 ## [0.0.58-beta] - 2026-10-28
 
 ### Paridad de MainForm — Issue #11

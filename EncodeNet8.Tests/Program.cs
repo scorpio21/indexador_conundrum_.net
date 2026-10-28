@@ -1,5 +1,6 @@
 using EncodeNet8;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
@@ -379,6 +380,25 @@ static void TestMainFormStates()
         changeState.Invoke(main, new object[] { "Fx" });
         Assert(GetMain<Label>(main, "heightLabel").Text == "Offset:" && !GetMain<TextBox>(main, "framesText").Visible,
             "MainForm FX: offset en TextDatos(2)");
+
+        var graphicsPath = Path.Combine(Path.GetTempPath(), "EncodeNet8.Tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(graphicsPath);
+        var bitmapPath = Path.Combine(graphicsPath, "700.bmp");
+        using (var bitmap = new Bitmap(3, 4)) bitmap.Save(bitmapPath, ImageFormat.Bmp);
+        var settings = GetMainValue<IndexerSettings>(main, "_settings");
+        settings.GraphicsPath = graphicsPath;
+        changeState.Invoke(main, new object[] { "Resource" });
+        var searchResults = GetMainList<int>(main, "_searchResults");
+        searchResults.Clear(); searchResults.Add(700);
+        var resourceMode = typeof(MainForm).GetField("_resourceSearchMode", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        resourceMode.SetValue(main, true);
+        var resourceList = GetMain<ListBox>(main, "indexList");
+        resourceList.Items.Clear(); resourceList.Items.Add(700); resourceList.SelectedIndex = 0;
+        InvokeMain(main, "ClickResourceSearchItem");
+        Assert(GetMain<TextBox>(main, "heightText").Text == "4" && GetMain<TextBox>(main, "widthText").Text == "3"
+            && GetMain<TextBox>(main, "speedText").Text == "32" && GetMain<TextBox>(main, "xText").Text == "BMP",
+            "MainForm Recursos: BMP muestra tamaño, dimensiones, bits y situación");
+        Directory.Delete(graphicsPath, true);
         main.Close();
     });
 }
@@ -402,6 +422,13 @@ static List<T> GetMainList<T>(MainForm form, string name)
     var field = typeof(MainForm).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)
         ?? throw new InvalidOperationException($"Fallo: no existe la lista MainForm.{name}.");
     return (List<T>)(field.GetValue(form) ?? throw new InvalidOperationException($"Fallo: lista MainForm.{name} no inicializada."));
+}
+
+static T GetMainValue<T>(MainForm form, string name)
+{
+    var field = typeof(MainForm).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)
+        ?? throw new InvalidOperationException($"Fallo: no existe el valor MainForm.{name}.");
+    return (T)(field.GetValue(form) ?? throw new InvalidOperationException($"Fallo: valor MainForm.{name} no inicializado."));
 }
 
 static void InvokeMain(MainForm form, string name)

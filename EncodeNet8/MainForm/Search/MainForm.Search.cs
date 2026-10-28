@@ -16,7 +16,7 @@ public partial class MainForm : Form
             _resourceSearchMode = false;
             var value = Microsoft.VisualBasic.Interaction.InputBox("Introduzca número de BMP a buscar.", "Buscar GRH con BMP");
             if (string.IsNullOrWhiteSpace(value)) return;
-            if (!int.TryParse(value, out var bmpNumber) || bmpNumber <= 0)
+            if (!int.TryParse(value, out var bmpNumber) || bmpNumber <= 0 || bmpNumber > ParseInt(maxGrhText.Text))
             {
                 SetUtilError("Introduzca un número de BMP válido.");
                 return;
@@ -29,12 +29,15 @@ public partial class MainForm : Form
             _searchCursor = 0;
             if (_searchResults.Count == 0)
             {
-                ReplaceGrhList(Array.Empty<int>());
                 SetUtilError($"BMP {bmpNumber} no encontrado en ningún GRH.");
+                buscarSiguienteMenu.Visible = false;
                 statusLabel.Text = "Búsqueda sin resultados.";
                 return;
             }
-            ReplaceGrhList(_searchResults);
+            // El VB6 conserva la lista completa de GRH y solo selecciona cada
+            // coincidencia; F3 no convierte la lista en una lista filtrada.
+            SelectGrhById(_searchResults[0]);
+            buscarSiguienteMenu.Visible = true;
             SetUtilError("F3 para continuar la búsqueda.");
             statusLabel.Text = $"BMP {bmpNumber}: {_searchResults.Count} GRH encontrados.";
         }
@@ -43,7 +46,10 @@ public partial class MainForm : Form
         {
             if (_searchResults.Count == 0) { SetUtilError("No hay una búsqueda activa."); statusLabel.Text = "Buscar siguiente: sin búsqueda activa."; return; }
             _searchCursor = (_searchCursor + 1) % _searchResults.Count;
-            indexList.SelectedIndex = _searchCursor;
+            if (_resourceSearchMode)
+                indexList.SelectedIndex = _searchCursor;
+            else
+                SelectGrhById(_searchResults[_searchCursor]);
             if (_searchCursor == 0 && _searchResults.Count > 1)
                 SetUtilError("Se terminó la búsqueda; se ha vuelto al primer resultado.");
             else
@@ -102,6 +108,9 @@ public partial class MainForm : Form
             private void SearchUnindexedBmps()
         {
             if (_file is null) { SetUtilError("No hay Graficos.ind cargado."); return; }
+            // La ventana VB6 abre el buscador de recursos; en MainForm el
+            // equivalente es cambiar al estado Resource antes de mostrar la lista.
+            CambiarEstado("Resource");
             var indexed = _file.Records.Select(record => (int)record.FileNumber).ToHashSet();
             var graphicsPath = ResolvePath(_settings.GraphicsPath);
             var unindexed = Directory.Exists(graphicsPath)
@@ -116,6 +125,7 @@ public partial class MainForm : Form
             _resourceSearchMode = true;
             _searchResults = unindexed;
             _searchCursor = 0;
+            buscarSiguienteMenu.Visible = false;
             indexList.Items.Clear();
             foreach (var fileNumber in unindexed) indexList.Items.Add(fileNumber);
             if (unindexed.Count > 0) indexList.SelectedIndex = 0;
@@ -127,6 +137,7 @@ public partial class MainForm : Form
         {
             if (_file is null) { ShowPending("Buscar GRH repetidos: no hay Graficos.ind cargado"); return; }
             _resourceSearchMode = false;
+            buscarSiguienteMenu.Visible = false;
             var repeated = _file.Records
                 .GroupBy(record => (record.FileNumber, record.X, record.Y, record.Width, record.Height))
                 .Where(group => group.Count() > 1)

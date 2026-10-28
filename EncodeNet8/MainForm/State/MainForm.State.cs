@@ -100,6 +100,7 @@ public partial class MainForm : Form
             deleteButton.Visible = true;
             herramientasMenu.Visible = state.Equals("Grh", StringComparison.OrdinalIgnoreCase);
             clonarMenu.Visible = state.Equals("Grh", StringComparison.OrdinalIgnoreCase);
+            buscarSiguienteMenu.Visible = false;
     
             if (state == "Grh")
             {
