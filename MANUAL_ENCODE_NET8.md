@@ -20,10 +20,10 @@ Ya están migrados la ventana principal, estados básicos, lectura Integer/Long,
 | `Mod_Indices.bas` | `DirectionalIndexing.cs` | **55 %** | Bodies, cabezas, cascos, alas, capas, botas, armas, escudos y FX. |
 | `Mod_Superficies.bas` | Pendiente | **10 %** | Formulario, lectura y generación para WE. |
 | `Mod_Edicion.bas` | `MainForm` / servicios | **65 %** | Mover, copiar, borrar, clonar e índice guardado. |
-| `Mod_Visor.bas` | `BufferedPreviewPanel.cs` | **75 %** | Escalado, transparencia, animación y refresco. |
+| `Mod_Visor.bas` | `BufferedPreviewPanel.cs` + `MainForm/Rendering/` | **100 %** | Temporización VB6, caché, escalado, transparencia, animación y refresco verificados en el alcance del issue #13. |
 | `Mod_Errores.bas` | `MainForm/IO/MainForm.Saving.cs` + validación en vivo | **100 %** | `LUlitError`, colores, frames, referencias direccionales y mensajes equivalentes verificados en el alcance del issue #12. |
 | `clsSurfaceManager.cls` | Pendiente | **0 %** | Gestión de superficies. |
-| APIs Win32/temporizadores | C#/.NET 8 | **70 %** | Temporización, refresco y selección de archivos. |
+| APIs Win32/temporizadores | C#/.NET 8 | **100 %** | Temporización y refresco equivalentes verificados en el alcance del issue #13. |
 
 ## Pendientes detallados
 
@@ -60,15 +60,15 @@ Ya están migrados la ventana principal, estados básicos, lectura Integer/Long,
 
 Falta validar en cada tipo las cuatro direcciones, offsets, GRH utilizados y escritura del archivo auxiliar.
 
-### Recursos y visor — **100 % / 75 %**
+### Recursos y visor — **100 % / 100 %**
 
 - Buscar GRH por BMP y continuar con F3: **100 %** — conserva la lista completa y selecciona cada coincidencia como el VB6.
 - Buscar BMP sin indexar: **100 %** — filtra BMP numéricos no utilizados y cambia al estado Resource.
 - Validar tamaño, profundidad y situación: **100 %** para BMP externos — muestra tamaño de archivo, alto, ancho, bits y `BMP`.
 - Comparación pixel a pixel con VB6: **60 %**.
-- Transparencia, fondo verde, centrado y escalado: **55 %**.
-- Ciclo, velocidad y reinicio de animaciones: **50 %**.
-- Rendimiento con carpetas grandes: **40 %**.
+- Transparencia, fondo verde, centrado y escalado: **100 %**.
+- Ciclo, velocidad y reinicio de animaciones: **100 %** — velocidad VB6 `50 * Speed`, fallback de 100 ms y módulo de frames seguro.
+- Rendimiento con carpetas grandes: **100 %** en el alcance verificado — caché reutilizable, precarga de animaciones y preview sin lecturas repetidas por `Paint`.
 
 ### Integer y Long — **84 %**
 
@@ -101,11 +101,11 @@ Falta validar en cada tipo las cuatro direcciones, offsets, GRH utilizados y esc
 | Cada estado reproduce `CambiarEstado` | **70 %** |
 | Mismos datos producen el mismo `Graficos.ind` | **75 %** |
 | Integer/Long sin pérdida | **84 %** |
-| Animaciones iguales en frames, tamaño y offsets | **60 %** |
+| Animaciones iguales en frames, tamaño y offsets | **100 %** |
 | Errores equivalentes | **100 %** |
 | `Indexar Superficies` completo | **10 %** |
 | Release sin errores ni advertencias | **100 %** |
-| Regresión con recursos reales | **35 %** |
+| Regresión con recursos reales y fixtures de visor | **100 %** en el alcance del issue #13 |
 
 ## Ruta de trabajo pendiente
 
@@ -113,10 +113,11 @@ Falta validar en cada tipo las cuatro direcciones, offsets, GRH utilizados y esc
 2. ~~Comparar el autoindexador con VB6~~ — **100 %**, issue **#14** cerrado.
 3. ~~Completar recursos BMP y búsquedas~~ — **100 %**, issue **#10** cerrado.
 4. Completar índices direccionales: objetivo **85 %**.
-5. ~~Terminar errores y `LUlitError`~~ — **100 %**, issue **#12** cerrado. El visor queda para el issue **#13**.
-6. Implementar `Indexar Superficies`: objetivo **100 %**.
-7. Ejecutar regresión Integer/Long: objetivo **100 %**.
-8. Publicar versión estable fuera de beta: objetivo **100 %**.
+5. ~~Terminar errores y `LUlitError`~~ — **100 %**, issue **#12** cerrado.
+6. ~~Completar visor, temporización y regresión~~ — **100 %**, issue **#13** cerrado.
+7. Implementar `Indexar Superficies`: objetivo **100 %**.
+8. Ejecutar regresión Integer/Long: objetivo **100 %**.
+9. Publicar versión estable fuera de beta: objetivo **100 %**.
 
 ## Verificación
 
@@ -126,13 +127,13 @@ dotnet build .\\EncodeNet8.slnx -c Release
 dotnet run --project .\\EncodeNet8.Tests\\EncodeNet8.Tests.csproj -c Release
 ```
 
-Última versión documentada: **0.0.60-beta**.
+Última versión documentada: **0.0.61-beta**.
 
 ## Issues de seguimiento
 
 - ~~**#10**~~ — [Completar recursos BMP y búsquedas del indexador](https://github.com/scorpio21/indexador_conundrum_.net/issues/10) — cerrado.
 - ~~**#11**~~ — [Completar equivalencia de MainForm con CambiarEstado](https://github.com/scorpio21/indexador_conundrum_.net/issues/11) — cerrado.
 - ~~**#12**~~ — [Completar sistema de errores y LUlitError](https://github.com/scorpio21/indexador_conundrum_.net/issues/12) — cerrado.
-- **#13** — [Completar pruebas de rendimiento y regresión del visor](https://github.com/scorpio21/indexador_conundrum_.net/issues/13).
+- ~~**#13**~~ — [Completar pruebas de rendimiento y regresión del visor](https://github.com/scorpio21/indexador_conundrum_.net/issues/13) — cerrado.
 - ~~**#14**~~ — [Completar paridad funcional de FormAuto con formAuto.frm](https://github.com/scorpio21/indexador_conundrum_.net/issues/14) — cerrado.
 

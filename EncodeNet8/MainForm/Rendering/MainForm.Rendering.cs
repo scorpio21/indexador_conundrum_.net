@@ -6,13 +6,17 @@ public partial class MainForm : Form
 {
         private void drawTimer_Tick(object? sender, EventArgs e)
         {
+            AdvanceAnimationFrame(_animationClock.ElapsedMilliseconds);
+        }
+
+        private void AdvanceAnimationFrame(long elapsed)
+        {
             if (_selectedRecord is null || !_selectedRecord.IsAnimation) return;
             if (_selectedRecord.Frames.Count == 0)
             {
                 _drawTimer.Stop();
                 return;
             }
-            var elapsed = _animationClock.ElapsedMilliseconds;
             var elapsedSinceFrame = elapsed - _animationElapsed;
             if (elapsedSinceFrame < _animationIntervalMs) return;
     
@@ -24,13 +28,14 @@ public partial class MainForm : Form
     
             private void ConfigureAnimationTimer(GrhRecord record)
         {
-            if (!record.IsAnimation || record.Speed <= 0)
+            if (!record.IsAnimation)
             {
                 _drawTimer.Stop();
                 return;
             }
             _animationFrame = 0;
-            _animationIntervalMs = Math.Clamp((int)Math.Round(record.Speed * (1000D / 60D)), 16, 1000);
+            // VB6: Dibujado.Interval = 50 * Speed; si Speed <= 0 usa 100 ms.
+            _animationIntervalMs = record.Speed > 0 ? Math.Clamp(record.Speed * 50, 16, 1000) : 100;
             _drawTimer.Interval = Math.Min(15, _animationIntervalMs);
             WarmAnimationBitmaps(record);
             _animationClock.Restart();
@@ -150,7 +155,7 @@ public partial class MainForm : Form
                 graphics.DrawString($"BMP {first.FileNumber} no encontrado", Font, brush, new PointF(12, 12));
                 return;
             }
-            using var bitmap = new Bitmap(bitmapPath);
+            var bitmap = GetCachedBitmap(bitmapPath);
             var scale = Math.Min((double)(previewPanel.ClientSize.Width - 20) / bitmap.Width,
                 (double)(previewPanel.ClientSize.Height - 20) / bitmap.Height);
             scale = Math.Min(scale, 4D);

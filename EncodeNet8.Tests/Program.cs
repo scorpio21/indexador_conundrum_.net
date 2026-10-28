@@ -415,6 +415,18 @@ static void TestMainFormStates()
         Assert(GetMain<TextBox>(main, "framesText").BackColor == Color.Red,
             "MainForm Validación: cantidad de frames incoherente en rojo");
         GetMain<TextBox>(main, "framesText").Text = "1";
+
+        var selectedField = typeof(MainForm).GetField("_selectedRecord", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var advance = typeof(MainForm).GetMethod("AdvanceAnimationFrame", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        foreach (var frameCount in new[] { 4, 15, 25 })
+        {
+            var animation = new GrhRecord { Id = 1000 + frameCount, Speed = 1, Frames = Enumerable.Range(1, frameCount).ToList() };
+            selectedField.SetValue(main, animation);
+            typeof(MainForm).GetMethod("ConfigureAnimationTimer", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(main, new object[] { animation });
+            advance.Invoke(main, new object[] { 50L });
+            var currentFrame = GetMainValue<int>(main, "_animationFrame");
+            Assert(currentFrame >= 0 && currentFrame < frameCount, $"Animación: frame dentro de rango para {frameCount} frames");
+        }
         Directory.Delete(graphicsPath, true);
         main.Close();
     });

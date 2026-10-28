@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.0.61-beta] - 2026-10-28
+
+### Rendimiento y regresión del visor — Issue #13
+
+- Se igualó la temporización de animaciones al VB6: `50 * Speed`; cuando `Speed <= 0`, se usa un intervalo de 100 ms.
+- El avance de frames usa un reloj monotónico, acumula el tiempo consumido y mantiene el índice dentro del rango para animaciones de 1, 4, 15 y 25 frames.
+- El preview del autoindexador reutiliza la caché de BMP y deja de abrir el archivo en cada repintado.
+- Las animaciones precargan sus BMP antes de iniciar el temporizador.
+- Se añadieron pruebas deterministas de ciclo de frames y regresión WinForms STA.
+- Build Release y pruebas verificadas: 0 advertencias y 0 errores.
+
 ## [0.0.60-beta] - 2026-10-28
 
 ### Validación y errores — Issue #12
