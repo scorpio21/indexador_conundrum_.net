@@ -97,6 +97,7 @@ public partial class MainForm : Form
             frameText.Text = _selectedRecord.IsAnimation ? string.Join("-", _selectedRecord.Frames) : "";
             tileHeightText.Text = frameData.Height > 0 ? (frameData.Height / 32).ToString() : "";
             tileWidthText.Text = frameData.Width > 0 ? (frameData.Width / 32).ToString() : "";
+            UpdateSurfaceSelection(frameData);
             SetUsageCount(CountReferences(_selectedRecord.Id));
             ValidateSelectedGrh(_selectedRecord);
             _drawTimer.Enabled = _selectedRecord.IsAnimation;

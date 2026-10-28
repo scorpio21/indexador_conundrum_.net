@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.0.69-beta] - 2026-10-28
+
+### Flujo visual de superficies WE
+
+- Añadidos al diseñador `surfaceGroup` (equivalente a `FraDatosIndice`), `generateSurfaceButton` (equivalente a `ChaGenerarIndices`) y `capasButton` (equivalente a `BotonI(7)`).
+- `Indexar Superficies` ahora alterna el modo visual, muestra/oculta los campos correspondientes y sincroniza GRH, alto, ancho y referencias con el índice seleccionado.
+- La generación usa los datos visibles del formulario, valida nombre/alto, solicita confirmación antes de sobrescribir y actualiza `Indices.ini` y el contador de referencias.
+- Añadida regresión WinForms para activar/desactivar el modo WE desde el menú y desde Capas.
+- Build Release y pruebas verificadas: 0 advertencias y 0 errores.
+
 ## [0.0.68-beta] - 2026-10-28
 
 ### Corrección de validación de frames

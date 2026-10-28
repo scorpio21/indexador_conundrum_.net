@@ -51,6 +51,8 @@ public partial class MainForm : Form
         {
             if (sender is not Button button) return;
             var state = button.Text.Equals("Bodies", StringComparison.OrdinalIgnoreCase) ? "Body" : button.Text;
+            if (state.Equals("Capas", StringComparison.OrdinalIgnoreCase))
+                ToggleWeMode();
             CambiarEstado(state);
             ComprobarIndexLista();
         }
@@ -81,6 +83,7 @@ public partial class MainForm : Form
             SetUsageCount(CountReferences(item.Directions[direction]));
             _selectedRecord = _file?.Records.FirstOrDefault(x => x.Id == item.Directions[direction]);
             frameText.Text = "1";
+            if (_selectedRecord is not null) UpdateSurfaceSelection(_selectedRecord);
             if (_selectedRecord is not null) ConfigureAnimationTimer(_selectedRecord);
             ValidateDirectionalInput();
             previewPanel.Invalidate();
@@ -110,6 +113,7 @@ public partial class MainForm : Form
             tileWidthText.Clear();
             SetUsageCount(CountReferences(item.Animation));
             _selectedRecord = _file?.Records.FirstOrDefault(x => x.Id == item.Animation);
+            if (_selectedRecord is not null) UpdateSurfaceSelection(_selectedRecord);
             if (_selectedRecord is not null) ConfigureAnimationTimer(_selectedRecord);
             ValidateDirectionalInput();
             previewPanel.Invalidate();

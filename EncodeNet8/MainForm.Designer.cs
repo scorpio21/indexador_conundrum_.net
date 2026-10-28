@@ -13,18 +13,20 @@ partial class MainForm
     private ToolStripMenuItem buscarGrhMenu = null!, buscarBmpsMenu = null!, buscarSiguienteMenu = null!, autoindexadorMenu = null!, repetidosMenu = null!, generarWeMenu = null!, acercaMenu = null!;
     private ToolStripSeparator archivoSeparator1 = null!, archivoSeparator2 = null!;
     private Button openButton = null!, saveButton = null!, deleteButton = null!, saveIndexButton = null!, clearMemoryButton = null!, viewButton = null!, encodeMapsButton = null!, newSearchButton = null!, greenButton = null!;
-    private Button bodiesButton = null!, headsButton = null!, helmetsButton = null!, shieldsButton = null!, weaponsButton = null!, alasButton = null!, bootsButton = null!, fxButton = null!;
+    private Button bodiesButton = null!, headsButton = null!, helmetsButton = null!, shieldsButton = null!, weaponsButton = null!, alasButton = null!, capasButton = null!, bootsButton = null!, fxButton = null!, generateSurfaceButton = null!;
     private ComboBox formatCombo = null!;
     private Label formatLabel = null!;
     private Label frameLabel = null!;
     private TextBox frameText = null!;
     private ListBox indexList = null!;
-    private GroupBox dataGroup = null!, foldersGroup = null!;
+    private GroupBox dataGroup = null!, foldersGroup = null!, surfaceGroup = null!;
     private TextBox grhText = null!, bmpText = null!, framesText = null!, heightText = null!, widthText = null!, speedText = null!, xText = null!, yText = null!, tileHeightText = null!, tileWidthText = null!, indsText = null!, graphicsText = null!, maxGrhText = null!;
     private ComboBox directionCombo = null!;
     private StatusStrip statusStrip = null!;
     private ToolStripStatusLabel statusLabel = null!;
     private Label LUlitError = null!;
+    private Label surfaceNameLabel = null!, surfaceHeightLabel = null!, surfaceWidthLabel = null!, surfaceGrhLabel = null!, surfaceReferencesLabel = null!, surfaceDescriptionLabel = null!;
+    private TextBox surfaceNameText = null!, surfaceHeightText = null!, surfaceWidthText = null!, surfaceGrhText = null!, surfaceReferencesText = null!;
 
     protected override void Dispose(bool disposing)
     { if (disposing && components != null) components.Dispose(); base.Dispose(disposing); }
@@ -33,18 +35,12 @@ partial class MainForm
     {
         menuStrip = new MenuStrip();
         archivoMenu = new ToolStripMenuItem();
-        edicionMenu = new ToolStripMenuItem();
-        herramientasMenu = new ToolStripMenuItem();
-        configuracionMenu = new ToolStripMenuItem();
-        indexarMenu = new ToolStripMenuItem();
-        ayudaMenu = new ToolStripMenuItem();
-        superficiesMenu = new ToolStripMenuItem();
         guardarGraficosMenu = new ToolStripMenuItem();
         guardarMenu = new ToolStripMenuItem();
         cargarGraficosMenu = new ToolStripMenuItem();
         cargarMenu = new ToolStripMenuItem();
+        archivoSeparator1 = new ToolStripSeparator();
         indiceGuardadoMenu = new ToolStripMenuItem();
-        salirMenu = new ToolStripMenuItem();
         slot0Menu = new ToolStripMenuItem();
         slot1Menu = new ToolStripMenuItem();
         slot2Menu = new ToolStripMenuItem();
@@ -55,21 +51,27 @@ partial class MainForm
         slot7Menu = new ToolStripMenuItem();
         slot8Menu = new ToolStripMenuItem();
         slot9Menu = new ToolStripMenuItem();
+        archivoSeparator2 = new ToolStripSeparator();
+        salirMenu = new ToolStripMenuItem();
+        edicionMenu = new ToolStripMenuItem();
         nuevoIrMenu = new ToolStripMenuItem();
         moverMenu = new ToolStripMenuItem();
         copiarMenu = new ToolStripMenuItem();
         borrarMenu = new ToolStripMenuItem();
         clonarMenu = new ToolStripMenuItem();
         colorFondoMenu = new ToolStripMenuItem();
+        herramientasMenu = new ToolStripMenuItem();
         buscarGrhMenu = new ToolStripMenuItem();
         buscarBmpsMenu = new ToolStripMenuItem();
         buscarSiguienteMenu = new ToolStripMenuItem();
         autoindexadorMenu = new ToolStripMenuItem();
         repetidosMenu = new ToolStripMenuItem();
+        configuracionMenu = new ToolStripMenuItem();
+        indexarMenu = new ToolStripMenuItem();
         generarWeMenu = new ToolStripMenuItem();
+        ayudaMenu = new ToolStripMenuItem();
         acercaMenu = new ToolStripMenuItem();
-        archivoSeparator1 = new ToolStripSeparator();
-        archivoSeparator2 = new ToolStripSeparator();
+        superficiesMenu = new ToolStripMenuItem();
         openButton = new Button();
         saveButton = new Button();
         deleteButton = new Button();
@@ -85,8 +87,10 @@ partial class MainForm
         shieldsButton = new Button();
         weaponsButton = new Button();
         alasButton = new Button();
+        capasButton = new Button();
         bootsButton = new Button();
         fxButton = new Button();
+        generateSurfaceButton = new Button();
         formatCombo = new ComboBox();
         formatLabel = new Label();
         indexList = new ListBox();
@@ -130,6 +134,18 @@ partial class MainForm
         menuStrip.SuspendLayout();
         dataGroup.SuspendLayout();
         foldersGroup.SuspendLayout();
+        surfaceGroup = new GroupBox();
+        surfaceNameLabel = new Label();
+        surfaceHeightLabel = new Label();
+        surfaceWidthLabel = new Label();
+        surfaceGrhLabel = new Label();
+        surfaceReferencesLabel = new Label();
+        surfaceDescriptionLabel = new Label();
+        surfaceNameText = new TextBox();
+        surfaceHeightText = new TextBox();
+        surfaceWidthText = new TextBox();
+        surfaceGrhText = new TextBox();
+        surfaceReferencesText = new TextBox();
         statusStrip.SuspendLayout();
         SuspendLayout();
         // 
@@ -152,12 +168,14 @@ partial class MainForm
         // 
         guardarGraficosMenu.Name = "guardarGraficosMenu";
         guardarGraficosMenu.ShortcutKeys = Keys.Control | Keys.S;
+        guardarGraficosMenu.Size = new Size(222, 22);
         guardarGraficosMenu.Text = "Guardar Graficos.ind";
         guardarGraficosMenu.Click += saveButton_Click;
         // 
         // guardarMenu
         // 
         guardarMenu.Name = "guardarMenu";
+        guardarMenu.Size = new Size(222, 22);
         guardarMenu.Text = "Guardar...";
         guardarMenu.Click += saveIndexButton_Click;
         // 
@@ -165,37 +183,118 @@ partial class MainForm
         // 
         cargarGraficosMenu.Name = "cargarGraficosMenu";
         cargarGraficosMenu.ShortcutKeys = Keys.Control | Keys.O;
+        cargarGraficosMenu.Size = new Size(222, 22);
         cargarGraficosMenu.Text = "Cargar Graficos.ind";
         cargarGraficosMenu.Click += openButton_Click;
         // 
         // cargarMenu
         // 
         cargarMenu.Name = "cargarMenu";
+        cargarMenu.Size = new Size(222, 22);
         cargarMenu.Text = "Cargar...";
         cargarMenu.Click += openButton_Click;
+        // 
+        // archivoSeparator1
+        // 
+        archivoSeparator1.Name = "archivoSeparator1";
+        archivoSeparator1.Size = new Size(219, 6);
         // 
         // indiceGuardadoMenu
         // 
         indiceGuardadoMenu.DropDownItems.AddRange(new ToolStripItem[] { slot0Menu, slot1Menu, slot2Menu, slot3Menu, slot4Menu, slot5Menu, slot6Menu, slot7Menu, slot8Menu, slot9Menu });
         indiceGuardadoMenu.Name = "indiceGuardadoMenu";
+        indiceGuardadoMenu.Size = new Size(222, 22);
         indiceGuardadoMenu.Text = "Indice de guardado";
         // 
-        // saved index slots
+        // slot0Menu
         // 
-        slot0Menu.Name = "slot0Menu"; slot0Menu.Tag = 0; slot0Menu.Text = "Sobreescribir"; slot0Menu.Click += savedIndexMenu_Click;
-        slot1Menu.Name = "slot1Menu"; slot1Menu.Tag = 1; slot1Menu.Text = "1"; slot1Menu.Click += savedIndexMenu_Click;
-        slot2Menu.Name = "slot2Menu"; slot2Menu.Tag = 2; slot2Menu.Text = "2"; slot2Menu.Click += savedIndexMenu_Click;
-        slot3Menu.Name = "slot3Menu"; slot3Menu.Tag = 3; slot3Menu.Text = "3"; slot3Menu.Click += savedIndexMenu_Click;
-        slot4Menu.Name = "slot4Menu"; slot4Menu.Tag = 4; slot4Menu.Text = "4"; slot4Menu.Click += savedIndexMenu_Click;
-        slot5Menu.Name = "slot5Menu"; slot5Menu.Tag = 5; slot5Menu.Text = "5"; slot5Menu.Click += savedIndexMenu_Click;
-        slot6Menu.Name = "slot6Menu"; slot6Menu.Tag = 6; slot6Menu.Text = "6"; slot6Menu.Click += savedIndexMenu_Click;
-        slot7Menu.Name = "slot7Menu"; slot7Menu.Tag = 7; slot7Menu.Text = "7"; slot7Menu.Click += savedIndexMenu_Click;
-        slot8Menu.Name = "slot8Menu"; slot8Menu.Tag = 8; slot8Menu.Text = "8"; slot8Menu.Click += savedIndexMenu_Click;
-        slot9Menu.Name = "slot9Menu"; slot9Menu.Tag = 9; slot9Menu.Text = "9"; slot9Menu.Click += savedIndexMenu_Click;
+        slot0Menu.Name = "slot0Menu";
+        slot0Menu.Size = new Size(142, 22);
+        slot0Menu.Tag = 0;
+        slot0Menu.Text = "Sobreescribir";
+        slot0Menu.Click += savedIndexMenu_Click;
+        // 
+        // slot1Menu
+        // 
+        slot1Menu.Name = "slot1Menu";
+        slot1Menu.Size = new Size(142, 22);
+        slot1Menu.Tag = 1;
+        slot1Menu.Text = "1";
+        slot1Menu.Click += savedIndexMenu_Click;
+        // 
+        // slot2Menu
+        // 
+        slot2Menu.Name = "slot2Menu";
+        slot2Menu.Size = new Size(142, 22);
+        slot2Menu.Tag = 2;
+        slot2Menu.Text = "2";
+        slot2Menu.Click += savedIndexMenu_Click;
+        // 
+        // slot3Menu
+        // 
+        slot3Menu.Name = "slot3Menu";
+        slot3Menu.Size = new Size(142, 22);
+        slot3Menu.Tag = 3;
+        slot3Menu.Text = "3";
+        slot3Menu.Click += savedIndexMenu_Click;
+        // 
+        // slot4Menu
+        // 
+        slot4Menu.Name = "slot4Menu";
+        slot4Menu.Size = new Size(142, 22);
+        slot4Menu.Tag = 4;
+        slot4Menu.Text = "4";
+        slot4Menu.Click += savedIndexMenu_Click;
+        // 
+        // slot5Menu
+        // 
+        slot5Menu.Name = "slot5Menu";
+        slot5Menu.Size = new Size(142, 22);
+        slot5Menu.Tag = 5;
+        slot5Menu.Text = "5";
+        slot5Menu.Click += savedIndexMenu_Click;
+        // 
+        // slot6Menu
+        // 
+        slot6Menu.Name = "slot6Menu";
+        slot6Menu.Size = new Size(142, 22);
+        slot6Menu.Tag = 6;
+        slot6Menu.Text = "6";
+        slot6Menu.Click += savedIndexMenu_Click;
+        // 
+        // slot7Menu
+        // 
+        slot7Menu.Name = "slot7Menu";
+        slot7Menu.Size = new Size(142, 22);
+        slot7Menu.Tag = 7;
+        slot7Menu.Text = "7";
+        slot7Menu.Click += savedIndexMenu_Click;
+        // 
+        // slot8Menu
+        // 
+        slot8Menu.Name = "slot8Menu";
+        slot8Menu.Size = new Size(142, 22);
+        slot8Menu.Tag = 8;
+        slot8Menu.Text = "8";
+        slot8Menu.Click += savedIndexMenu_Click;
+        // 
+        // slot9Menu
+        // 
+        slot9Menu.Name = "slot9Menu";
+        slot9Menu.Size = new Size(142, 22);
+        slot9Menu.Tag = 9;
+        slot9Menu.Text = "9";
+        slot9Menu.Click += savedIndexMenu_Click;
+        // 
+        // archivoSeparator2
+        // 
+        archivoSeparator2.Name = "archivoSeparator2";
+        archivoSeparator2.Size = new Size(219, 6);
         // 
         // salirMenu
         // 
         salirMenu.Name = "salirMenu";
+        salirMenu.Size = new Size(222, 22);
         salirMenu.Text = "Salir";
         salirMenu.Click += salirMenu_Click;
         // 
@@ -206,12 +305,49 @@ partial class MainForm
         edicionMenu.Size = new Size(58, 20);
         edicionMenu.Text = "Edición";
         // 
-        nuevoIrMenu.Name = "nuevoIrMenu"; nuevoIrMenu.ShortcutKeys = Keys.Control | Keys.F; nuevoIrMenu.Text = "Nuevo/Ir A"; nuevoIrMenu.Click += newSearchButton_Click;
-        moverMenu.Name = "moverMenu"; moverMenu.Text = "Mover"; moverMenu.Click += moveMenu_Click;
-        copiarMenu.Name = "copiarMenu"; copiarMenu.Text = "Copiar"; copiarMenu.Click += copyMenu_Click;
-        borrarMenu.Name = "borrarMenu"; borrarMenu.Text = "Borrar"; borrarMenu.ShortcutKeys = Keys.Delete; borrarMenu.Click += deleteButton_Click;
-        clonarMenu.Name = "clonarMenu"; clonarMenu.Text = "Clonar..."; clonarMenu.Click += cloneMenu_Click;
-        colorFondoMenu.Name = "colorFondoMenu"; colorFondoMenu.Text = "Color de fondo..."; colorFondoMenu.Click += colorMenu_Click;
+        // nuevoIrMenu
+        // 
+        nuevoIrMenu.Name = "nuevoIrMenu";
+        nuevoIrMenu.ShortcutKeys = Keys.Control | Keys.F;
+        nuevoIrMenu.Size = new Size(172, 22);
+        nuevoIrMenu.Text = "Nuevo/Ir A";
+        nuevoIrMenu.Click += newSearchButton_Click;
+        // 
+        // moverMenu
+        // 
+        moverMenu.Name = "moverMenu";
+        moverMenu.Size = new Size(172, 22);
+        moverMenu.Text = "Mover";
+        moverMenu.Click += moveMenu_Click;
+        // 
+        // copiarMenu
+        // 
+        copiarMenu.Name = "copiarMenu";
+        copiarMenu.Size = new Size(172, 22);
+        copiarMenu.Text = "Copiar";
+        copiarMenu.Click += copyMenu_Click;
+        // 
+        // borrarMenu
+        // 
+        borrarMenu.Name = "borrarMenu";
+        borrarMenu.ShortcutKeys = Keys.Delete;
+        borrarMenu.Size = new Size(172, 22);
+        borrarMenu.Text = "Borrar";
+        borrarMenu.Click += deleteButton_Click;
+        // 
+        // clonarMenu
+        // 
+        clonarMenu.Name = "clonarMenu";
+        clonarMenu.Size = new Size(172, 22);
+        clonarMenu.Text = "Clonar...";
+        clonarMenu.Click += cloneMenu_Click;
+        // 
+        // colorFondoMenu
+        // 
+        colorFondoMenu.Name = "colorFondoMenu";
+        colorFondoMenu.Size = new Size(172, 22);
+        colorFondoMenu.Text = "Color de fondo...";
+        colorFondoMenu.Click += colorMenu_Click;
         // 
         // herramientasMenu
         // 
@@ -220,33 +356,76 @@ partial class MainForm
         herramientasMenu.Size = new Size(90, 20);
         herramientasMenu.Text = "Herramientas";
         // 
+        // buscarGrhMenu
+        // 
+        buscarGrhMenu.Name = "buscarGrhMenu";
+        buscarGrhMenu.Size = new Size(230, 22);
+        buscarGrhMenu.Text = "Buscar Grh con bmp...";
+        buscarGrhMenu.Click += buscarGrhMenu_Click;
+        // 
+        // buscarBmpsMenu
+        // 
+        buscarBmpsMenu.Name = "buscarBmpsMenu";
+        buscarBmpsMenu.Size = new Size(230, 22);
+        buscarBmpsMenu.Text = "Buscar Bmps sin indexar (Cry)";
+        buscarBmpsMenu.Click += buscarBmpsMenu_Click;
+        // 
+        // buscarSiguienteMenu
+        // 
+        buscarSiguienteMenu.Name = "buscarSiguienteMenu";
+        buscarSiguienteMenu.ShortcutKeys = Keys.F3;
+        buscarSiguienteMenu.Size = new Size(230, 22);
+        buscarSiguienteMenu.Text = "Buscar siguiente";
+        buscarSiguienteMenu.Click += buscarSiguienteMenu_Click;
+        // 
+        // autoindexadorMenu
+        // 
+        autoindexadorMenu.Name = "autoindexadorMenu";
+        autoindexadorMenu.Size = new Size(230, 22);
+        autoindexadorMenu.Text = "Autoindexador";
+        autoindexadorMenu.Click += autoindexadorMenu_Click;
+        // 
+        // repetidosMenu
+        // 
+        repetidosMenu.Name = "repetidosMenu";
+        repetidosMenu.Size = new Size(230, 22);
+        repetidosMenu.Text = "Buscar Grh Repetidos";
+        repetidosMenu.Click += repetidosMenu_Click;
+        // 
         // configuracionMenu
         // 
         configuracionMenu.Name = "configuracionMenu";
-        configuracionMenu.Size = new Size(150, 22);
+        configuracionMenu.Size = new Size(230, 22);
         configuracionMenu.Text = "Configuración";
         configuracionMenu.Click += configuracionMenu_Click;
-        buscarGrhMenu.Name = "buscarGrhMenu"; buscarGrhMenu.Text = "Buscar Grh con bmp..."; buscarGrhMenu.Click += buscarGrhMenu_Click;
-        buscarBmpsMenu.Name = "buscarBmpsMenu"; buscarBmpsMenu.Text = "Buscar Bmps sin indexar (Cry)"; buscarBmpsMenu.Click += buscarBmpsMenu_Click;
-        buscarSiguienteMenu.Name = "buscarSiguienteMenu"; buscarSiguienteMenu.ShortcutKeys = Keys.F3; buscarSiguienteMenu.Text = "Buscar siguiente"; buscarSiguienteMenu.Click += buscarSiguienteMenu_Click;
-        autoindexadorMenu.Name = "autoindexadorMenu"; autoindexadorMenu.Text = "Autoindexador"; autoindexadorMenu.Click += autoindexadorMenu_Click;
-        repetidosMenu.Name = "repetidosMenu"; repetidosMenu.Text = "Buscar Grh Repetidos"; repetidosMenu.Click += repetidosMenu_Click;
         // 
         // indexarMenu
         // 
-        indexarMenu.DropDownItems.Add(generarWeMenu);
+        indexarMenu.DropDownItems.AddRange(new ToolStripItem[] { generarWeMenu });
         indexarMenu.Name = "indexarMenu";
         indexarMenu.Size = new Size(117, 20);
         indexarMenu.Text = "Indexar Superficies";
-        generarWeMenu.Name = "generarWeMenu"; generarWeMenu.Text = "Generar Indices Para WE"; generarWeMenu.Click += generarWeMenu_Click;
+        // 
+        // generarWeMenu
+        // 
+        generarWeMenu.Name = "generarWeMenu";
+        generarWeMenu.Size = new Size(32, 19);
+        generarWeMenu.Text = "Generar Indices Para WE";
+        generarWeMenu.Click += generarWeMenu_Click;
         // 
         // ayudaMenu
         // 
-        ayudaMenu.DropDownItems.Add(acercaMenu);
+        ayudaMenu.DropDownItems.AddRange(new ToolStripItem[] { acercaMenu });
         ayudaMenu.Name = "ayudaMenu";
         ayudaMenu.Size = new Size(53, 20);
         ayudaMenu.Text = "Ayuda";
-        acercaMenu.Name = "acercaMenu"; acercaMenu.Text = "Acerca de..."; acercaMenu.Click += acercaMenu_Click;
+        // 
+        // acercaMenu
+        // 
+        acercaMenu.Name = "acercaMenu";
+        acercaMenu.Size = new Size(32, 19);
+        acercaMenu.Text = "Acerca de...";
+        acercaMenu.Click += acercaMenu_Click;
         // 
         // superficiesMenu
         // 
@@ -301,7 +480,7 @@ partial class MainForm
         // 
         // viewButton
         // 
-        viewButton.Location = new Point(6, 404);
+        viewButton.Location = new Point(6, 420);
         viewButton.Name = "viewButton";
         viewButton.Size = new Size(86, 40);
         viewButton.TabIndex = 6;
@@ -310,7 +489,7 @@ partial class MainForm
         // 
         // encodeMapsButton
         // 
-        encodeMapsButton.Location = new Point(6, 460);
+        encodeMapsButton.Location = new Point(6, 470);
         encodeMapsButton.Name = "encodeMapsButton";
         encodeMapsButton.Size = new Size(86, 40);
         encodeMapsButton.TabIndex = 7;
@@ -389,23 +568,42 @@ partial class MainForm
         alasButton.Text = "Alas";
         alasButton.Click += kindButton_Click;
         // 
+        // capasButton
+        // 
+        capasButton.Location = new Point(4, 309);
+        capasButton.Name = "capasButton";
+        capasButton.Size = new Size(86, 31);
+        capasButton.TabIndex = 14;
+        capasButton.Text = "Capas";
+        capasButton.Click += kindButton_Click;
+        // 
         // bootsButton
         // 
-        bootsButton.Location = new Point(4, 309);
+        bootsButton.Location = new Point(4, 343);
         bootsButton.Name = "bootsButton";
         bootsButton.Size = new Size(86, 31);
-        bootsButton.TabIndex = 14;
+        bootsButton.TabIndex = 15;
         bootsButton.Text = "Botas";
         bootsButton.Click += kindButton_Click;
         // 
         // fxButton
         // 
-        fxButton.Location = new Point(4, 343);
+        fxButton.Location = new Point(4, 377);
         fxButton.Name = "fxButton";
         fxButton.Size = new Size(86, 31);
-        fxButton.TabIndex = 15;
+        fxButton.TabIndex = 16;
         fxButton.Text = "Fx";
         fxButton.Click += kindButton_Click;
+        // 
+        // generateSurfaceButton
+        // 
+        generateSurfaceButton.Location = new Point(82, 636);
+        generateSurfaceButton.Name = "generateSurfaceButton";
+        generateSurfaceButton.Size = new Size(112, 25);
+        generateSurfaceButton.TabIndex = 32;
+        generateSurfaceButton.Text = "Generar índice";
+        generateSurfaceButton.Visible = false;
+        generateSurfaceButton.Click += generateSurfaceButton_Click;
         // 
         // formatCombo
         // 
@@ -704,9 +902,110 @@ partial class MainForm
         maxGrhText.TabIndex = 5;
         maxGrhText.Text = "32720";
         // 
+        // surfaceGroup
+        // 
+        surfaceGroup.Controls.Add(surfaceNameLabel);
+        surfaceGroup.Controls.Add(surfaceHeightLabel);
+        surfaceGroup.Controls.Add(surfaceWidthLabel);
+        surfaceGroup.Controls.Add(surfaceGrhLabel);
+        surfaceGroup.Controls.Add(surfaceReferencesLabel);
+        surfaceGroup.Controls.Add(surfaceDescriptionLabel);
+        surfaceGroup.Controls.Add(surfaceNameText);
+        surfaceGroup.Controls.Add(surfaceHeightText);
+        surfaceGroup.Controls.Add(surfaceWidthText);
+        surfaceGroup.Controls.Add(surfaceGrhText);
+        surfaceGroup.Controls.Add(surfaceReferencesText);
+        surfaceGroup.FlatStyle = FlatStyle.Flat;
+        surfaceGroup.Location = new Point(4, 520);
+        surfaceGroup.Name = "surfaceGroup";
+        surfaceGroup.Size = new Size(205, 145);
+        surfaceGroup.TabIndex = 31;
+        surfaceGroup.TabStop = false;
+        surfaceGroup.Text = "Datos índice WE";
+        surfaceGroup.Visible = false;
+        // 
+        // surfaceNameLabel
+        // 
+        surfaceNameLabel.AutoSize = true;
+        surfaceNameLabel.Location = new Point(8, 22);
+        surfaceNameLabel.Name = "surfaceNameLabel";
+        surfaceNameLabel.Size = new Size(50, 15);
+        surfaceNameLabel.Text = "Nombre:";
+        // 
+        // surfaceNameText
+        // 
+        surfaceNameText.Location = new Point(82, 19);
+        surfaceNameText.Name = "surfaceNameText";
+        surfaceNameText.Size = new Size(112, 23);
+        // 
+        // surfaceHeightLabel
+        // 
+        surfaceHeightLabel.AutoSize = true;
+        surfaceHeightLabel.Location = new Point(8, 50);
+        surfaceHeightLabel.Name = "surfaceHeightLabel";
+        surfaceHeightLabel.Size = new Size(32, 15);
+        surfaceHeightLabel.Text = "Alto:";
+        // 
+        // surfaceHeightText
+        // 
+        surfaceHeightText.Location = new Point(82, 47);
+        surfaceHeightText.Name = "surfaceHeightText";
+        surfaceHeightText.Size = new Size(48, 23);
+        // 
+        // surfaceWidthLabel
+        // 
+        surfaceWidthLabel.AutoSize = true;
+        surfaceWidthLabel.Location = new Point(8, 79);
+        surfaceWidthLabel.Name = "surfaceWidthLabel";
+        surfaceWidthLabel.Size = new Size(45, 15);
+        surfaceWidthLabel.Text = "Ancho:";
+        // 
+        // surfaceWidthText
+        // 
+        surfaceWidthText.Location = new Point(82, 76);
+        surfaceWidthText.Name = "surfaceWidthText";
+        surfaceWidthText.Size = new Size(48, 23);
+        // 
+        // surfaceGrhLabel
+        // 
+        surfaceGrhLabel.AutoSize = true;
+        surfaceGrhLabel.Location = new Point(8, 108);
+        surfaceGrhLabel.Name = "surfaceGrhLabel";
+        surfaceGrhLabel.Size = new Size(33, 15);
+        surfaceGrhLabel.Text = "GRH:";
+        // 
+        // surfaceGrhText
+        // 
+        surfaceGrhText.Location = new Point(82, 105);
+        surfaceGrhText.Name = "surfaceGrhText";
+        surfaceGrhText.ReadOnly = true;
+        surfaceGrhText.Size = new Size(48, 23);
+        // 
+        // surfaceReferencesLabel
+        // 
+        surfaceReferencesLabel.AutoSize = true;
+        surfaceReferencesLabel.Location = new Point(136, 108);
+        surfaceReferencesLabel.Name = "surfaceReferencesLabel";
+        surfaceReferencesLabel.Size = new Size(28, 15);
+        surfaceReferencesLabel.Text = "Ref:";
+        // 
+        // surfaceReferencesText
+        // 
+        surfaceReferencesText.Location = new Point(165, 105);
+        surfaceReferencesText.Name = "surfaceReferencesText";
+        surfaceReferencesText.ReadOnly = true;
+        surfaceReferencesText.Size = new Size(32, 23);
+        // 
+        // surfaceDescriptionLabel
+        // 
+        surfaceDescriptionLabel.AutoSize = true;
+        surfaceDescriptionLabel.Location = new Point(8, 130);
+        surfaceDescriptionLabel.Name = "surfaceDescriptionLabel";
+        surfaceDescriptionLabel.Size = new Size(0, 15);
+        // 
         // previewPanel
         // 
-        previewPanel.BackColor = Color.WhiteSmoke;
+        previewPanel.BackColor = Color.Black;
         previewPanel.BorderStyle = BorderStyle.FixedSingle;
         previewPanel.Location = new Point(480, 58);
         previewPanel.Name = "previewPanel";
@@ -796,13 +1095,16 @@ partial class MainForm
         Controls.Add(shieldsButton);
         Controls.Add(weaponsButton);
         Controls.Add(alasButton);
+        Controls.Add(capasButton);
         Controls.Add(bootsButton);
         Controls.Add(fxButton);
+        Controls.Add(generateSurfaceButton);
         Controls.Add(indexList);
         Controls.Add(formatLabel);
         Controls.Add(formatCombo);
         Controls.Add(dataGroup);
         Controls.Add(foldersGroup);
+        Controls.Add(surfaceGroup);
         Controls.Add(previewPanel);
         Controls.Add(LUlitError);
         Controls.Add(statusStrip);
@@ -817,6 +1119,8 @@ partial class MainForm
         dataGroup.PerformLayout();
         foldersGroup.ResumeLayout(false);
         foldersGroup.PerformLayout();
+        surfaceGroup.ResumeLayout(false);
+        surfaceGroup.PerformLayout();
         statusStrip.ResumeLayout(false);
         statusStrip.PerformLayout();
         ResumeLayout(false);

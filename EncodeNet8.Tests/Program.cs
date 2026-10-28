@@ -457,6 +457,23 @@ static void TestMainFormStates()
         Assert(backupPath == backupSource + ".bak" && File.ReadAllText(backupPath!) == "contenido anterior",
             "Edición: crea una copia .bak recuperable antes de sobrescribir");
 
+        var toggleWeMode = typeof(MainForm).GetMethod("ToggleWeMode", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var surfaceGroup = GetMain<GroupBox>(main, "surfaceGroup");
+        var generateSurfaceButton = GetMain<Button>(main, "generateSurfaceButton");
+        var capasButton = GetMain<Button>(main, "capasButton");
+        Assert(!surfaceGroup.Visible && !generateSurfaceButton.Visible,
+            "WE: panel y botón de generación empiezan ocultos");
+        toggleWeMode.Invoke(main, null);
+        Assert(surfaceGroup.Visible && generateSurfaceButton.Visible && GetMain<TextBox>(main, "surfaceGrhText").Text == "999",
+            "WE: activar el modo muestra el panel y sincroniza el GRH seleccionado");
+        toggleWeMode.Invoke(main, null);
+        Assert(!surfaceGroup.Visible && !generateSurfaceButton.Visible,
+            "WE: desactivar el modo oculta el panel y el botón");
+        capasButton.PerformClick();
+        Assert(surfaceGroup.Visible, "WE: Capas activa el modo de superficies desde el botón del diseñador");
+        capasButton.PerformClick();
+        Assert(!surfaceGroup.Visible, "WE: Capas vuelve a ocultar el modo de superficies");
+
         Directory.Delete(graphicsPath, true);
         main.Close();
     });

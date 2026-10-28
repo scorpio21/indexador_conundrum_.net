@@ -18,7 +18,7 @@ Ya están migrados la ventana principal, estados básicos, lectura Integer/Long,
 | `Mod_Recursos.bas` | `MainForm/Search/MainForm.Search.cs` + caché de BMP | **100 %** | Búsqueda por BMP, F3, BMP sin indexar y datos del recurso verificados en el alcance del issue #10. |
 | `Mod_Directorios.bas` | `SettingsForm.cs` + JSON | **100 %** | Rutas relativas, valores iniciales y persistencia JSON verificadas. |
 | `Mod_Indices.bas` | `DirectionalIndexing.cs` + lectores adicionales | **100 %** en la regresión cubierta | Estados direccionales, offsets, FX, armas, escudos, alas, capas y botas verificados con Integer/Long o INI. |
-| `Mod_Superficies.bas` | `WeIndexFile.cs` + `MainForm` | **100 %** | Generación de `Indices.ini` para WE, referencias consecutivas y confirmación de modificación verificados en el issue #7. |
+| `Mod_Superficies.bas` | `WeIndexFile.cs` + `MainForm` | **100 %** | Generación de `Indices.ini` para WE, panel equivalente a `FraDatosIndice`, botón equivalente a `ChaGenerarIndices`, modo `Capas`, referencias consecutivas y confirmación de modificación verificados en el issue #7. |
 | `Mod_Edicion.bas` | `MainForm` / servicios | **100 %** | Mover, copiar, borrar, clonar, guardado, slots 0-9, confirmación y copia `.bak` verificados en el issue #6. |
 | `Mod_Visor.bas` | `BufferedPreviewPanel.cs` + `MainForm/Rendering/` | **100 %** | Temporización VB6, caché, escalado, transparencia, animación y refresco verificados; no se porta DirectX7. |
 | `Mod_Errores.bas` | `MainForm/IO/MainForm.Saving.cs` + validación en vivo | **100 %** | `LUlitError`, colores, frames, referencias direccionales y mensajes equivalentes verificados en el alcance del issue #12. |
@@ -81,7 +81,7 @@ Las cuatro direcciones, offsets, GRH utilizados y escritura del archivo auxiliar
 
 - Entrada de menú: **100 %**.
 - Lectura del formato: **100 %** — se preservan `INIT/Referencias` y las secciones existentes.
-- Formulario: **100 %** — el comando se ejecuta desde el menú y usa el GRH seleccionado.
+- Formulario: **100 %** — el panel equivalente a `FraDatosIndice` se alterna desde el menú y `Capas`, y usa el GRH seleccionado.
 - Generación compatible con WE: **100 %** — `REFERENCIA<n>` con nombre, GRH, alto y ancho.
 - Validación con mapas reales: **100 %** en la generación no destructiva de `Indices.ini`.
 
@@ -105,7 +105,7 @@ Las cuatro direcciones, offsets, GRH utilizados y escritura del archivo auxiliar
 - Buscar BMP sin indexar: **100 %** — cambia al estado Resource y muestra los BMP numéricos no utilizados.
 - Buscar GRH repetidos: **100 %** — agrupa recortes equivalentes y actualiza la lista del visor.
 - Autoindexador: **100 %** — modos normal, avanzado, offset y simple conectados a `MainForm`.
-- Generar índices para WE: **100 %** — añade `REFERENCIA<n>` a `Indices.ini`, actualiza `INIT/Referencias` y solicita confirmación si el archivo ya existe.
+- Generar índices para WE: **100 %** — el menú y `Capas` alternan el panel del diseñador, cargan el GRH seleccionado, validan los campos visibles, añaden `REFERENCIA<n>` a `Indices.ini`, actualizan `INIT/Referencias` y solicitan confirmación si el archivo ya existe.
 
 ## Criterio de finalización
 
@@ -145,7 +145,7 @@ dotnet build .\\EncodeNet8.slnx -c Release
 dotnet run --project .\\EncodeNet8.Tests\\EncodeNet8.Tests.csproj -c Release
 ```
 
-Última versión documentada: **0.0.68-beta**.
+Última versión documentada: **0.0.69-beta**.
 
 ## Issues de seguimiento
 

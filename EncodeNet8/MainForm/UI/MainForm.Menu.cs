@@ -14,7 +14,7 @@ public partial class MainForm : Form
         private void buscarSiguienteMenu_Click(object? sender, EventArgs e) => SearchNext();
         private void autoindexadorMenu_Click(object? sender, EventArgs e) => OpenAutoIndexer();
         private void repetidosMenu_Click(object? sender, EventArgs e) => SearchRepeatedGrh();
-        private void generarWeMenu_Click(object? sender, EventArgs e) => GenerateWeIndex();
+        private void generarWeMenu_Click(object? sender, EventArgs e) => ToggleWeMode();
         private void acercaMenu_Click(object? sender, EventArgs e) => MessageBox.Show(this, "AOSpain - Indexador de gráficos .NET 8\nBasado en Encode.frm de Conundrum.", "Ayuda");
         private void SetUsageCount(int count) => usageStatusLabel.Text = $"Veces que el GRH es utilizado: {count}";
     
@@ -41,6 +41,54 @@ public partial class MainForm : Form
     
             private void ShowPending(string action) => MessageBox.Show(this, $"La acción «{action}» está preparada en el menú y se conectará al módulo correspondiente.", "AOSpain");
 
+        private void ToggleWeMode()
+        {
+            _weMode = !_weMode;
+            surfaceGroup.Visible = _weMode;
+            generateSurfaceButton.Visible = _weMode;
+            surfaceNameText.Visible = _weMode;
+            surfaceHeightText.Visible = _weMode;
+            surfaceWidthText.Visible = _weMode;
+            surfaceGrhText.Visible = _weMode;
+            surfaceReferencesText.Visible = _weMode;
+            surfaceDescriptionLabel.Visible = _weMode;
+
+            if (_weMode)
+            {
+                surfaceDescriptionLabel.Text = "Selecciona un GRH y completa el nombre.";
+                surfaceReferencesText.Text = ReadWeReferenceCount().ToString();
+                if (_selectedRecord is not null)
+                    UpdateSurfaceSelection(_selectedRecord);
+                statusLabel.Text = "Modo superficies WE activado. Selecciona un GRH y completa los datos.";
+            }
+            else
+            {
+                statusLabel.Text = "Modo superficies WE desactivado.";
+            }
+        }
+
+        private int ReadWeReferenceCount()
+        {
+            var path = Path.Combine(ResolvePath(_settings.InitPath), "Indices.ini");
+            if (!File.Exists(path)) return 0;
+            return File.ReadLines(path)
+                .Select(line => line.Trim())
+                .Where(line => line.StartsWith("Referencias", StringComparison.OrdinalIgnoreCase))
+                .Select(line => line.IndexOf('=') >= 0 ? line[(line.IndexOf('=') + 1)..].Trim() : string.Empty)
+                .Select(value => int.TryParse(value, out var count) ? count : 0)
+                .FirstOrDefault();
+        }
+
+        private void UpdateSurfaceSelection(GrhRecord record)
+        {
+            if (!_weMode) return;
+            surfaceGrhText.Text = record.Id.ToString();
+            surfaceHeightText.Text = record.Height > 0 ? record.Height.ToString() : string.Empty;
+            surfaceWidthText.Text = record.Width > 0 ? record.Width.ToString() : string.Empty;
+        }
+
+        private void generateSurfaceButton_Click(object? sender, EventArgs e) => GenerateWeIndex();
+
         private void GenerateWeIndex()
         {
             if (_file is null || _selectedRecord is null)
@@ -49,9 +97,13 @@ public partial class MainForm : Form
                 return;
             }
 
-            var name = Microsoft.VisualBasic.Interaction.InputBox(
-                "Nombre de la superficie:", "Generar índices para WE", "Superficie").Trim();
+            var name = surfaceNameText.Text.Trim();
             if (string.IsNullOrWhiteSpace(name)) return;
+            if (string.IsNullOrWhiteSpace(surfaceHeightText.Text.Trim()))
+            {
+                SetUtilError("Indica el alto de la superficie.");
+                return;
+            }
 
             var path = Path.Combine(ResolvePath(_settings.InitPath), "Indices.ini");
             if (File.Exists(path))
@@ -65,9 +117,14 @@ public partial class MainForm : Form
             try
             {
                 var frame = _file.Records.FirstOrDefault(record => record.Id == _selectedRecord.Frames.FirstOrDefault()) ?? _selectedRecord;
-                var reference = WeIndexFile.Append(path, name, _selectedRecord.Id,
-                    frame.Height > 0 ? frame.Height : _selectedRecord.Height,
-                    frame.Width > 0 ? frame.Width : _selectedRecord.Width);
+                var height = ParseInt(surfaceHeightText.Text);
+                var width = ParseInt(surfaceWidthText.Text);
+                if (height <= 0) height = frame.Height > 0 ? frame.Height : _selectedRecord.Height;
+                if (width <= 0) width = frame.Width > 0 ? frame.Width : _selectedRecord.Width;
+                var grh = ParseInt(surfaceGrhText.Text);
+                if (grh <= 0) grh = _selectedRecord.Id;
+                var reference = WeIndexFile.Append(path, name, grh, height, width);
+                surfaceReferencesText.Text = reference.ToString();
                 statusLabel.Text = $"Índice WE {reference} generado en {path}.";
                 SetUtilError(null);
             }
