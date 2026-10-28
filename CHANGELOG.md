@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.67-beta] - 2026-10-28
+
+### Auditoría final del indexador
+
+- Se corrigieron las métricas obsoletas del manual: estados, índices direccionales, superficies WE, rutas JSON, menús y regresión quedan reflejados al 100 % dentro del alcance del indexador.
+- Se deja explícito que `clsSurfaceManager` pertenece al runtime del cliente y no forma parte de esta utilidad.
+
 ## [0.0.66-beta] - 2026-10-28
 
 ### Arquitectura del visor — Issue #9

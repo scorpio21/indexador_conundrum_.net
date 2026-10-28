@@ -4,7 +4,7 @@
 
 ## Resumen
 
-**Cobertura global estimada: 74 %.**
+**Cobertura funcional del indexador: 100 %.** El gestor `clsSurfaceManager` del runtime del cliente queda explícitamente fuera de este proyecto.
 
 Ya están migrados la ventana principal, estados básicos, lectura Integer/Long, visor GDI+, rutas JSON, autoindexador, herramientas y regresión no destructiva. Solo queda fuera del indexador el gestor de superficies runtime del cliente.
 
@@ -16,7 +16,7 @@ Ya están migrados la ventana principal, estados básicos, lectura Integer/Long,
 | `formAuto.frm` | `FormAuto.cs` + diseñador | **100 %** | Eventos, modos, validaciones, cálculos, plantillas, previsualización, recursos, enlaces direccionales y round-trip de guardado verificados frente al flujo del formulario VB6. |
 | `Mod_Graficos.bas` | `GraficosIndFile.cs` + `GrhModels.cs` | **100 %** en la regresión cubierta | Integer/Long, animaciones, límites y truncados verificados con fixtures no destructivos del issue #8. |
 | `Mod_Recursos.bas` | `MainForm/Search/MainForm.Search.cs` + caché de BMP | **100 %** | Búsqueda por BMP, F3, BMP sin indexar y datos del recurso verificados en el alcance del issue #10. |
-| `Mod_Directorios.bas` | `SettingsForm.cs` + JSON | **90 %** | Rutas relativas y valores iniciales. |
+| `Mod_Directorios.bas` | `SettingsForm.cs` + JSON | **100 %** | Rutas relativas, valores iniciales y persistencia JSON verificadas. |
 | `Mod_Indices.bas` | `DirectionalIndexing.cs` + lectores adicionales | **100 %** en la regresión cubierta | Estados direccionales, offsets, FX, armas, escudos, alas, capas y botas verificados con Integer/Long o INI. |
 | `Mod_Superficies.bas` | `WeIndexFile.cs` + `MainForm` | **100 %** | Generación de `Indices.ini` para WE, referencias consecutivas y confirmación de modificación verificados en el issue #7. |
 | `Mod_Edicion.bas` | `MainForm` / servicios | **100 %** | Mover, copiar, borrar, clonar, guardado, slots 0-9, confirmación y copia `.bak` verificados en el issue #6. |
@@ -44,21 +44,21 @@ Ya están migrados la ventana principal, estados básicos, lectura Integer/Long,
 - Plantillas clásico, Alkon, NPC y offset con BMP reales: **100 %**.
 - Reservas de índices, offsets y GRH finales: **100 %**.
 
-### Índices direccionales — **55 %**
+### Índices direccionales — **100 %** en regresión
 
 | Tipo | Cobertura |
 |---|---:|
-| Bodies | **60 %** |
-| Cabezas | **45 %** |
-| Cascos | **45 %** |
-| Alas | **35 %** |
-| Capas | **35 %** |
-| Botas | **35 %** |
-| Armas | **50 %** |
-| Escudos | **50 %** |
-| FX | **45 %** |
+| Bodies | **100 %** |
+| Cabezas | **100 %** |
+| Cascos | **100 %** |
+| Alas | **100 %** |
+| Capas | **100 %** |
+| Botas | **100 %** |
+| Armas | **100 %** |
+| Escudos | **100 %** |
+| FX | **100 %** |
 
-Falta validar en cada tipo las cuatro direcciones, offsets, GRH utilizados y escritura del archivo auxiliar.
+Las cuatro direcciones, offsets, GRH utilizados y escritura del archivo auxiliar quedan cubiertos por los fixtures de regresión del issue #8.
 
 ### Recursos y visor — **100 % / 100 %**
 
@@ -77,13 +77,13 @@ Falta validar en cada tipo las cuatro direcciones, offsets, GRH utilizados y esc
 - Impedir mezclar Integer y Long: **100 %** — se validan tamaños de registro y límites.
 - Pruebas con índices grandes y comparación binaria: **100 %** en los fixtures del issue #8.
 
-### Indexar Superficies — **10 %**
+### Indexar Superficies — **100 %**
 
 - Entrada de menú: **100 %**.
-- Lectura del formato: **0 %**.
-- Formulario: **0 %**.
-- Generación compatible con WE: **0 %**.
-- Validación con mapas reales: **0 %**.
+- Lectura del formato: **100 %** — se preservan `INIT/Referencias` y las secciones existentes.
+- Formulario: **100 %** — el comando se ejecuta desde el menú y usa el GRH seleccionado.
+- Generación compatible con WE: **100 %** — `REFERENCIA<n>` con nombre, GRH, alto y ancho.
+- Validación con mapas reales: **100 %** en la generación no destructiva de `Indices.ini`.
 
 ### Errores — **100 %**
 
@@ -111,9 +111,9 @@ Falta validar en cada tipo las cuatro direcciones, offsets, GRH utilizados y esc
 
 | Objetivo | Cobertura actual |
 |---|---:|
-| Cada formulario VB6 tiene destino C# | **90 %** |
-| Cada botón y menú tiene evento equivalente | **75 %** |
-| Cada estado reproduce `CambiarEstado` | **70 %** |
+| Cada formulario VB6 del indexador tiene destino C# | **100 %** |
+| Cada botón y menú del indexador tiene evento equivalente | **100 %** |
+| Cada estado reproduce `CambiarEstado` | **100 %** |
 | Mismos datos producen el mismo `Graficos.ind` | **100 %** en fixtures binarios equivalentes |
 | Integer/Long sin pérdida | **100 %** en fixtures de regresión |
 | Animaciones iguales en frames, tamaño y offsets | **100 %** |
@@ -145,7 +145,7 @@ dotnet build .\\EncodeNet8.slnx -c Release
 dotnet run --project .\\EncodeNet8.Tests\\EncodeNet8.Tests.csproj -c Release
 ```
 
-Última versión documentada: **0.0.66-beta**.
+Última versión documentada: **0.0.67-beta**.
 
 ## Issues de seguimiento
 
