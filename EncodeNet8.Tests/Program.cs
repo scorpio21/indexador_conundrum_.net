@@ -352,6 +352,9 @@ static void TestMainFormStates()
         using var main = new MainForm();
         main.Show();
         Application.DoEvents();
+        var deleteMenu = GetMainValue<ToolStripMenuItem>(main, "borrarMenu");
+        Assert(deleteMenu.ShortcutKeys == Keys.None && deleteMenu.ShortcutKeyDisplayString == "Supr",
+            "MainForm Edición: Supr no secuestra la edición de TextBox");
         var changeState = typeof(MainForm).GetMethod("CambiarEstado", BindingFlags.Instance | BindingFlags.NonPublic)!;
 
         changeState.Invoke(main, new object[] { "Resource" });

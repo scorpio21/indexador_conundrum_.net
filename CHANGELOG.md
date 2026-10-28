@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.0.73-beta] - 2026-10-28
+
+### Edición segura del offset
+
+- Corregido el atajo `Supr`: ya no borra el Body cuando el foco está dentro de un campo de texto.
+- El menú mantiene visible la indicación `Supr`, pero la tecla solo elimina el índice cuando la lista tiene el foco.
+- Añadida regresión para evitar que el atajo global interfiera con la edición del offset.
+- Build Release y pruebas verificadas: 0 advertencias y 0 errores.
+
 ## [0.0.72-beta] - 2026-10-28
 
 ### Offset de cabeza en Bodies

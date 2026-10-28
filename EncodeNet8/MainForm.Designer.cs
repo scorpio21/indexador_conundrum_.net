@@ -333,7 +333,8 @@ partial class MainForm
         // borrarMenu
         // 
         borrarMenu.Name = "borrarMenu";
-        borrarMenu.ShortcutKeys = Keys.Delete;
+        borrarMenu.ShortcutKeys = Keys.None;
+        borrarMenu.ShortcutKeyDisplayString = "Supr";
         borrarMenu.Size = new Size(172, 22);
         borrarMenu.Text = "Borrar";
         borrarMenu.Click += deleteButton_Click;

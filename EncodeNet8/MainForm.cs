@@ -57,6 +57,17 @@ public partial class MainForm : Form
         LoadConfiguredGraphics();
         UpdateUi();
     }
+
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+    {
+        if (keyData == Keys.Delete && !IsTextEditingActive() && indexList.Focused)
+        {
+            DeleteSelected();
+            return true;
+        }
+
+        return base.ProcessCmdKey(ref msg, keyData);
+    }
 }
 
 #pragma warning restore CS8618

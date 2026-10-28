@@ -6,7 +6,19 @@ public partial class MainForm : Form
 {
         private void salirMenu_Click(object? sender, EventArgs e) => Close();
 
-        private void deleteButton_Click(object? sender, EventArgs e) => DeleteSelected();
+        private void deleteButton_Click(object? sender, EventArgs e)
+        {
+            if (IsTextEditingActive()) return;
+            DeleteSelected();
+        }
+
+        private bool IsTextEditingActive()
+        {
+            Control? focused = ActiveControl;
+            while (focused is ContainerControl container && container.ActiveControl is not null)
+                focused = container.ActiveControl;
+            return focused is TextBoxBase;
+        }
     
             private void saveIndexButton_Click(object? sender, EventArgs e) => SaveIndex();
     
