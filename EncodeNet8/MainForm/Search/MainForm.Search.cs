@@ -154,8 +154,10 @@ public partial class MainForm : Form
             {
                 var records = dialog.GeneratedRecords.ToList();
                 var ids = records.Select(record => record.Id).ToHashSet();
-                if (_file.Records.Any(record => ids.Contains(record.Id)))
+                if (_file.Records.Any(record => ids.Contains(record.Id)) && !dialog.OverwriteExisting)
                     throw new InvalidDataException("Uno o más GRH de destino ya existen.");
+                if (dialog.OverwriteExisting)
+                    _file.Records.RemoveAll(record => ids.Contains(record.Id));
                 _file.Records.AddRange(records);
                 RebuildReferenceCounts();
                 RefreshGrid();

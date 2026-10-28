@@ -197,7 +197,7 @@ partial class MainForm
         // 
         salirMenu.Name = "salirMenu";
         salirMenu.Text = "Salir";
-        salirMenu.Click += (_, _) => Close();
+        salirMenu.Click += salirMenu_Click;
         // 
         // edicionMenu
         // 

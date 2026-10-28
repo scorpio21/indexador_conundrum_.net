@@ -4,6 +4,8 @@ namespace EncodeNet8;
 
 public partial class MainForm : Form
 {
+        private void salirMenu_Click(object? sender, EventArgs e) => Close();
+
         private void deleteButton_Click(object? sender, EventArgs e) => DeleteSelected();
     
             private void saveIndexButton_Click(object? sender, EventArgs e) => SaveIndex();

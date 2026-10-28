@@ -60,14 +60,19 @@
             textBox21 = new TextBox();
             radioButton6 = new RadioButton();
             GroupBox = new GroupBox();
-            radioButton3 = new RadioButton();
-            radioButton2 = new RadioButton();
-            radioButton1 = new RadioButton();
+            checkAuto = new CheckBox();
+            TextDatos2_8 = new TextBox();
+            text1 = new TextBox();
+            Loffy = new Label();
+            TextDatos2_7 = new TextBox();
+            Loffx = new Label();
+            Loff = new Label();
+            Optiondimension_1 = new RadioButton();
+            Optiondimension_0 = new RadioButton();
+            Optiondimension_2 = new RadioButton();
             label11 = new Label();
-            textBox9 = new TextBox();
-            textBox8 = new TextBox();
-            comboBox1 = new ComboBox();
-            checkBox1 = new CheckBox();
+            Text2 = new TextBox();
+            combo2 = new ComboBox();
             label8 = new Label();
             label7 = new Label();
             label6 = new Label();
@@ -75,8 +80,8 @@
             textBox6 = new TextBox();
             textBox5 = new TextBox();
             textBox4 = new TextBox();
-            textBox3 = new TextBox();
-            textBox2 = new TextBox();
+            textDatos2_3 = new TextBox();
+            textDatos2_1 = new TextBox();
             label5 = new Label();
             label4 = new Label();
             label3 = new Label();
@@ -85,8 +90,8 @@
             CommandBuscar = new Button();
             Command1 = new Button();
             label1 = new Label();
-            textBox1 = new TextBox();
-            comboBox2 = new ComboBox();
+            textDatos2_0 = new TextBox();
+            ComboTipoAnim = new ComboBox();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             GroupBox.SuspendLayout();
@@ -386,14 +391,19 @@
             // 
             // GroupBox
             // 
-            GroupBox.Controls.Add(radioButton3);
-            GroupBox.Controls.Add(radioButton2);
-            GroupBox.Controls.Add(radioButton1);
+            GroupBox.Controls.Add(checkAuto);
+            GroupBox.Controls.Add(TextDatos2_8);
+            GroupBox.Controls.Add(text1);
+            GroupBox.Controls.Add(Loffy);
+            GroupBox.Controls.Add(TextDatos2_7);
+            GroupBox.Controls.Add(Loffx);
+            GroupBox.Controls.Add(Loff);
+            GroupBox.Controls.Add(Optiondimension_1);
+            GroupBox.Controls.Add(Optiondimension_0);
+            GroupBox.Controls.Add(Optiondimension_2);
             GroupBox.Controls.Add(label11);
-            GroupBox.Controls.Add(textBox9);
-            GroupBox.Controls.Add(textBox8);
-            GroupBox.Controls.Add(comboBox1);
-            GroupBox.Controls.Add(checkBox1);
+            GroupBox.Controls.Add(Text2);
+            GroupBox.Controls.Add(combo2);
             GroupBox.Controls.Add(label8);
             GroupBox.Controls.Add(label7);
             GroupBox.Controls.Add(label6);
@@ -401,8 +411,8 @@
             GroupBox.Controls.Add(textBox6);
             GroupBox.Controls.Add(textBox5);
             GroupBox.Controls.Add(textBox4);
-            GroupBox.Controls.Add(textBox3);
-            GroupBox.Controls.Add(textBox2);
+            GroupBox.Controls.Add(textDatos2_3);
+            GroupBox.Controls.Add(textDatos2_1);
             GroupBox.Controls.Add(label5);
             GroupBox.Controls.Add(label4);
             GroupBox.Controls.Add(label3);
@@ -411,8 +421,8 @@
             GroupBox.Controls.Add(CommandBuscar);
             GroupBox.Controls.Add(Command1);
             GroupBox.Controls.Add(label1);
-            GroupBox.Controls.Add(textBox1);
-            GroupBox.Controls.Add(comboBox2);
+            GroupBox.Controls.Add(textDatos2_0);
+            GroupBox.Controls.Add(ComboTipoAnim);
             GroupBox.Location = new Point(10, 35);
             GroupBox.Name = "GroupBox";
             GroupBox.Size = new Size(425, 365);
@@ -421,38 +431,99 @@
             GroupBox.Text = "Animacion Especial";
             GroupBox.Paint += GroupBox_Paint;
             // 
-            // radioButton3
+            // checkAuto
             // 
-            radioButton3.AutoSize = true;
-            radioButton3.Location = new Point(312, 201);
-            radioButton3.Name = "radioButton3";
-            radioButton3.Size = new Size(96, 19);
-            radioButton3.TabIndex = 27;
-            radioButton3.TabStop = true;
-            radioButton3.Text = "Nomal (NPC)";
-            radioButton3.UseVisualStyleBackColor = true;
+            checkAuto.AutoSize = true;
+            checkAuto.Location = new Point(2, 268);
+            checkAuto.Name = "checkAuto";
+            checkAuto.Size = new Size(90, 19);
+            checkAuto.TabIndex = 20;
+            checkAuto.Text = "Autoindexar";
+            checkAuto.UseVisualStyleBackColor = true;
             // 
-            // radioButton2
+            // TextDatos2_8
             // 
-            radioButton2.AutoSize = true;
-            radioButton2.Location = new Point(312, 176);
-            radioButton2.Name = "radioButton2";
-            radioButton2.Size = new Size(82, 19);
-            radioButton2.TabIndex = 26;
-            radioButton2.TabStop = true;
-            radioButton2.Text = "(pj) clasico";
-            radioButton2.UseVisualStyleBackColor = true;
+            TextDatos2_8.Location = new Point(238, 267);
+            TextDatos2_8.Name = "TextDatos2_8";
+            TextDatos2_8.Size = new Size(91, 23);
+            TextDatos2_8.TabIndex = 34;
+            TextDatos2_8.Visible = false;
             // 
-            // radioButton1
+            // text1
             // 
-            radioButton1.AutoSize = true;
-            radioButton1.Location = new Point(312, 151);
-            radioButton1.Name = "radioButton1";
-            radioButton1.Size = new Size(77, 19);
-            radioButton1.TabIndex = 25;
-            radioButton1.TabStop = true;
-            radioButton1.Text = "(pj) Alkon";
-            radioButton1.UseVisualStyleBackColor = true;
+            text1.Location = new Point(186, 268);
+            text1.Name = "text1";
+            text1.Size = new Size(52, 23);
+            text1.TabIndex = 22;
+            // 
+            // Loffy
+            // 
+            Loffy.AutoSize = true;
+            Loffy.Location = new Point(219, 268);
+            Loffy.Name = "Loffy";
+            Loffy.Size = new Size(13, 15);
+            Loffy.TabIndex = 33;
+            Loffy.Text = "y";
+            Loffy.Visible = false;
+            // 
+            // TextDatos2_7
+            // 
+            TextDatos2_7.Location = new Point(95, 268);
+            TextDatos2_7.Name = "TextDatos2_7";
+            TextDatos2_7.Size = new Size(90, 23);
+            TextDatos2_7.TabIndex = 32;
+            TextDatos2_7.Visible = false;
+            // 
+            // Loffx
+            // 
+            Loffx.AutoSize = true;
+            Loffx.Location = new Point(75, 265);
+            Loffx.Name = "Loffx";
+            Loffx.Size = new Size(12, 15);
+            Loffx.TabIndex = 31;
+            Loffx.Text = "x";
+            // 
+            // Loff
+            // 
+            Loff.AutoSize = true;
+            Loff.Location = new Point(10, 269);
+            Loff.Name = "Loff";
+            Loff.Size = new Size(42, 15);
+            Loff.TabIndex = 30;
+            Loff.Text = "Offset:";
+            // 
+            // Optiondimension_1
+            // 
+            Optiondimension_1.AutoSize = true;
+            Optiondimension_1.Location = new Point(312, 201);
+            Optiondimension_1.Name = "Optiondimension_1";
+            Optiondimension_1.Size = new Size(96, 19);
+            Optiondimension_1.TabIndex = 27;
+            Optiondimension_1.TabStop = true;
+            Optiondimension_1.Text = "Nomal (NPC)";
+            Optiondimension_1.UseVisualStyleBackColor = true;
+            // 
+            // Optiondimension_0
+            // 
+            Optiondimension_0.AutoSize = true;
+            Optiondimension_0.Location = new Point(312, 176);
+            Optiondimension_0.Name = "Optiondimension_0";
+            Optiondimension_0.Size = new Size(82, 19);
+            Optiondimension_0.TabIndex = 26;
+            Optiondimension_0.TabStop = true;
+            Optiondimension_0.Text = "(pj) clasico";
+            Optiondimension_0.UseVisualStyleBackColor = true;
+            // 
+            // Optiondimension_2
+            // 
+            Optiondimension_2.AutoSize = true;
+            Optiondimension_2.Location = new Point(312, 151);
+            Optiondimension_2.Name = "Optiondimension_2";
+            Optiondimension_2.Size = new Size(77, 19);
+            Optiondimension_2.TabIndex = 25;
+            Optiondimension_2.TabStop = true;
+            Optiondimension_2.Text = "(pj) Alkon";
+            Optiondimension_2.UseVisualStyleBackColor = true;
             // 
             // label11
             // 
@@ -463,37 +534,20 @@
             label11.TabIndex = 24;
             label11.Text = "OffSet:";
             // 
-            // textBox9
+            // Text2
             // 
-            textBox9.Location = new Point(312, 266);
-            textBox9.Name = "textBox9";
-            textBox9.Size = new Size(52, 23);
-            textBox9.TabIndex = 23;
+            Text2.Location = new Point(313, 267);
+            Text2.Name = "Text2";
+            Text2.Size = new Size(52, 23);
+            Text2.TabIndex = 23;
             // 
-            // textBox8
+            // combo2
             // 
-            textBox8.Location = new Point(203, 265);
-            textBox8.Name = "textBox8";
-            textBox8.Size = new Size(52, 23);
-            textBox8.TabIndex = 22;
-            // 
-            // comboBox1
-            // 
-            comboBox1.FormattingEnabled = true;
-            comboBox1.Location = new Point(114, 265);
-            comboBox1.Name = "comboBox1";
-            comboBox1.Size = new Size(78, 23);
-            comboBox1.TabIndex = 21;
-            // 
-            // checkBox1
-            // 
-            checkBox1.AutoSize = true;
-            checkBox1.Location = new Point(18, 268);
-            checkBox1.Name = "checkBox1";
-            checkBox1.Size = new Size(90, 19);
-            checkBox1.TabIndex = 20;
-            checkBox1.Text = "Autoindexar";
-            checkBox1.UseVisualStyleBackColor = true;
+            combo2.FormattingEnabled = true;
+            combo2.Location = new Point(93, 267);
+            combo2.Name = "combo2";
+            combo2.Size = new Size(90, 23);
+            combo2.TabIndex = 21;
             // 
             // label8
             // 
@@ -550,19 +604,19 @@
             textBox4.Size = new Size(90, 23);
             textBox4.TabIndex = 13;
             // 
-            // textBox3
+            // textDatos2_3
             // 
-            textBox3.Location = new Point(231, 103);
-            textBox3.Name = "textBox3";
-            textBox3.Size = new Size(52, 23);
-            textBox3.TabIndex = 12;
+            textDatos2_3.Location = new Point(231, 103);
+            textDatos2_3.Name = "textDatos2_3";
+            textDatos2_3.Size = new Size(52, 23);
+            textDatos2_3.TabIndex = 12;
             // 
-            // textBox2
+            // textDatos2_1
             // 
-            textBox2.Location = new Point(163, 103);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(52, 23);
-            textBox2.TabIndex = 11;
+            textDatos2_1.Location = new Point(163, 103);
+            textDatos2_1.Name = "textDatos2_1";
+            textDatos2_1.Size = new Size(52, 23);
+            textDatos2_1.TabIndex = 11;
             // 
             // label5
             // 
@@ -636,20 +690,20 @@
             label1.TabIndex = 2;
             label1.Text = "A lo ancho";
             // 
-            // textBox1
+            // textDatos2_0
             // 
-            textBox1.Location = new Point(93, 103);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(52, 23);
-            textBox1.TabIndex = 1;
+            textDatos2_0.Location = new Point(93, 103);
+            textDatos2_0.Name = "textDatos2_0";
+            textDatos2_0.Size = new Size(52, 23);
+            textDatos2_0.TabIndex = 1;
             // 
-            // comboBox2
+            // ComboTipoAnim
             // 
-            comboBox2.FormattingEnabled = true;
-            comboBox2.Location = new Point(28, 31);
-            comboBox2.Name = "comboBox2";
-            comboBox2.Size = new Size(205, 23);
-            comboBox2.TabIndex = 29;
+            ComboTipoAnim.FormattingEnabled = true;
+            ComboTipoAnim.Location = new Point(28, 31);
+            ComboTipoAnim.Name = "ComboTipoAnim";
+            ComboTipoAnim.Size = new Size(205, 23);
+            ComboTipoAnim.TabIndex = 29;
             // 
             // FormAuto
             // 
@@ -707,14 +761,14 @@
         private TextBox textBox21;
         private RadioButton radioButton6;
         private GroupBox GroupBox;
-        private RadioButton radioButton3;
-        private RadioButton radioButton2;
-        private RadioButton radioButton1;
+        private RadioButton Optiondimension_1;
+        private RadioButton Optiondimension_0;
+        private RadioButton Optiondimension_2;
         private Label label11;
-        private TextBox textBox9;
-        private TextBox textBox8;
-        private ComboBox comboBox1;
-        private CheckBox checkBox1;
+        private TextBox Text2;
+        private TextBox text1;
+        private ComboBox combo2;
+        private CheckBox checkAuto;
         private Label label8;
         private Label label7;
         private Label label6;
@@ -722,8 +776,8 @@
         private TextBox textBox6;
         private TextBox textBox5;
         private TextBox textBox4;
-        private TextBox textBox3;
-        private TextBox textBox2;
+        private TextBox textDatos2_3;
+        private TextBox textDatos2_1;
         private Label label5;
         private Label label4;
         private Label label3;
@@ -732,7 +786,12 @@
         private Button CommandBuscar;
         private Button Command1;
         private Label label1;
-        private TextBox textBox1;
-        private ComboBox comboBox2;
+        private TextBox textDatos2_0;
+        private ComboBox ComboTipoAnim;
+        private Label Loff;
+        private TextBox TextDatos2_7;
+        private Label Loffx;
+        private TextBox TextDatos2_8;
+        private Label Loffy;
     }
 }
