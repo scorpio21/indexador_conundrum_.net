@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.0.62-beta] - 2026-10-28
+
+### Regresión del visor — Issue #5
+
+- Se verificó el preview de GRH y de las cuatro direcciones de índices direccionales.
+- Se verificó el ciclo de animaciones de 1, 4, 15 y 25 frames sin desbordamiento.
+- Los frames inexistentes se informan en `LUlitError` y el render termina de forma segura sin lanzar excepciones.
+- La prueba WinForms STA cubre límites de frame, temporización y render de errores.
+- Build Release y pruebas verificadas: 0 advertencias y 0 errores.
+
 ## [0.0.61-beta] - 2026-10-28
 
 ### Rendimiento y regresión del visor — Issue #13

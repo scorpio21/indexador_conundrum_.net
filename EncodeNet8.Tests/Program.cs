@@ -427,6 +427,16 @@ static void TestMainFormStates()
             var currentFrame = GetMainValue<int>(main, "_animationFrame");
             Assert(currentFrame >= 0 && currentFrame < frameCount, $"Animación: frame dentro de rango para {frameCount} frames");
         }
+        selectedField.SetValue(main, new GrhRecord { Id = 999, Speed = 1, Frames = new List<int> { 999, 1000 } });
+        var preview = GetMain<BufferedPreviewPanel>(main, "previewPanel");
+        using (var canvas = new Bitmap(120, 120))
+        using (var graphics = Graphics.FromImage(canvas))
+        {
+            var paint = typeof(MainForm).GetMethod("previewPanel_Paint", BindingFlags.Instance | BindingFlags.NonPublic)!;
+            paint.Invoke(main, new object[] { preview, new PaintEventArgs(graphics, new Rectangle(0, 0, 120, 120)) });
+        }
+        Assert(GetMain<Label>(main, "LUlitError").Text.Length > 0,
+            "Visor: frame inexistente se informa sin excepción ni índice fuera de rango");
         Directory.Delete(graphicsPath, true);
         main.Close();
     });
