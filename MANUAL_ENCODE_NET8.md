@@ -13,7 +13,7 @@ Ya están migrados la ventana principal, estados básicos, lectura Integer/Long,
 | VB6 | Destino C# | Cobertura | Falta |
 |---|---|---:|---|
 | `frmMain.frm` | `MainForm.cs` + `MainForm/` | **82 %** | Estados, visibilidad, colores, menús y eventos. |
-| `formAuto.frm` | `FormAuto.cs` + diseñador | **84 %** | Validación, creación, modos y previsualización temporal implementados; falta cerrar la comparación exhaustiva y la regresión con recursos reales. |
+| `formAuto.frm` | `FormAuto.cs` + diseñador | **86 %** | Validación, creación, modos, previsualización temporal y prueba WinForms de los tres modos implementados; falta cerrar guardado/regresión completa con archivos reales. |
 | `Mod_Graficos.bas` | `GraficosIndFile.cs` + `GrhModels.cs` | **84 %** | Casos límite, referencias y escritura idéntica. |
 | `Mod_Recursos.bas` | `ResourceIndexing.cs` | **65 %** | BMP no indexados, búsqueda y mensajes. |
 | `Mod_Directorios.bas` | `SettingsForm.cs` + JSON | **90 %** | Rutas relativas y valores iniciales. |

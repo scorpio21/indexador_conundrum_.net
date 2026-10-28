@@ -1,6 +1,8 @@
 using EncodeNet8;
 using System.Drawing;
 using System.Reflection;
+using System.Threading;
+using System.Windows.Forms;
 
 var root = Path.Combine(Path.GetTempPath(), "EncodeNet8.Tests", Guid.NewGuid().ToString("N"));
 Directory.CreateDirectory(root);
@@ -77,6 +79,7 @@ try
     TestDirectionalReader(root);
     TestAdditionalReaders(root);
     TestAutoIndexer(root);
+    TestFormAutoModes(root);
     Console.WriteLine("Graficos.ind, lectores direccionales y adicionales: Integer/Long OK; truncado rechazado.");
 }
 finally
@@ -223,4 +226,79 @@ static void TestAutoIndexer(string root)
     Assert(records.Count == 3, "autoindexador: cantidad de GRH");
     Assert(records[0].FileNumber == 700 && records[1].X == 32, "autoindexador: recortes");
     Assert(records[2].IsAnimation && records[2].Frames.SequenceEqual(new[] { 10, 11 }), "autoindexador: animación");
+}
+
+static void TestFormAutoModes(string root)
+{
+    var bitmapPath = Path.Combine(root, "700.bmp");
+    using (var bitmap = new Bitmap(156, 184)) bitmap.Save(bitmapPath);
+
+    RunSta(() =>
+    {
+        using var normal = new FormAuto(root, 1000);
+        normal.Show();
+        Application.DoEvents();
+        Get<Button>(normal, "Command4").PerformClick();
+        Get<TextBox>(normal, "textBox7").Text = "700";
+        Get<TextBox>(normal, "textBox4").Text = "1";
+        Get<Button>(normal, "Command1").PerformClick();
+        var classic = normal.GeneratedRecords ?? throw new InvalidOperationException("Fallo: FormAuto no generó la animación clásica.");
+        Assert(classic.Count == 26, "FormAuto clásico: cantidad de GRH");
+        Assert(classic[0].X == 0 && classic[0].Y == 0 && classic[0].Frames.SequenceEqual(new[] { 1 }), "FormAuto clásico: primer frame VB6");
+        Assert(classic[1].X == 25 && classic[6].Y == 45, "FormAuto clásico: posiciones VB6");
+        Assert(classic[^4].Frames.Count == 6 && classic[^2].Frames.Count == 5, "FormAuto clásico: grupos direccionales");
+        normal.Close();
+
+        using var offset = new FormAuto(root, 1000);
+        offset.Show();
+        Application.DoEvents();
+        Get<Button>(offset, "Command4").PerformClick();
+        Get<ComboBox>(offset, "ComboTipoAnim").SelectedIndex = 1;
+        Get<TextBox>(offset, "textBox7").Text = "700";
+        Get<TextBox>(offset, "textBox4").Text = "1";
+        Get<TextBox>(offset, "textDatos2_0").Text = "2";
+        Get<TextBox>(offset, "textDatos2_1").Text = "2";
+        Get<TextBox>(offset, "textDatos2_3").Text = "4";
+        Get<TextBox>(offset, "textBox5").Text = "32";
+        Get<TextBox>(offset, "textBox6").Text = "32";
+        Get<TextBox>(offset, "TextDatos2_7").Text = "3";
+        Get<TextBox>(offset, "TextDatos2_8").Text = "4";
+        Get<Button>(offset, "Command1").PerformClick();
+        var offsetRecords = offset.GeneratedRecords ?? throw new InvalidOperationException("Fallo: FormAuto no generó el offset.");
+        Assert(offsetRecords.Count == 5 && offsetRecords[0].X == 3 && offsetRecords[0].Y == 4, "FormAuto offset: recortes");
+        Assert(offsetRecords[^1].Frames.SequenceEqual(new[] { 1, 2, 3, 4 }), "FormAuto offset: animación");
+        offset.Close();
+
+        using var simple = new FormAuto(root, 1000);
+        simple.Show();
+        Application.DoEvents();
+        Get<Button>(simple, "ISimple").PerformClick();
+        Get<TextBox>(simple, "textBoxBmp").Text = "700";
+        Get<TextBox>(simple, "textBoxGrh").Text = "1";
+        Get<Button>(simple, "BtnIndexar").PerformClick();
+        var simpleRecords = simple.GeneratedRecords ?? throw new InvalidOperationException("Fallo: FormAuto no generó el índice simple.");
+        Assert(simpleRecords.Count == 1 && simpleRecords[0].FileNumber == 700, "FormAuto simple: índice");
+        simple.Close();
+    });
+}
+
+static T Get<T>(Form form, string name) where T : Control
+{
+    var field = typeof(FormAuto).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)
+        ?? throw new InvalidOperationException($"Fallo: no existe el control {name}.");
+    return (T)(field.GetValue(form) ?? throw new InvalidOperationException($"Fallo: control {name} no inicializado."));
+}
+
+static void RunSta(Action action)
+{
+    Exception? error = null;
+    var thread = new Thread(() =>
+    {
+        try { action(); }
+        catch (Exception ex) { error = ex; }
+    });
+    thread.SetApartmentState(ApartmentState.STA);
+    thread.Start();
+    thread.Join();
+    if (error is not null) throw error;
 }

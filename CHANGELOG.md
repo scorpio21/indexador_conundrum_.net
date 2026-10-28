@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.52-beta] - 2026-10-28
+
+### Pruebas — Issue #14
+
+- Se añadió una prueba WinForms en STA para ejecutar realmente los tres modos del `FormAuto`.
+- Se verifican la animación clásica de 26 GRH, las posiciones VB6 `X=25`/`Y=45`, los grupos direccionales 6/6/5/5, el modo offset y la indexación simple.
+- Build Release y la suite de pruebas verificadas: 0 errores y 0 advertencias.
+
 ## [0.0.51-beta] - 2026-10-28
 
 ### Corrección — Issue #14
