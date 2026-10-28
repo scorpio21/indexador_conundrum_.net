@@ -33,6 +33,7 @@ Ya están migrados la ventana principal, estados básicos, lectura Integer/Long,
 - Visibilidad, textos, colores y controles: **100 %** — incluidos `Resource`, `Fx`, Body/Alas y los índices direccionales.
 - `ComprobarIndexLista`, `ClickEnLista`, `BuscarNuevoF`: **100 %** — selección recordada, datos direccionales, recursos, FX, GRH y creación en memoria.
 - Selector de Bodies (`CDibujarWalk`): **100 %** — `Todos` dibuja las cuatro direcciones y `Norte`, `Este`, `Sur` y `Oeste` dibujan una sola; `Checkcabeza` se mantiene al cambiar de opción.
+- Offset de cabeza (`TextDatos(5)`): **100 %** — se interpreta como `YºX`, se acepta también `Y.X` y el preview aplica ambos desplazamientos a la cabeza.
 - Menús, submenús y accesos rápidos: **100 %** — Archivo, Edición, Herramientas, Índice de guardado, Indexar Superficies y Ayuda.
 - Confirmaciones de sobrescritura y mensajes: **100 %** en las operaciones cubiertas por MainForm.
 
@@ -175,7 +176,7 @@ dotnet build .\\EncodeNet8.slnx -c Release
 dotnet run --project .\\EncodeNet8.Tests\\EncodeNet8.Tests.csproj -c Release
 ```
 
-Última versión documentada: **0.0.71-beta**.
+Última versión documentada: **0.0.72-beta**.
 
 ## Issues de seguimiento
 

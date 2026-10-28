@@ -169,6 +169,7 @@ public partial class MainForm : Form
             };
             var directions = new[] { body.Walk1, body.Walk2, body.Walk3, body.Walk4 };
             var drawnBody = new Rectangle[4];
+            GrhRecord? southBody = null;
 
             for (var i = 0; i < directions.Length; i++)
             {
@@ -177,13 +178,14 @@ public partial class MainForm : Form
                 var frame = ResolvePreviewFrame(record);
                 if (frame is null) continue;
                 drawnBody[i] = DrawRecordFit(graphics, frame, slots[i]);
+                if (i == 2) southBody = frame;
             }
 
             if (cabezaActual > 0 && cabezaActual <= 32720 && drawnBody[2].Width > 0)
             {
                 var head = _file.Records.FirstOrDefault(item => item.Id == cabezaActual);
                 if (head is not null)
-                    DrawOverlay(graphics, head, drawnBody[2]);
+                    DrawOverlay(graphics, head, southBody, drawnBody[2]);
             }
         }
 
@@ -219,18 +221,23 @@ public partial class MainForm : Form
             }
         }
 
-        private void DrawOverlay(Graphics graphics, GrhRecord record, Rectangle bodyBounds)
+        private void DrawOverlay(Graphics graphics, GrhRecord record, GrhRecord? bodyRecord, Rectangle bodyBounds)
         {
+            if (bodyRecord is null || bodyRecord.Width <= 0 || bodyRecord.Height <= 0 || record.Width <= 0 || record.Height <= 0) return;
             var bitmapPath = Path.Combine(ResolvePath(_settings.GraphicsPath), $"{record.FileNumber}.bmp");
-            if (!File.Exists(bitmapPath) || record.Width <= 0 || record.Height <= 0) return;
+            if (!File.Exists(bitmapPath)) return;
             try
             {
                 var bitmap = GetCachedBitmap(bitmapPath);
                 var source = new Rectangle(record.X, record.Y, record.Width, record.Height);
                 if (source.X < 0 || source.Y < 0 || source.Right > bitmap.Width || source.Bottom > bitmap.Height) return;
-                var scale = Math.Min((double)bodyBounds.Width / (source.Width * 2), (double)bodyBounds.Height / (source.Height * 2));
-                var dest = new Rectangle(bodyBounds.Left + (bodyBounds.Width - (int)(source.Width * scale)) / 2,
-                    bodyBounds.Top, Math.Max(1, (int)(source.Width * scale)), Math.Max(1, (int)(source.Height * scale)));
+                var scale = Math.Min((double)bodyBounds.Width / bodyRecord.Width, (double)bodyBounds.Height / bodyRecord.Height);
+                var destWidth = Math.Max(1, (int)(source.Width * scale));
+                var destHeight = Math.Max(1, (int)(source.Height * scale));
+                var dest = new Rectangle(
+                    bodyBounds.Left + (bodyBounds.Width - destWidth) / 2 + (int)(_previewHeadOffsetX * scale),
+                    bodyBounds.Bottom - destHeight + (int)((_previewHeadOffsetY - 1) * scale),
+                    destWidth, destHeight);
                 graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
                 graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Half;
                 graphics.DrawImage(bitmap, dest, source, GraphicsUnit.Pixel);

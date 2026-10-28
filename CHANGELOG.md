@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.0.72-beta] - 2026-10-28
+
+### Offset de cabeza en Bodies
+
+- Corregido el flujo equivalente a `TextDatos_Change` del VB6.
+- El campo de offset actualiza el preview en tiempo real interpretando `YºX`.
+- Se aceptan tanto `-3º0` como `-3.0`.
+- El render aplica `HeadOffset.X` y `HeadOffset.Y` a la cabeza `3008` cuando `Checkcabeza` está activo.
+- Añadida regresión para verificar el cambio de offset.
+- Build Release y pruebas verificadas: 0 advertencias y 0 errores.
+
 ## [0.0.71-beta] - 2026-10-28
 
 ### Selector de dirección para Bodies

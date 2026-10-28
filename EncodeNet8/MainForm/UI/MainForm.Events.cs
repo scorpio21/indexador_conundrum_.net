@@ -62,6 +62,23 @@ public partial class MainForm : Form
             cabezaActual = Checkcabeza.Checked ? 3008 : 0;
             previewPanel.Invalidate();
         }
+
+        private void UpdateBodyPreviewOffset()
+        {
+            if (!_indexerState.Equals("Body", StringComparison.OrdinalIgnoreCase)) return;
+            var parts = xText.Text.Trim().Replace('°', 'º').Split(new[] { 'º', '.' }, StringSplitOptions.TrimEntries);
+            if (parts.Length >= 2 && short.TryParse(parts[0], out var y) && short.TryParse(parts[1], out var x))
+            {
+                _previewHeadOffsetY = y;
+                _previewHeadOffsetX = x;
+            }
+            else
+            {
+                _previewHeadOffsetX = 0;
+                _previewHeadOffsetY = 0;
+            }
+            previewPanel.Invalidate();
+        }
     
             private void ClickDirectionalEnLista()
         {
@@ -86,6 +103,8 @@ public partial class MainForm : Form
             yText.Clear();
             tileHeightText.Clear();
             tileWidthText.Clear();
+            if (_indexerState.Equals("Body", StringComparison.OrdinalIgnoreCase))
+                UpdateBodyPreviewOffset();
             SetUsageCount(CountReferences(item.Directions[direction]));
             _selectedRecord = _file?.Records.FirstOrDefault(x => x.Id == item.Directions[direction]);
             frameText.Text = "1";

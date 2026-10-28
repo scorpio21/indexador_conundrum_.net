@@ -383,6 +383,10 @@ static void TestMainFormStates()
         checkCabeza.Checked = false;
         Assert(GetMainValue<int>(main, "cabezaActual") == 0,
             "MainForm Body: desmarcar Checkcabeza limpia cabezaActual");
+        GetMain<TextBox>(main, "xText").Text = "-3.0";
+        Assert(GetMainValue<short>(main, "_previewHeadOffsetY") == -3 && GetMainValue<short>(main, "_previewHeadOffsetX") == 0,
+            "MainForm Body: TextDatos(5) actualiza el offset Y/X del preview");
+        GetMain<TextBox>(main, "xText").Text = "-38º0";
 
         var directional = GetMainList<DirectionalIndexRecord>(main, "_directionalRecords");
         directional.Clear();

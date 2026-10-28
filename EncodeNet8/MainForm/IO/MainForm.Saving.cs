@@ -57,6 +57,8 @@ public partial class MainForm : Form
             }
 
             ValidateDirectionalInput();
+            if (_indexerState.Equals("Body", StringComparison.OrdinalIgnoreCase))
+                UpdateBodyPreviewOffset();
         }
 
         private void ValidateCurrentGrhInput()
