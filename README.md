@@ -20,6 +20,11 @@ La base funcional actual incluye:
 
 La migración todavía es parcial. Las búsquedas, el autoindexador, la edición completa y el resto de índices están planificados en GitHub Issues.
 
+## Manual
+
+- [Manual de EncodeNet8 en Markdown](MANUAL_ENCODE_NET8.md)
+- [Manual de EncodeNet8 en PDF](output/pdf/MANUAL_ENCODE_NET8.pdf)
+
 ## Versionado y seguimiento
 
 La versión actual es `v0.0.46-beta`. Cada mejora relevante incrementará la versión y se registrará en `CHANGELOG.md` con la referencia al issue correspondiente.

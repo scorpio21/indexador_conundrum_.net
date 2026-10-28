@@ -1,6 +1,30 @@
 # Changelog
 
+## [0.0.48-beta] - 2026-10-28
+
+### Avance — Issue #14
+
+- Se añadió validación en tiempo real de los campos de animación normal, avanzada y simple.
+- Se igualaron los colores de error y advertencia para BMP, primer índice y dimensiones.
+- Se completaron las opciones `Body`, `Arma`, `Escudo`, `Alas`, `Espalda` y `Botas`.
+- Se corrigió la búsqueda de huecos para devolver `0` cuando no existe espacio disponible.
+- El autoindexador avanzado genera las cuatro animaciones direccionales reservadas por VB6.
+- Se conectó el índice direccional generado con `MainForm` y sus registros auxiliares.
+- Release compilada correctamente: 0 errores y 0 advertencias.
+
 Todos los cambios relevantes de este proyecto se documentan aquí.
+
+## [0.0.47-beta] - 2026-10-28
+
+### En progreso — Issue #7
+
+- Se creó `MANUAL_ENCODE_NET8.md`, basado en el manual original de Conundrum y adaptado al flujo actual de EncodeNet8.
+- Se documentaron los menús, estados, visor, validaciones, formatos Integer/Long y los tres modos del autoindexador.
+- Se conectó `FormAuto` como único autoindexador activo y se retiró `AutoIndexerForm`.
+- Se adaptaron los botones Buscar, AutoCalcular, Crear e Indexar de los tres modos al flujo VB6.
+- Se documentaron las funcionalidades implantadas y las pendientes de la migración.
+- Se corrigió la incompatibilidad del diseñador causada por lambdas dentro de `MainForm.Designer.cs`.
+- Build Release correcta con 0 errores y 0 advertencias.
 
 ## [0.0.46-beta] - 2026-10-27
 

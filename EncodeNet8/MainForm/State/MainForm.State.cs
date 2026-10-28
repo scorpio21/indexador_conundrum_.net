@@ -59,6 +59,10 @@ public partial class MainForm : Form
                 LoadStateSlots(_indexerState);
                 statusLabel.Text = $"Estado {StateCaption(_indexerState)} seleccionado. {indexList.Items.Count} índices disponibles.";
             }
+
+            MergePendingDirectionalState(_indexerState);
+            if (_indexerState == "Body" || IsDirectionalState(_indexerState) || _indexerState is "Armas" or "Escudos")
+                RefreshDirectionalList();
     
             UpdateUi();
             ComprobarIndexLista();

@@ -159,8 +159,10 @@ public partial class MainForm : Form
                 if (dialog.OverwriteExisting)
                     _file.Records.RemoveAll(record => ids.Contains(record.Id));
                 _file.Records.AddRange(records);
+                if (dialog.GeneratedDirectionalIndex is not null)
+                    ApplyGeneratedDirectionalIndex(dialog.GeneratedDirectionalIndex, dialog.GeneratedDirectionalKind);
                 RebuildReferenceCounts();
-                RefreshGrid();
+                CambiarEstado("Grh");
                 SelectGrhById(records[0].Id);
                 statusLabel.Text = $"Autoindexados {records.Count} GRH en memoria. Guarda Graficos.ind para conservarlos.";
                 SetUtilError(null);
@@ -168,6 +170,81 @@ public partial class MainForm : Form
             catch (Exception ex)
             {
                 SetUtilError($"Autoindexador: {ex.Message}");
+            }
+        }
+
+        private void ApplyGeneratedDirectionalIndex(DirectionalIndexRecord generated, int generatedKind)
+        {
+            var state = generatedKind switch
+            {
+                0 => "Body",
+                1 => "Armas",
+                2 => "Escudos",
+                3 => "Alas",
+                4 => "Cascos",
+                5 => "Botas",
+                _ => "Body"
+            };
+            var copy = new DirectionalIndexRecord
+            {
+                Id = generated.Id,
+                Directions = generated.Directions.ToArray(),
+                OffsetX = generated.OffsetX,
+                OffsetY = generated.OffsetY
+            };
+            if (!_pendingDirectionalRecords.TryGetValue(state, out var pending))
+                _pendingDirectionalRecords[state] = pending = new List<DirectionalIndexRecord>();
+            pending.RemoveAll(item => item.Id == copy.Id);
+            pending.Add(copy);
+
+            if (_indexerState.Equals(state, StringComparison.OrdinalIgnoreCase))
+            {
+                _directionalRecords.RemoveAll(item => item.Id == copy.Id);
+                _directionalRecords.Add(copy);
+            }
+
+            if (!state.Equals("Body", StringComparison.OrdinalIgnoreCase)) return;
+            _bodyRecords.RemoveAll(item => item.Id == generated.Id);
+            _bodyRecords.Add(new BodyIndexRecord
+            {
+                Id = generated.Id,
+                Walk1 = generated.Directions[0],
+                Walk2 = generated.Directions[1],
+                Walk3 = generated.Directions[2],
+                Walk4 = generated.Directions[3],
+                HeadOffsetX = generated.OffsetX,
+                HeadOffsetY = generated.OffsetY
+            });
+        }
+
+        private void MergePendingDirectionalState(string state)
+        {
+            if (!_pendingDirectionalRecords.TryGetValue(state, out var pending)) return;
+            foreach (var item in pending)
+            {
+                _directionalRecords.RemoveAll(existing => existing.Id == item.Id);
+                _directionalRecords.Add(new DirectionalIndexRecord
+                {
+                    Id = item.Id,
+                    Directions = item.Directions.ToArray(),
+                    OffsetX = item.OffsetX,
+                    OffsetY = item.OffsetY
+                });
+            }
+            if (!state.Equals("Body", StringComparison.OrdinalIgnoreCase)) return;
+            foreach (var item in pending)
+            {
+                _bodyRecords.RemoveAll(existing => existing.Id == item.Id);
+                _bodyRecords.Add(new BodyIndexRecord
+                {
+                    Id = item.Id,
+                    Walk1 = item.Directions[0],
+                    Walk2 = item.Directions[1],
+                    Walk3 = item.Directions[2],
+                    Walk4 = item.Directions[3],
+                    HeadOffsetX = item.OffsetX,
+                    HeadOffsetY = item.OffsetY
+                });
             }
         }
     

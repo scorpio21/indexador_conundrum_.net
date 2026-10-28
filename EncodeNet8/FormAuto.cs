@@ -7,8 +7,11 @@ public partial class FormAuto : Form
     private readonly string _graphicsFolder;
     private readonly int _maxGrh;
     private readonly HashSet<int> _usedGrh;
+    private bool _updatingInputs;
 
     public IReadOnlyList<GrhRecord>? GeneratedRecords { get; private set; }
+    public DirectionalIndexRecord? GeneratedDirectionalIndex { get; private set; }
+    public int GeneratedDirectionalKind { get; private set; } = -1;
     public bool OverwriteExisting { get; private set; }
 
     public FormAuto() : this(string.Empty, int.MaxValue, Array.Empty<int>()) { }
@@ -38,11 +41,17 @@ public partial class FormAuto : Form
         ISimple.Click += (_, _) => ShowMode(groupBox1);
 
         radioButton6.CheckedChanged += (_, _) => UpdateNormalInputs();
+        foreach (var field in new[] { textBox21, textBox20, textBox19, textBox18, textBox17, textBox16, textBox15 })
+            field.TextChanged += (_, _) => ValidateNormalInputs();
         button5.Click += (_, _) => FindNormalIndex();
         button4.Click += (_, _) => CalculateNormalCellSize();
         button6.Click += (_, _) => CreateNormalIndex();
 
         ComboTipoAnim.SelectedIndexChanged += (_, _) => UpdateAdvancedMode();
+        foreach (var field in new[] { textDatos2_0, textDatos2_1, textBox5, textBox6, textBox7, textBox4, textDatos2_3, TextDatos2_7, TextDatos2_8 })
+            field.TextChanged += (_, _) => ValidateAdvancedInputs();
+        text1.TextChanged += (_, _) => ValidateAdvancedBodyIndex();
+        Text2.TextChanged += (_, _) => NormalizeOffsetText();
         checkAuto.CheckedChanged += (_, _) => UpdateAutoIndexInputs();
         Optiondimension_2.CheckedChanged += (_, _) => UpdateAdvancedDimensionMode();
         Optiondimension_0.CheckedChanged += (_, _) => UpdateAdvancedDimensionMode();
@@ -53,6 +62,8 @@ public partial class FormAuto : Form
 
         Btn_Buscar3.Click += (_, _) => FindSimpleIndex();
         BtnIndexar.Click += (_, _) => CreateSimpleIndex();
+        textBoxBmp.TextChanged += (_, _) => ValidateSimpleInputs();
+        textBoxGrh.TextChanged += (_, _) => ValidateSimpleInputs();
     }
 
     private void InitialiseOriginalState()
@@ -77,7 +88,7 @@ public partial class FormAuto : Form
         ComboTipoAnim.Items.AddRange(new object[] { "Bodys/armas/Escudo", "Animacion con offset" });
         ComboTipoAnim.SelectedIndex = 0;
         combo2.Items.Clear();
-        combo2.Items.AddRange(new object[] { "Body", "Arma", "Escudo" });
+        combo2.Items.AddRange(new object[] { "Body", "Arma", "Escudo", "Alas", "Espalda", "Botas" });
         combo2.SelectedIndex = 0;
         text1.Text = "280";
         Text2.Text = "-38";
@@ -89,6 +100,9 @@ public partial class FormAuto : Form
         UpdateAdvancedMode();
         UpdateAutoIndexInputs();
         UpdateAdvancedDimensionMode();
+        ValidateNormalInputs();
+        ValidateAdvancedInputs();
+        ValidateSimpleInputs();
     }
 
     private void ShowMode(Control active)
@@ -114,6 +128,7 @@ public partial class FormAuto : Form
             textBox21.Text = "1";
             textBox20.Text = "1";
         }
+        ValidateNormalInputs();
     }
 
     private void UpdateAdvancedMode()
@@ -162,6 +177,7 @@ public partial class FormAuto : Form
 
         UpdateAutoIndexInputs();
         UpdateAdvancedDimensionMode();
+        ValidateAdvancedInputs();
     }
 
     private void UpdateAutoIndexInputs()
@@ -246,6 +262,135 @@ public partial class FormAuto : Form
         textBox4.Text = FindFreeIndex(requiredIndexes).ToString();
     }
     private void FindSimpleIndex() => textBoxGrh.Text = FindFreeIndex(1).ToString();
+
+    private void ValidateNormalInputs()
+    {
+        if (_updatingInputs || IsDisposed) return;
+        _updatingInputs = true;
+        try
+        {
+            var fields = new[] { textBox21, textBox20, textBox17, textBox16, textBox15, textBox18, textBox19 };
+            for (var i = 1; i < fields.Length; i++)
+            {
+                var value = Parse(fields[i], 0);
+                if (value > _maxGrh || value <= 0) fields[i].Text = "0";
+            }
+
+            var total = Parse(textBox19, 0);
+            if (total > 25) textBox19.Text = "25";
+            if (total <= 0) textBox19.Text = "0";
+            total = Parse(textBox19, 0);
+
+            button5.Enabled = total > 0;
+            var start = Parse(textBox18, 0);
+            textBox18.BackColor = HasFreeIndexes(start, total + 1) ? SystemColors.Window : Color.Red;
+
+            var bmp = Parse(textBox15, 0);
+            if (!TryGetBitmap(bmp, out var bitmap))
+            {
+                textBox15.BackColor = Color.Red;
+                button4.Enabled = false;
+                return;
+            }
+
+            using (bitmap)
+            {
+                textBox15.BackColor = SystemColors.Window;
+                button4.Enabled = true;
+                var rows = Parse(textBox20, 0);
+                var columns = Parse(textBox21, 0);
+                textBox17.BackColor = rows > 0 && rows * Parse(textBox17, 0) > bitmap.Height ? Color.Yellow : SystemColors.Window;
+                textBox16.BackColor = columns > 0 && columns * Parse(textBox16, 0) > bitmap.Width ? Color.Yellow : SystemColors.Window;
+            }
+        }
+        finally { _updatingInputs = false; }
+    }
+
+    private void ValidateAdvancedInputs()
+    {
+        if (_updatingInputs || IsDisposed) return;
+        _updatingInputs = true;
+        try
+        {
+            var fields = new[] { textDatos2_0, textDatos2_1, textBox5, textBox6, textBox7, textBox4, textDatos2_3 };
+            for (var i = 1; i < fields.Length; i++)
+            {
+                var value = Parse(fields[i], 0);
+                if (value > _maxGrh || value <= 0) fields[i].Text = "0";
+            }
+
+            var columns = Parse(textDatos2_0, 0);
+            var rows = Parse(textDatos2_1, 0);
+            var total = Parse(textDatos2_3, 0);
+            if (ComboTipoAnim.SelectedIndex == 0 && Optiondimension_1.Checked)
+            {
+                total = Math.Max(0, columns * 4);
+                textDatos2_3.Text = total.ToString();
+            }
+            if (ComboTipoAnim.SelectedIndex > 1 && total > 25) textDatos2_3.Text = "25";
+            if (total <= 0) textDatos2_3.Text = "0";
+            total = Parse(textDatos2_3, 0);
+
+            CommandBuscar.Enabled = total > 0;
+            var start = Parse(textBox4, 0);
+            textBox4.BackColor = HasFreeIndexes(start, total + 4) ? SystemColors.Window : Color.Red;
+
+            var bmp = Parse(textBox7, 0);
+            if (!TryGetBitmap(bmp, out var bitmap))
+            {
+                textBox7.BackColor = Color.Red;
+                CommandCalu.Enabled = false;
+                return;
+            }
+
+            using (bitmap)
+            {
+                textBox7.BackColor = SystemColors.Window;
+                CommandCalu.Enabled = Optiondimension_1.Checked || ComboTipoAnim.SelectedIndex == 1;
+                textBox5.BackColor = rows > 0 && rows * Parse(textBox5, 0) > bitmap.Height ? Color.Yellow : SystemColors.Window;
+                textBox6.BackColor = columns > 0 && columns * Parse(textBox6, 0) > bitmap.Width ? Color.Yellow : SystemColors.Window;
+            }
+        }
+        finally { _updatingInputs = false; }
+    }
+
+    private void ValidateAdvancedBodyIndex()
+    {
+        if (int.TryParse(text1.Text, out var value) && value > 0 && value <= _maxGrh)
+            text1.BackColor = SystemColors.Window;
+        else
+            text1.BackColor = Color.Red;
+    }
+
+    private void NormalizeOffsetText()
+    {
+        if (_updatingInputs || string.IsNullOrWhiteSpace(Text2.Text)) return;
+        var parts = Text2.Text.Split('º', StringSplitOptions.TrimEntries);
+        if (parts.Length == 0) return;
+        var x = ParseValue(parts[0], 0);
+        var y = parts.Length > 1 ? ParseValue(parts[1], 0) : 0;
+        x = Math.Clamp(x, -_maxGrh, _maxGrh);
+        y = Math.Clamp(y, -_maxGrh, _maxGrh);
+        var normalized = $"{x}º{y}";
+        if (!string.Equals(Text2.Text, normalized, StringComparison.Ordinal)) Text2.Text = normalized;
+    }
+
+    private void ValidateSimpleInputs()
+    {
+        if (int.TryParse(textBoxBmp.Text, out var bmp) && bmp > 0 && TryGetBitmap(bmp, out var bitmap))
+        {
+            bitmap.Dispose();
+            textBoxBmp.BackColor = SystemColors.Window;
+        }
+        else textBoxBmp.BackColor = Color.Red;
+
+        if (int.TryParse(textBoxGrh.Text, out var id) && id > 0 && id <= _maxGrh)
+            textBoxGrh.BackColor = HasFreeIndexes(id, 1) ? SystemColors.Window : Color.Yellow;
+        else
+            textBoxGrh.BackColor = Color.Red;
+    }
+
+    private static int ParseValue(string value, int fallback) => int.TryParse(value, out var result) ? result : fallback;
 
     private void CalculateNormalCellSize()
     {
@@ -345,7 +490,9 @@ public partial class FormAuto : Form
             var columns = Parse(textBox21, 0);
             var rows = Parse(textBox20, 0);
             var total = Parse(textBox19, 0);
-            var start = Math.Max(1, Parse(textBox18, FindFreeIndex(total + 1)));
+            var start = Parse(textBox18, 0);
+            if (!HasFreeIndexes(start, total + 1))
+                throw new InvalidDataException("No hay sitio para la animación o el primer índice no es válido.");
             GeneratedRecords = BuildGrid(
                 start,
                 total,
@@ -370,9 +517,29 @@ public partial class FormAuto : Form
             var columns = Math.Max(1, Parse(textDatos2_0, 6));
             var rows = Math.Max(1, Parse(textDatos2_1, 4));
             var total = Math.Max(1, Parse(textDatos2_3, columns * rows));
-            var start = Math.Max(1, Parse(textBox4, FindFreeIndex(total + 4)));
-            var offset = Parse(Text2, -38);
-            GeneratedRecords = BuildGrid(start, total, columns, rows, Parse(textBox7, 0), Math.Max(1, Parse(textBox6, 26)), Math.Max(1, Parse(textBox5, 46)), offset, 0, true);
+            var start = Parse(textBox4, 0);
+            if (!HasFreeIndexes(start, total + 4))
+                throw new InvalidDataException("No hay sitio para la animación avanzada o el primer índice no es válido.");
+            var offset = ComboTipoAnim.SelectedIndex == 1 ? Parse(TextDatos2_7, 0) : 0;
+            var offsetY = ComboTipoAnim.SelectedIndex == 1 ? Parse(TextDatos2_8, 0) : 0;
+            var directional = ComboTipoAnim.SelectedIndex == 0;
+            GeneratedRecords = BuildGrid(start, total, columns, rows, Parse(textBox7, 0), Math.Max(1, Parse(textBox6, 26)), Math.Max(1, Parse(textBox5, 46)), offset, offsetY, true, directional);
+            if (directional && checkAuto.Checked)
+            {
+                var bodyId = Parse(text1, 0);
+                if (bodyId <= 0 || bodyId > _maxGrh)
+                    throw new InvalidDataException("El índice de autoindexación no es válido.");
+                var animationIds = GeneratedRecords.Skip(total).Take(4).Select(record => record.Id).ToArray();
+                var offsetParts = ParseOffset(Text2.Text);
+                GeneratedDirectionalIndex = new DirectionalIndexRecord
+                {
+                    Id = bodyId,
+                    Directions = new[] { animationIds[1], animationIds[3], animationIds[0], animationIds[2] },
+                    OffsetX = (short)Math.Clamp(offsetParts.X, short.MinValue, short.MaxValue),
+                    OffsetY = (short)Math.Clamp(offsetParts.Y, short.MinValue, short.MaxValue)
+                };
+                GeneratedDirectionalKind = combo2.SelectedIndex;
+            }
             DialogResult = DialogResult.OK;
         }
         catch (Exception ex) { ShowError(ex); }
@@ -438,7 +605,8 @@ public partial class FormAuto : Form
         int offsetX,
         int offsetY,
         bool sameBitmap,
-        bool createAnimation = false)
+        bool createAnimation = false,
+        bool directionalAnimations = false)
     {
         if (bmpNumber <= 0) throw new InvalidDataException("Indica un número de BMP válido.");
         if (start <= 0 || start > _maxGrh) throw new InvalidDataException("El primer índice no es válido.");
@@ -472,7 +640,33 @@ public partial class FormAuto : Form
             });
         }
 
-        if (createAnimation)
+        if (createAnimation && directionalAnimations)
+        {
+            var groupSizes = rows == 4 && columns == 6 && total >= 22
+                ? new[] { 6, 6, 5, 5 }
+                : Enumerable.Repeat(columns, 4).ToArray();
+            if (groupSizes.Sum() > result.Count)
+                throw new InvalidDataException("La cuadrícula no contiene suficientes frames para las cuatro direcciones.");
+
+            var frameOffset = 0;
+            foreach (var groupSize in groupSizes)
+            {
+                var firstFrame = result[frameOffset];
+                result.Add(new GrhRecord
+                {
+                    Id = checked(start + result.Count),
+                    FileNumber = firstFrame.FileNumber,
+                    X = firstFrame.X,
+                    Y = firstFrame.Y,
+                    Width = firstFrame.Width,
+                    Height = firstFrame.Height,
+                    Speed = 1,
+                    Frames = result.Skip(frameOffset).Take(groupSize).Select(frame => frame.Id).ToList()
+                });
+                frameOffset += groupSize;
+            }
+        }
+        else if (createAnimation)
         {
             var animationId = checked(start + total);
             if (_usedGrh.Contains(animationId))
@@ -507,12 +701,26 @@ public partial class FormAuto : Form
 
     private int FindFreeIndex(int required)
     {
+        if (required <= 0 || required > _maxGrh) return 0;
         for (var id = 1; id <= _maxGrh - required + 1; id++)
             if (Enumerable.Range(id, required).All(candidate => !_usedGrh.Contains(candidate))) return id;
-        return 1;
+        return 0;
+    }
+
+    private bool HasFreeIndexes(int first, int required)
+    {
+        if (first <= 0 || required <= 0 || first > _maxGrh - required + 1) return false;
+        return Enumerable.Range(first, required).All(candidate => !_usedGrh.Contains(candidate));
     }
 
     private static int Parse(TextBox field, int fallback) => int.TryParse(field.Text, out var value) ? value : fallback;
+    private static (int X, int Y) ParseOffset(string text)
+    {
+        var parts = text.Split('º', StringSplitOptions.TrimEntries);
+        var y = parts.Length > 0 ? ParseValue(parts[0], 0) : 0;
+        var x = parts.Length > 1 ? ParseValue(parts[1], 0) : 0;
+        return (x, y);
+    }
     private void ShowError(Exception ex) => MessageBox.Show(this, ex.Message, "Autoindexador", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
     private void GroupBox_Paint(object? sender, PaintEventArgs e)
