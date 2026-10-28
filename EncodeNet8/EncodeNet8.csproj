@@ -6,11 +6,11 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <VersionPrefix>0.0.62</VersionPrefix>
+    <VersionPrefix>0.0.63</VersionPrefix>
     <VersionSuffix>beta</VersionSuffix>
-    <InformationalVersion>0.0.62-beta</InformationalVersion>
-    <AssemblyVersion>0.0.62.0</AssemblyVersion>
-    <FileVersion>0.0.62.0</FileVersion>
+    <InformationalVersion>0.0.63-beta</InformationalVersion>
+    <AssemblyVersion>0.0.63.0</AssemblyVersion>
+    <FileVersion>0.0.63.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

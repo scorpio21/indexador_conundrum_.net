@@ -278,9 +278,11 @@ public partial class MainForm : Form
             if (answer != DialogResult.Yes) return;
             try
             {
+                var backupPath = BackupExistingFile(targetPath);
                 ApplyGridToModel();
                 _file.Save(targetPath, SelectedFormat);
                 statusLabel.Text = isCopySlot ? $"Copia guardada en: {targetPath}" : $"Guardado: {targetPath}";
+                if (backupPath is not null) statusLabel.Text += $" (copia anterior: {backupPath})";
                 SetUtilError(string.Empty);
             }
             catch (Exception ex) { MessageBox.Show(this, ex.Message, "No se pudo guardar el índice", MessageBoxButtons.OK, MessageBoxIcon.Error); }
@@ -315,12 +317,15 @@ public partial class MainForm : Form
                     FileName = Path.GetFileName(currentPath ?? $"{StateCaption(_indexerState)}{extension}")
                 };
                 if (auxiliaryDialog.ShowDialog(this) != DialogResult.OK) return;
+                if (!ConfirmFileOverwrite(auxiliaryDialog.FileName)) return;
                 try
                 {
+                    var backupPath = BackupExistingFile(auxiliaryDialog.FileName);
                     ApplyNonGrhToModel();
                     SaveNonGrhToPath(auxiliaryDialog.FileName);
                     RebuildReferenceCounts();
                     statusLabel.Text = $"Guardado: {auxiliaryDialog.FileName}";
+                    if (backupPath is not null) statusLabel.Text += $" (copia anterior: {backupPath})";
                     SetUtilError(string.Empty);
                 }
                 catch (Exception ex) { MessageBox.Show(this, ex.Message, "No se pudo guardar el índice", MessageBoxButtons.OK, MessageBoxIcon.Error); }
@@ -328,12 +333,15 @@ public partial class MainForm : Form
             }
             using var dialog = new SaveFileDialog { Filter = "Índice gráfico (*.ind)|*.ind|Todos los archivos (*.*)|*.*", FileName = Path.GetFileName(_loadedPath ?? "Graficos.ind") };
             if (dialog.ShowDialog(this) != DialogResult.OK) return;
+            if (!ConfirmFileOverwrite(dialog.FileName)) return;
             try
             {
+                var backupPath = BackupExistingFile(dialog.FileName);
                 ApplyGridToModel();
                 _file.Save(dialog.FileName, SelectedFormat);
                 _loadedPath = dialog.FileName;
                 statusLabel.Text = $"Guardado: {dialog.FileName}";
+                if (backupPath is not null) statusLabel.Text += $" (copia anterior: {backupPath})";
             }
             catch (Exception ex) { MessageBox.Show(this, ex.Message, "No se pudo guardar el índice", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
@@ -354,10 +362,12 @@ public partial class MainForm : Form
             if (answer != DialogResult.Yes) return;
             try
             {
+                var backupPath = BackupExistingFile(path);
                 ApplyNonGrhToModel();
                 SaveNonGrhToPath(path);
                 RebuildReferenceCounts();
                 statusLabel.Text = isCopySlot ? $"Copia guardada en: {path}" : $"Guardado: {path}";
+                if (backupPath is not null) statusLabel.Text += $" (copia anterior: {backupPath})";
                 SetUtilError(string.Empty);
             }
             catch (Exception ex) { MessageBox.Show(this, ex.Message, "No se pudo guardar el índice", MessageBoxButtons.OK, MessageBoxIcon.Error); }
@@ -395,6 +405,22 @@ public partial class MainForm : Form
             _directionalPath = path;
             _iniDirectionalPath = null;
             _fxPath = null;
+        }
+
+        private bool ConfirmFileOverwrite(string path)
+        {
+            if (!File.Exists(path)) return true;
+            return MessageBox.Show(this,
+                $"El archivo ya existe:\n{path}\n¿Deseas sobrescribirlo?",
+                "Aviso", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes;
+        }
+
+        private static string? BackupExistingFile(string path)
+        {
+            if (!File.Exists(path)) return null;
+            var backupPath = path + ".bak";
+            File.Copy(path, backupPath, true);
+            return backupPath;
         }
     
             private void ApplyNonGrhToModel()

@@ -19,7 +19,7 @@ Ya están migrados la ventana principal, estados básicos, lectura Integer/Long,
 | `Mod_Directorios.bas` | `SettingsForm.cs` + JSON | **90 %** | Rutas relativas y valores iniciales. |
 | `Mod_Indices.bas` | `DirectionalIndexing.cs` | **55 %** | Bodies, cabezas, cascos, alas, capas, botas, armas, escudos y FX. |
 | `Mod_Superficies.bas` | Pendiente | **10 %** | Formulario, lectura y generación para WE. |
-| `Mod_Edicion.bas` | `MainForm` / servicios | **65 %** | Mover, copiar, borrar, clonar e índice guardado. |
+| `Mod_Edicion.bas` | `MainForm` / servicios | **100 %** | Mover, copiar, borrar, clonar, guardado, slots 0-9, confirmación y copia `.bak` verificados en el issue #6. |
 | `Mod_Visor.bas` | `BufferedPreviewPanel.cs` + `MainForm/Rendering/` | **100 %** | Temporización VB6, caché, escalado, transparencia, animación y refresco verificados en el alcance del issue #13. |
 | `Mod_Errores.bas` | `MainForm/IO/MainForm.Saving.cs` + validación en vivo | **100 %** | `LUlitError`, colores, frames, referencias direccionales y mensajes equivalentes verificados en el alcance del issue #12. |
 | `clsSurfaceManager.cls` | Pendiente | **0 %** | Gestión de superficies. |
@@ -92,6 +92,13 @@ Falta validar en cada tipo las cuatro direcciones, offsets, GRH utilizados y esc
 - Campos rojos/blancos según validación: **100 %** — rojo crítico, amarillo advertencia y blanco restaurado.
 - Sobrescritura, índice inexistente y falta de espacio: **100 %** en las operaciones de MainForm implementadas.
 
+### Edición y guardado — **100 %**
+
+- Nuevo/Ir a, mover, copiar, borrar y clonar: **100 %** — actualizan la lista, la selección y el visor.
+- Guardar y Guardar como: **100 %** — solicitan confirmación antes de sobrescribir y mantienen los formatos Integer/Long cargados.
+- Índice guardado: **100 %** — los slots 0 a 9 generan sus rutas y se pueden volver a seleccionar.
+- Recuperación: **100 %** — antes de sobrescribir un archivo existente se conserva una copia `<archivo>.bak`.
+
 ## Criterio de finalización
 
 | Objetivo | Cobertura actual |
@@ -112,12 +119,13 @@ Falta validar en cada tipo las cuatro direcciones, offsets, GRH utilizados y esc
 1. ~~Completar `MainForm` y `CambiarEstado`~~ — **100 %**, issue **#11** cerrado.
 2. ~~Comparar el autoindexador con VB6~~ — **100 %**, issue **#14** cerrado.
 3. ~~Completar recursos BMP y búsquedas~~ — **100 %**, issue **#10** cerrado.
-4. Completar índices direccionales: objetivo **85 %**.
-5. ~~Terminar errores y `LUlitError`~~ — **100 %**, issue **#12** cerrado.
-6. ~~Completar visor, temporización y regresión~~ — **100 %**, issue **#13** cerrado.
-7. Implementar `Indexar Superficies`: objetivo **100 %**.
-8. Ejecutar regresión Integer/Long: objetivo **100 %**.
-9. Publicar versión estable fuera de beta: objetivo **100 %**.
+4. ~~Completar edición y guardado~~ — **100 %**, issue **#6** cerrado.
+5. Completar índices direccionales: objetivo **85 %**.
+6. ~~Terminar errores y `LUlitError`~~ — **100 %**, issue **#12** cerrado.
+7. ~~Completar visor, temporización y regresión~~ — **100 %**, issue **#13** cerrado.
+8. Implementar `Indexar Superficies`: objetivo **100 %**.
+9. Ejecutar regresión Integer/Long: objetivo **100 %**.
+10. Publicar versión estable fuera de beta: objetivo **100 %**.
 
 ## Verificación
 
@@ -127,7 +135,7 @@ dotnet build .\\EncodeNet8.slnx -c Release
 dotnet run --project .\\EncodeNet8.Tests\\EncodeNet8.Tests.csproj -c Release
 ```
 
-Última versión documentada: **0.0.62-beta**.
+Última versión documentada: **0.0.63-beta**.
 
 ## Issues de seguimiento
 
@@ -137,4 +145,5 @@ dotnet run --project .\\EncodeNet8.Tests\\EncodeNet8.Tests.csproj -c Release
 - ~~**#13**~~ — [Completar pruebas de rendimiento y regresión del visor](https://github.com/scorpio21/indexador_conundrum_.net/issues/13) — cerrado.
 - ~~**#5**~~ — [Fase 5: completar visor, referencias y animaciones](https://github.com/scorpio21/indexador_conundrum_.net/issues/5) — cerrado.
 - ~~**#14**~~ — [Completar paridad funcional de FormAuto con formAuto.frm](https://github.com/scorpio21/indexador_conundrum_.net/issues/14) — cerrado.
+- ~~**#6**~~ — [Fase 6: completar edición y guardado](https://github.com/scorpio21/indexador_conundrum_.net/issues/6) — cerrado.
 

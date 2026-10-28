@@ -437,6 +437,14 @@ static void TestMainFormStates()
         }
         Assert(GetMain<Label>(main, "LUlitError").Text.Length > 0,
             "Visor: frame inexistente se informa sin excepción ni índice fuera de rango");
+
+        var backupMethod = typeof(MainForm).GetMethod("BackupExistingFile", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var backupSource = Path.Combine(graphicsPath, "graficos.ind");
+        File.WriteAllText(backupSource, "contenido anterior");
+        var backupPath = (string?)backupMethod.Invoke(null, new object[] { backupSource });
+        Assert(backupPath == backupSource + ".bak" && File.ReadAllText(backupPath!) == "contenido anterior",
+            "Edición: crea una copia .bak recuperable antes de sobrescribir");
+
         Directory.Delete(graphicsPath, true);
         main.Close();
     });

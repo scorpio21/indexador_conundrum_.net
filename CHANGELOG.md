@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.0.63-beta] - 2026-10-28
+
+### Edición y guardado — Issue #6
+
+- Se completó la protección de guardado para `Guardar` y `Guardar como`: si el destino existe, se solicita confirmación antes de sobrescribirlo.
+- Antes de sobrescribir un índice se conserva una copia recuperable con extensión `.bak`.
+- La protección se aplica tanto a `Graficos.ind` como a los índices direccionales, FX y slots guardados.
+- Se añadió una prueba WinForms STA que verifica que la copia anterior conserva exactamente el contenido original.
+- Build Release y pruebas verificadas: 0 advertencias y 0 errores.
+
 ## [0.0.62-beta] - 2026-10-28
 
 ### Regresión del visor — Issue #5
