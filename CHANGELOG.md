@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.0.55-beta] - 2026-10-28
+
+### Paridad de previsualización — Issue #14
+
+- `TextDatos_Change` y `TextDatos2_Change` ahora notifican a `MainForm` cuando el BMP introducido es válido.
+- Los modos normal, avanzado y simple pueden mostrar el recurso seleccionado mientras se editan sus parámetros, como el `CrearIndexacion` del VB6.
+- La prueba WinForms cubre el aviso de recurso en modo avanzado y simple.
+- Build Release y pruebas verificadas: 0 errores y 0 advertencias.
+
 ## [0.0.54-beta] - 2026-10-28
 
 ### Recursos — Issue #14

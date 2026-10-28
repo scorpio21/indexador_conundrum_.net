@@ -304,6 +304,7 @@ public partial class FormAuto : Form
             {
                 textBox15.BackColor = SystemColors.Window;
                 button4.Enabled = true;
+                NotifyResourcePreview(bmp);
                 var rows = Parse(textBox20, 0);
                 var columns = Parse(textBox21, 0);
                 textBox17.BackColor = rows > 0 && rows * Parse(textBox17, 0) > bitmap.Height ? Color.Yellow : SystemColors.Window;
@@ -356,6 +357,7 @@ public partial class FormAuto : Form
             {
                 textBox7.BackColor = SystemColors.Window;
                 CommandCalu.Enabled = Optiondimension_1.Checked || ComboTipoAnim.SelectedIndex == 1;
+                NotifyResourcePreview(bmp);
                 textBox5.BackColor = rows > 0 && rows * Parse(textBox5, 0) > bitmap.Height ? Color.Yellow : SystemColors.Window;
                 textBox6.BackColor = columns > 0 && columns * Parse(textBox6, 0) > bitmap.Width ? Color.Yellow : SystemColors.Window;
             }
@@ -393,11 +395,7 @@ public partial class FormAuto : Form
         {
             bitmap.Dispose();
             textBoxBmp.BackColor = SystemColors.Window;
-            if (groupBox1.Visible && bmp != _lastResourcePreviewBmp)
-            {
-                _lastResourcePreviewBmp = bmp;
-                ResourcePreviewChanged?.Invoke(bmp);
-            }
+            if (groupBox1.Visible) NotifyResourcePreview(bmp);
         }
         else
         {
@@ -410,6 +408,13 @@ public partial class FormAuto : Form
         else
             textBoxGrh.BackColor = Color.Red;
         UpdatePreview();
+    }
+
+    private void NotifyResourcePreview(int bmp)
+    {
+        if (bmp <= 0 || bmp == _lastResourcePreviewBmp) return;
+        _lastResourcePreviewBmp = bmp;
+        ResourcePreviewChanged?.Invoke(bmp);
     }
 
     private void UpdatePreview()

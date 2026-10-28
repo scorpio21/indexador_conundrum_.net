@@ -239,7 +239,10 @@ static void TestFormAutoModes(string root)
         normal.Show();
         Application.DoEvents();
         Get<Button>(normal, "Command4").PerformClick();
+        var normalResourcePreviewBmp = 0;
+        normal.ResourcePreviewChanged += bmp => normalResourcePreviewBmp = bmp;
         Get<TextBox>(normal, "textBox7").Text = "700";
+        Assert(normalResourcePreviewBmp == 700, "FormAuto avanzado: aviso de recurso para MainForm");
         Get<TextBox>(normal, "textBox4").Text = "1";
         Get<Button>(normal, "Command1").PerformClick();
         var classic = normal.GeneratedRecords ?? throw new InvalidOperationException("Fallo: FormAuto no generó la animación clásica.");
