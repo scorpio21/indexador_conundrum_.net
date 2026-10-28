@@ -83,6 +83,7 @@ try
     TestFormAutoModes(root);
     TestWeIndexFile(root);
     TestMainFormStates();
+    TestAllIndexerStates();
     Console.WriteLine("Graficos.ind, lectores direccionales y adicionales: Integer/Long OK; truncado rechazado.");
 }
 finally
@@ -161,6 +162,8 @@ static void TestDirectionalReader(string root)
 
         var records = DirectionalIndexFile.Load(path, format, includesOffsets: true);
         Assert(records.Count == 2 && records[1].Directions[3] == 17, $"lector directional {format}");
+        var autodetected = DirectionalIndexFile.LoadAuto(path, includesOffsets: true);
+        Assert(autodetected.Count == 2 && autodetected[1].Directions[3] == 17, $"autodetección directional {format}");
         Assert(records[1].OffsetX == 3 && records[1].OffsetY == 4, $"offsets directional {format}");
         var roundtrip = Path.Combine(root, $"Personajes-roundtrip-{format}.ind");
         DirectionalIndexFile.Save(roundtrip, records, format, includesOffsets: true);
@@ -192,6 +195,7 @@ static void TestAdditionalReaders(string root)
     }
     var fx = FxIndexFile.Load(fxPath, GrhStorageFormat.LegacyInteger);
     Assert(fx.Count == 1 && fx[0].Animation == 20 && fx[0].OffsetX == 1, "lector FX");
+    Assert(FxIndexFile.LoadAuto(fxPath).Count == 1, "autodetección FX");
     var fxRoundtrip = Path.Combine(root, "Fxs-roundtrip.ind");
     FxIndexFile.Save(fxRoundtrip, fx, GrhStorageFormat.LegacyInteger);
     Assert(FxIndexFile.Load(fxRoundtrip, GrhStorageFormat.LegacyInteger).Count == 1, "guardado FX");
@@ -461,6 +465,26 @@ static void TestWeIndexFile(string root)
         && content.Contains("[REFERENCIA1]") && content.Contains("GrhIndice=115")
         && content.Contains("[REFERENCIA2]") && content.Contains("GrhIndice=116"),
         "WE: genera y añade referencias compatibles en Indices.ini");
+}
+
+static void TestAllIndexerStates()
+{
+    RunSta(() =>
+    {
+        using var main = new MainForm();
+        main.Show();
+        Application.DoEvents();
+        var changeState = typeof(MainForm).GetMethod("CambiarEstado", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var states = new[] { "Grh", "Body", "Cabezas", "Cascos", "Escudos", "Armas", "Alas", "Capas", "Botas", "Fx", "Resource" };
+        foreach (var state in states)
+        {
+            changeState.Invoke(main, new object[] { state });
+            var expected = state.Equals("Bodies", StringComparison.OrdinalIgnoreCase) ? "Body" : state;
+            Assert(GetMainValue<string>(main, "_indexerState").Equals(expected, StringComparison.OrdinalIgnoreCase),
+                $"Regresión: estado {state} se puede cargar sin excepción");
+        }
+        main.Close();
+    });
 }
 
 static T Get<T>(Form form, string name) where T : Control

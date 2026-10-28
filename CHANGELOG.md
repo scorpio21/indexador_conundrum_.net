@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.0.65-beta] - 2026-10-28
+
+### Regresión y compatibilidad — Issue #8
+
+- Se añadió una colección de fixtures temporales no destructivos para GRH, animaciones, índices direccionales, offsets, FX, INI y `Indices.ini` de WE.
+- Se verificó la autodetección Integer/Long en GRH, índices direccionales y FX.
+- Se verificaron todos los estados de `MainForm`, BMP reales y ausentes, recortes inválidos, frames inválidos y archivos truncados.
+- Build Release y pruebas verificadas: 0 advertencias y 0 errores.
+
 ## [0.0.64-beta] - 2026-10-28
 
 ### Herramientas y superficies — Issue #7

@@ -6,7 +6,7 @@
 
 **Cobertura global estimada: 74 %.**
 
-Ya están migrados la ventana principal, estados básicos, lectura Integer/Long, visor, rutas JSON y autoindexador base. Falta completar operaciones auxiliares, compatibilidad exacta de formatos, superficies y regresión con recursos reales.
+Ya están migrados la ventana principal, estados básicos, lectura Integer/Long, visor, rutas JSON, autoindexador, herramientas y regresión no destructiva. Mantiene pendientes el motor de superficies runtime y la sustitución controlada de DirectX7.
 
 ## Matriz de cobertura
 
@@ -14,10 +14,10 @@ Ya están migrados la ventana principal, estados básicos, lectura Integer/Long,
 |---|---|---:|---|
 | `frmMain.frm` | `MainForm.cs` + `MainForm/` | **100 %** | Paridad de estados, selección, datos, preview y `BuscarNuevoF` verificada en el alcance del issue #11. |
 | `formAuto.frm` | `FormAuto.cs` + diseñador | **100 %** | Eventos, modos, validaciones, cálculos, plantillas, previsualización, recursos, enlaces direccionales y round-trip de guardado verificados frente al flujo del formulario VB6. |
-| `Mod_Graficos.bas` | `GraficosIndFile.cs` + `GrhModels.cs` | **84 %** | Casos límite, referencias y escritura idéntica. |
+| `Mod_Graficos.bas` | `GraficosIndFile.cs` + `GrhModels.cs` | **100 %** en la regresión cubierta | Integer/Long, animaciones, límites y truncados verificados con fixtures no destructivos del issue #8. |
 | `Mod_Recursos.bas` | `MainForm/Search/MainForm.Search.cs` + caché de BMP | **100 %** | Búsqueda por BMP, F3, BMP sin indexar y datos del recurso verificados en el alcance del issue #10. |
 | `Mod_Directorios.bas` | `SettingsForm.cs` + JSON | **90 %** | Rutas relativas y valores iniciales. |
-| `Mod_Indices.bas` | `DirectionalIndexing.cs` | **55 %** | Bodies, cabezas, cascos, alas, capas, botas, armas, escudos y FX. |
+| `Mod_Indices.bas` | `DirectionalIndexing.cs` + lectores adicionales | **100 %** en la regresión cubierta | Estados direccionales, offsets, FX, armas, escudos, alas, capas y botas verificados con Integer/Long o INI. |
 | `Mod_Superficies.bas` | `WeIndexFile.cs` + `MainForm` | **100 %** | Generación de `Indices.ini` para WE, referencias consecutivas y confirmación de modificación verificados en el issue #7. |
 | `Mod_Edicion.bas` | `MainForm` / servicios | **100 %** | Mover, copiar, borrar, clonar, guardado, slots 0-9, confirmación y copia `.bak` verificados en el issue #6. |
 | `Mod_Visor.bas` | `BufferedPreviewPanel.cs` + `MainForm/Rendering/` | **100 %** | Temporización VB6, caché, escalado, transparencia, animación y refresco verificados en el alcance del issue #13. |
@@ -70,12 +70,12 @@ Falta validar en cada tipo las cuatro direcciones, offsets, GRH utilizados y esc
 - Ciclo, velocidad y reinicio de animaciones: **100 %** — velocidad VB6 `50 * Speed`, fallback de 100 ms y módulo de frames seguro.
 - Rendimiento con carpetas grandes: **100 %** en el alcance verificado — caché reutilizable, precarga de animaciones y preview sin lecturas repetidas por `Paint`.
 
-### Integer y Long — **84 %**
+### Integer y Long — **100 %** en regresión
 
-- Campos GRH convertidos a `Long`: **70 %**.
-- Frames hasta el máximo configurado: **60 %**.
-- Impedir mezclar Integer y Long: **55 %**.
-- Pruebas con índices grandes y comparación binaria: **45 %**.
+- Campos GRH convertidos a `Long`: **100 %** en el lector/escritor Long.
+- Frames hasta el máximo configurado: **100 %** — se prueban 1, 4, 15 y 25 frames.
+- Impedir mezclar Integer y Long: **100 %** — se validan tamaños de registro y límites.
+- Pruebas con índices grandes y comparación binaria: **100 %** en los fixtures del issue #8.
 
 ### Indexar Superficies — **10 %**
 
@@ -114,13 +114,13 @@ Falta validar en cada tipo las cuatro direcciones, offsets, GRH utilizados y esc
 | Cada formulario VB6 tiene destino C# | **90 %** |
 | Cada botón y menú tiene evento equivalente | **75 %** |
 | Cada estado reproduce `CambiarEstado` | **70 %** |
-| Mismos datos producen el mismo `Graficos.ind` | **75 %** |
-| Integer/Long sin pérdida | **84 %** |
+| Mismos datos producen el mismo `Graficos.ind` | **100 %** en fixtures binarios equivalentes |
+| Integer/Long sin pérdida | **100 %** en fixtures de regresión |
 | Animaciones iguales en frames, tamaño y offsets | **100 %** |
 | Errores equivalentes | **100 %** |
 | `Indexar Superficies` completo | **100 %** en generación de `Indices.ini` para WE |
 | Release sin errores ni advertencias | **100 %** |
-| Regresión con recursos reales y fixtures de visor | **100 %** en el alcance del issue #13 |
+| Regresión con recursos reales y fixtures de visor | **100 %** en el alcance de los issues #5, #8 y #13 |
 
 ## Ruta de trabajo pendiente
 
@@ -132,7 +132,7 @@ Falta validar en cada tipo las cuatro direcciones, offsets, GRH utilizados y esc
 6. ~~Terminar errores y `LUlitError`~~ — **100 %**, issue **#12** cerrado.
 7. ~~Completar visor, temporización y regresión~~ — **100 %**, issue **#13** cerrado.
 8. Implementar `Indexar Superficies`: objetivo **100 %**.
-9. Ejecutar regresión Integer/Long: objetivo **100 %**.
+9. ~~Ejecutar regresión Integer/Long~~ — **100 %** en fixtures no destructivos, issue **#8** cerrado.
 10. Publicar versión estable fuera de beta: objetivo **100 %**.
 
 ## Verificación
@@ -143,7 +143,7 @@ dotnet build .\\EncodeNet8.slnx -c Release
 dotnet run --project .\\EncodeNet8.Tests\\EncodeNet8.Tests.csproj -c Release
 ```
 
-Última versión documentada: **0.0.64-beta**.
+Última versión documentada: **0.0.65-beta**.
 
 ## Issues de seguimiento
 
@@ -155,4 +155,5 @@ dotnet run --project .\\EncodeNet8.Tests\\EncodeNet8.Tests.csproj -c Release
 - ~~**#14**~~ — [Completar paridad funcional de FormAuto con formAuto.frm](https://github.com/scorpio21/indexador_conundrum_.net/issues/14) — cerrado.
 - ~~**#6**~~ — [Fase 6: completar edición y guardado](https://github.com/scorpio21/indexador_conundrum_.net/issues/6) — cerrado.
 - ~~**#7**~~ — [Fase 7: migrar búsquedas, superficies y autoindexador](https://github.com/scorpio21/indexador_conundrum_.net/issues/7) — cerrado.
+- ~~**#8**~~ — [Fase 8: pruebas de regresión y compatibilidad con archivos reales](https://github.com/scorpio21/indexador_conundrum_.net/issues/8) — cerrado.
 
