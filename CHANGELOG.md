@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.0.71-beta] - 2026-10-28
+
+### Selector de dirección para Bodies
+
+- El selector del estado Bodies ahora contiene `Todos`, `Norte`, `Este`, `Sur` y `Oeste`, como `CDibujarWalk` en VB6.
+- `Todos` dibuja las cuatro direcciones y las opciones individuales dibujan solo la dirección elegida.
+- `Checkcabeza` se conserva al cambiar entre `Todos` y una dirección concreta.
+- Añadida regresión para el selector y el flujo de repintado.
+- Build Release y pruebas verificadas: 0 advertencias y 0 errores.
+
+## [0.0.70-beta] - 2026-10-28
+
+### Estado Bodies y Checkcabeza
+
+- Añadido al diseñador el `CheckBox` `Checkcabeza` con el texto `cabeza`.
+- Al marcarlo se asigna `cabezaActual = 3008`; al desmarcarlo se restablece a `0`, siguiendo el evento VB6 original.
+- Corregidas las etiquetas y el orden visual del estado Body: `Subir`, `Derecha`, `Abajo`, `Izquierda` y `Offset`.
+- Añadida regresión WinForms para visibilidad, etiquetas y valores del checkbox.
+- Build Release y pruebas verificadas: 0 advertencias y 0 errores.
+
 ## [0.0.69-beta] - 2026-10-28
 
 ### Flujo visual de superficies WE

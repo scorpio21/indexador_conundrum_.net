@@ -56,14 +56,20 @@ public partial class MainForm : Form
             CambiarEstado(state);
             ComprobarIndexLista();
         }
+
+        private void Checkcabeza_CheckedChanged(object? sender, EventArgs e)
+        {
+            cabezaActual = Checkcabeza.Checked ? 3008 : 0;
+            previewPanel.Invalidate();
+        }
     
             private void ClickDirectionalEnLista()
         {
             if (indexList.SelectedIndex < 0 || indexList.SelectedIndex >= _directionalRecords.Count) return;
             var item = _directionalRecords[indexList.SelectedIndex];
             _lastIndexByState[_indexerState] = indexList.SelectedIndex;
-            directionCombo.SelectedIndex = Math.Clamp(directionCombo.SelectedIndex, 0, 3);
-            var direction = directionCombo.SelectedIndex;
+            directionCombo.SelectedIndex = Math.Clamp(directionCombo.SelectedIndex, 0, 4);
+            var direction = Math.Clamp(directionCombo.SelectedIndex - 1, 0, 3);
             grhText.Text = item.Id.ToString();
             // GetInfoDataIndex del VB6 siempre muestra las cuatro direcciones
             // en TextDatos(0), (2), (3) y (4); el selector solo cambia el
@@ -92,8 +98,10 @@ public partial class MainForm : Form
     
             private void directionCombo_SelectedIndexChanged(object? sender, EventArgs e)
         {
+            _drawWalk = Math.Clamp(directionCombo.SelectedIndex, 0, 4);
             if (_indexerState is "Body" or "Cabezas" or "Cascos" or "Alas" or "Capas" or "Botas")
                 ClickDirectionalEnLista();
+            previewPanel.Invalidate();
         }
     
             private void ClickFxEnLista()

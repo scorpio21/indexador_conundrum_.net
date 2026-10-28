@@ -27,6 +27,7 @@ partial class MainForm
     private Label LUlitError = null!;
     private Label surfaceNameLabel = null!, surfaceHeightLabel = null!, surfaceWidthLabel = null!, surfaceGrhLabel = null!, surfaceReferencesLabel = null!, surfaceDescriptionLabel = null!;
     private TextBox surfaceNameText = null!, surfaceHeightText = null!, surfaceWidthText = null!, surfaceGrhText = null!, surfaceReferencesText = null!;
+    private CheckBox Checkcabeza = null!;
 
     protected override void Dispose(bool disposing)
     { if (disposing && components != null) components.Dispose(); base.Dispose(disposing); }
@@ -95,6 +96,7 @@ partial class MainForm
         formatLabel = new Label();
         indexList = new ListBox();
         dataGroup = new GroupBox();
+        Checkcabeza = new CheckBox();
         xLabel = new Label();
         yLabel = new Label();
         grhLabel = new Label();
@@ -131,9 +133,6 @@ partial class MainForm
         frameText = new TextBox();
         frameLabel = new Label();
         directionCombo = new ComboBox();
-        menuStrip.SuspendLayout();
-        dataGroup.SuspendLayout();
-        foldersGroup.SuspendLayout();
         surfaceGroup = new GroupBox();
         surfaceNameLabel = new Label();
         surfaceHeightLabel = new Label();
@@ -146,7 +145,11 @@ partial class MainForm
         surfaceWidthText = new TextBox();
         surfaceGrhText = new TextBox();
         surfaceReferencesText = new TextBox();
+        menuStrip.SuspendLayout();
+        dataGroup.SuspendLayout();
+        foldersGroup.SuspendLayout();
         statusStrip.SuspendLayout();
+        surfaceGroup.SuspendLayout();
         SuspendLayout();
         // 
         // menuStrip
@@ -409,7 +412,7 @@ partial class MainForm
         // generarWeMenu
         // 
         generarWeMenu.Name = "generarWeMenu";
-        generarWeMenu.Size = new Size(32, 19);
+        generarWeMenu.Size = new Size(201, 22);
         generarWeMenu.Text = "Generar Indices Para WE";
         generarWeMenu.Click += generarWeMenu_Click;
         // 
@@ -423,7 +426,7 @@ partial class MainForm
         // acercaMenu
         // 
         acercaMenu.Name = "acercaMenu";
-        acercaMenu.Size = new Size(32, 19);
+        acercaMenu.Size = new Size(135, 22);
         acercaMenu.Text = "Acerca de...";
         acercaMenu.Click += acercaMenu_Click;
         // 
@@ -471,7 +474,7 @@ partial class MainForm
         // 
         // clearMemoryButton
         // 
-        clearMemoryButton.Location = new Point(96, 470);
+        clearMemoryButton.Location = new Point(96, 454);
         clearMemoryButton.Name = "clearMemoryButton";
         clearMemoryButton.Size = new Size(120, 30);
         clearMemoryButton.TabIndex = 5;
@@ -597,9 +600,9 @@ partial class MainForm
         // 
         // generateSurfaceButton
         // 
-        generateSurfaceButton.Location = new Point(82, 636);
+        generateSurfaceButton.Location = new Point(6, 518);
         generateSurfaceButton.Name = "generateSurfaceButton";
-        generateSurfaceButton.Size = new Size(112, 25);
+        generateSurfaceButton.Size = new Size(86, 40);
         generateSurfaceButton.TabIndex = 32;
         generateSurfaceButton.Text = "Generar índice";
         generateSurfaceButton.Visible = false;
@@ -636,6 +639,7 @@ partial class MainForm
         // 
         // dataGroup
         // 
+        dataGroup.Controls.Add(Checkcabeza);
         dataGroup.Controls.Add(xLabel);
         dataGroup.Controls.Add(yLabel);
         dataGroup.Controls.Add(grhLabel);
@@ -664,6 +668,18 @@ partial class MainForm
         dataGroup.TabIndex = 17;
         dataGroup.TabStop = false;
         dataGroup.Text = "Datos del índice elegido";
+        // 
+        // Checkcabeza
+        // 
+        Checkcabeza.AutoSize = true;
+        Checkcabeza.Location = new Point(116, 228);
+        Checkcabeza.Name = "Checkcabeza";
+        Checkcabeza.Size = new Size(62, 19);
+        Checkcabeza.TabIndex = 32;
+        Checkcabeza.Text = "cabeza";
+        Checkcabeza.UseVisualStyleBackColor = true;
+        Checkcabeza.Visible = false;
+        Checkcabeza.CheckedChanged += Checkcabeza_CheckedChanged;
         // 
         // xLabel
         // 
@@ -754,7 +770,7 @@ partial class MainForm
         // tileHeightLabel
         // 
         tileHeightLabel.AutoSize = true;
-        tileHeightLabel.Location = new Point(19, 264);
+        tileHeightLabel.Location = new Point(21, 269);
         tileHeightLabel.Name = "tileHeightLabel";
         tileHeightLabel.Size = new Size(63, 15);
         tileHeightLabel.TabIndex = 8;
@@ -828,7 +844,7 @@ partial class MainForm
         // 
         // DescripcionAyuda
         // 
-        DescripcionAyuda.Location = new Point(19, 229);
+        DescripcionAyuda.Location = new Point(19, 225);
         DescripcionAyuda.Name = "DescripcionAyuda";
         DescripcionAyuda.Size = new Size(220, 45);
         DescripcionAyuda.TabIndex = 26;
@@ -902,107 +918,6 @@ partial class MainForm
         maxGrhText.TabIndex = 5;
         maxGrhText.Text = "32720";
         // 
-        // surfaceGroup
-        // 
-        surfaceGroup.Controls.Add(surfaceNameLabel);
-        surfaceGroup.Controls.Add(surfaceHeightLabel);
-        surfaceGroup.Controls.Add(surfaceWidthLabel);
-        surfaceGroup.Controls.Add(surfaceGrhLabel);
-        surfaceGroup.Controls.Add(surfaceReferencesLabel);
-        surfaceGroup.Controls.Add(surfaceDescriptionLabel);
-        surfaceGroup.Controls.Add(surfaceNameText);
-        surfaceGroup.Controls.Add(surfaceHeightText);
-        surfaceGroup.Controls.Add(surfaceWidthText);
-        surfaceGroup.Controls.Add(surfaceGrhText);
-        surfaceGroup.Controls.Add(surfaceReferencesText);
-        surfaceGroup.FlatStyle = FlatStyle.Flat;
-        surfaceGroup.Location = new Point(4, 520);
-        surfaceGroup.Name = "surfaceGroup";
-        surfaceGroup.Size = new Size(205, 145);
-        surfaceGroup.TabIndex = 31;
-        surfaceGroup.TabStop = false;
-        surfaceGroup.Text = "Datos índice WE";
-        surfaceGroup.Visible = false;
-        // 
-        // surfaceNameLabel
-        // 
-        surfaceNameLabel.AutoSize = true;
-        surfaceNameLabel.Location = new Point(8, 22);
-        surfaceNameLabel.Name = "surfaceNameLabel";
-        surfaceNameLabel.Size = new Size(50, 15);
-        surfaceNameLabel.Text = "Nombre:";
-        // 
-        // surfaceNameText
-        // 
-        surfaceNameText.Location = new Point(82, 19);
-        surfaceNameText.Name = "surfaceNameText";
-        surfaceNameText.Size = new Size(112, 23);
-        // 
-        // surfaceHeightLabel
-        // 
-        surfaceHeightLabel.AutoSize = true;
-        surfaceHeightLabel.Location = new Point(8, 50);
-        surfaceHeightLabel.Name = "surfaceHeightLabel";
-        surfaceHeightLabel.Size = new Size(32, 15);
-        surfaceHeightLabel.Text = "Alto:";
-        // 
-        // surfaceHeightText
-        // 
-        surfaceHeightText.Location = new Point(82, 47);
-        surfaceHeightText.Name = "surfaceHeightText";
-        surfaceHeightText.Size = new Size(48, 23);
-        // 
-        // surfaceWidthLabel
-        // 
-        surfaceWidthLabel.AutoSize = true;
-        surfaceWidthLabel.Location = new Point(8, 79);
-        surfaceWidthLabel.Name = "surfaceWidthLabel";
-        surfaceWidthLabel.Size = new Size(45, 15);
-        surfaceWidthLabel.Text = "Ancho:";
-        // 
-        // surfaceWidthText
-        // 
-        surfaceWidthText.Location = new Point(82, 76);
-        surfaceWidthText.Name = "surfaceWidthText";
-        surfaceWidthText.Size = new Size(48, 23);
-        // 
-        // surfaceGrhLabel
-        // 
-        surfaceGrhLabel.AutoSize = true;
-        surfaceGrhLabel.Location = new Point(8, 108);
-        surfaceGrhLabel.Name = "surfaceGrhLabel";
-        surfaceGrhLabel.Size = new Size(33, 15);
-        surfaceGrhLabel.Text = "GRH:";
-        // 
-        // surfaceGrhText
-        // 
-        surfaceGrhText.Location = new Point(82, 105);
-        surfaceGrhText.Name = "surfaceGrhText";
-        surfaceGrhText.ReadOnly = true;
-        surfaceGrhText.Size = new Size(48, 23);
-        // 
-        // surfaceReferencesLabel
-        // 
-        surfaceReferencesLabel.AutoSize = true;
-        surfaceReferencesLabel.Location = new Point(136, 108);
-        surfaceReferencesLabel.Name = "surfaceReferencesLabel";
-        surfaceReferencesLabel.Size = new Size(28, 15);
-        surfaceReferencesLabel.Text = "Ref:";
-        // 
-        // surfaceReferencesText
-        // 
-        surfaceReferencesText.Location = new Point(165, 105);
-        surfaceReferencesText.Name = "surfaceReferencesText";
-        surfaceReferencesText.ReadOnly = true;
-        surfaceReferencesText.Size = new Size(32, 23);
-        // 
-        // surfaceDescriptionLabel
-        // 
-        surfaceDescriptionLabel.AutoSize = true;
-        surfaceDescriptionLabel.Location = new Point(8, 130);
-        surfaceDescriptionLabel.Name = "surfaceDescriptionLabel";
-        surfaceDescriptionLabel.Size = new Size(0, 15);
-        // 
         // previewPanel
         // 
         previewPanel.BackColor = Color.Black;
@@ -1065,12 +980,125 @@ partial class MainForm
         // 
         directionCombo.DropDownStyle = ComboBoxStyle.DropDownList;
         directionCombo.FormattingEnabled = true;
-        directionCombo.Items.AddRange(new object[] { "Subir", "Derecha", "Abajo", "Izquierda" });
+        directionCombo.Items.AddRange(new object[] { "Todos", "Norte", "Este", "Sur", "Oeste" });
         directionCombo.Location = new Point(321, 28);
         directionCombo.Name = "directionCombo";
         directionCombo.Size = new Size(89, 23);
         directionCombo.TabIndex = 27;
+        directionCombo.SelectedIndexChanged += directionCombo_SelectedIndexChanged;
         directionCombo.Visible = false;
+        // 
+        // surfaceGroup
+        // 
+        surfaceGroup.Controls.Add(surfaceNameLabel);
+        surfaceGroup.Controls.Add(surfaceHeightLabel);
+        surfaceGroup.Controls.Add(surfaceWidthLabel);
+        surfaceGroup.Controls.Add(surfaceGrhLabel);
+        surfaceGroup.Controls.Add(surfaceReferencesLabel);
+        surfaceGroup.Controls.Add(surfaceDescriptionLabel);
+        surfaceGroup.Controls.Add(surfaceNameText);
+        surfaceGroup.Controls.Add(surfaceHeightText);
+        surfaceGroup.Controls.Add(surfaceWidthText);
+        surfaceGroup.Controls.Add(surfaceGrhText);
+        surfaceGroup.Controls.Add(surfaceReferencesText);
+        surfaceGroup.FlatStyle = FlatStyle.Flat;
+        surfaceGroup.Location = new Point(98, 484);
+        surfaceGroup.Name = "surfaceGroup";
+        surfaceGroup.Size = new Size(283, 123);
+        surfaceGroup.TabIndex = 31;
+        surfaceGroup.TabStop = false;
+        surfaceGroup.Text = "Datos índice WE";
+        surfaceGroup.Visible = false;
+        // 
+        // surfaceNameLabel
+        // 
+        surfaceNameLabel.AutoSize = true;
+        surfaceNameLabel.Location = new Point(27, 92);
+        surfaceNameLabel.Name = "surfaceNameLabel";
+        surfaceNameLabel.Size = new Size(54, 15);
+        surfaceNameLabel.TabIndex = 0;
+        surfaceNameLabel.Text = "Nombre:";
+        // 
+        // surfaceHeightLabel
+        // 
+        surfaceHeightLabel.AutoSize = true;
+        surfaceHeightLabel.Location = new Point(27, 30);
+        surfaceHeightLabel.Name = "surfaceHeightLabel";
+        surfaceHeightLabel.Size = new Size(32, 15);
+        surfaceHeightLabel.TabIndex = 1;
+        surfaceHeightLabel.Text = "Alto:";
+        // 
+        // surfaceWidthLabel
+        // 
+        surfaceWidthLabel.AutoSize = true;
+        surfaceWidthLabel.Location = new Point(14, 56);
+        surfaceWidthLabel.Name = "surfaceWidthLabel";
+        surfaceWidthLabel.Size = new Size(45, 15);
+        surfaceWidthLabel.TabIndex = 2;
+        surfaceWidthLabel.Text = "Ancho:";
+        // 
+        // surfaceGrhLabel
+        // 
+        surfaceGrhLabel.AutoSize = true;
+        surfaceGrhLabel.Location = new Point(129, 34);
+        surfaceGrhLabel.Name = "surfaceGrhLabel";
+        surfaceGrhLabel.Size = new Size(57, 15);
+        surfaceGrhLabel.TabIndex = 3;
+        surfaceGrhLabel.Text = "GrhIndex:";
+        // 
+        // surfaceReferencesLabel
+        // 
+        surfaceReferencesLabel.AutoSize = true;
+        surfaceReferencesLabel.Location = new Point(129, 61);
+        surfaceReferencesLabel.Name = "surfaceReferencesLabel";
+        surfaceReferencesLabel.Size = new Size(70, 15);
+        surfaceReferencesLabel.TabIndex = 4;
+        surfaceReferencesLabel.Text = "Referencias:";
+        // 
+        // surfaceDescriptionLabel
+        // 
+        surfaceDescriptionLabel.AutoSize = true;
+        surfaceDescriptionLabel.Location = new Point(8, 130);
+        surfaceDescriptionLabel.Name = "surfaceDescriptionLabel";
+        surfaceDescriptionLabel.Size = new Size(0, 15);
+        surfaceDescriptionLabel.TabIndex = 5;
+        // 
+        // surfaceNameText
+        // 
+        surfaceNameText.Location = new Point(87, 86);
+        surfaceNameText.Name = "surfaceNameText";
+        surfaceNameText.Size = new Size(177, 23);
+        surfaceNameText.TabIndex = 6;
+        // 
+        // surfaceHeightText
+        // 
+        surfaceHeightText.Location = new Point(65, 25);
+        surfaceHeightText.Name = "surfaceHeightText";
+        surfaceHeightText.Size = new Size(48, 23);
+        surfaceHeightText.TabIndex = 7;
+        // 
+        // surfaceWidthText
+        // 
+        surfaceWidthText.Location = new Point(65, 53);
+        surfaceWidthText.Name = "surfaceWidthText";
+        surfaceWidthText.Size = new Size(48, 23);
+        surfaceWidthText.TabIndex = 8;
+        // 
+        // surfaceGrhText
+        // 
+        surfaceGrhText.Location = new Point(205, 30);
+        surfaceGrhText.Name = "surfaceGrhText";
+        surfaceGrhText.ReadOnly = true;
+        surfaceGrhText.Size = new Size(59, 23);
+        surfaceGrhText.TabIndex = 9;
+        // 
+        // surfaceReferencesText
+        // 
+        surfaceReferencesText.Location = new Point(205, 60);
+        surfaceReferencesText.Name = "surfaceReferencesText";
+        surfaceReferencesText.ReadOnly = true;
+        surfaceReferencesText.Size = new Size(32, 23);
+        surfaceReferencesText.TabIndex = 10;
         // 
         // MainForm
         // 
@@ -1104,10 +1132,10 @@ partial class MainForm
         Controls.Add(formatCombo);
         Controls.Add(dataGroup);
         Controls.Add(foldersGroup);
-        Controls.Add(surfaceGroup);
         Controls.Add(previewPanel);
         Controls.Add(LUlitError);
         Controls.Add(statusStrip);
+        Controls.Add(surfaceGroup);
         MainMenuStrip = menuStrip;
         MinimumSize = new Size(1000, 600);
         Name = "MainForm";
@@ -1119,10 +1147,10 @@ partial class MainForm
         dataGroup.PerformLayout();
         foldersGroup.ResumeLayout(false);
         foldersGroup.PerformLayout();
-        surfaceGroup.ResumeLayout(false);
-        surfaceGroup.PerformLayout();
         statusStrip.ResumeLayout(false);
         statusStrip.PerformLayout();
+        surfaceGroup.ResumeLayout(false);
+        surfaceGroup.PerformLayout();
         ResumeLayout(false);
         PerformLayout();
     }

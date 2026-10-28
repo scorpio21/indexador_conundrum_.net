@@ -32,6 +32,8 @@ public partial class MainForm : Form
     private bool _greenBackground;
     private bool _resourceSearchMode;
     private bool _weMode;
+    private int cabezaActual;
+    private int _drawWalk;
     private IReadOnlyList<GrhRecord>? _autoPreviewRecords;
 
     private static readonly string[] AllStates = { "Grh", "Body", "Cabezas", "Cascos", "Escudos", "Armas", "Alas", "Capas", "Fx", "Resource", "Botas" };

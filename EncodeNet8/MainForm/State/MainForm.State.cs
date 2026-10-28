@@ -95,6 +95,9 @@ public partial class MainForm : Form
             frameText.Visible = true;
             frameLabel.Visible = true;
             directionCombo.Visible = false;
+            Checkcabeza.Visible = false;
+            Checkcabeza.Checked = false;
+            cabezaActual = 0;
             DescripcionAyuda.Visible = false;
             saveIndexButton.Visible = true;
             deleteButton.Visible = true;
@@ -154,13 +157,18 @@ public partial class MainForm : Form
     
             grhLabel.Text = $"{StateCaption(state)}:";
             bmpLabel.Text = "Subir:";
-            framesLabel.Text = "Derecha:";
-            heightLabel.Text = "Abajo:";
-            widthLabel.Text = "Izquierda:";
-            speedLabel.Text = state == "Body" || state == "Alas" ? "Offset:" : "";
+            framesLabel.Text = state == "Body" || state == "Alas" ? "" : "Derecha:";
+            heightLabel.Text = state == "Body" || state == "Alas" ? "Derecha:" : "Abajo:";
+            widthLabel.Text = state == "Body" || state == "Alas" ? "Abajo:" : "Izquierda:";
+            speedLabel.Text = state == "Body" || state == "Alas" ? "Izquierda:" : "";
+            xLabel.Text = state == "Body" || state == "Alas" ? "Offset:" : "Posicion X:";
             directionCombo.Visible = true;
+            if (directionCombo.Items.Count > 0)
+                directionCombo.SelectedIndex = 0;
+            _drawWalk = 0;
             frameText.Visible = false;
             frameLabel.Visible = false;
+            Checkcabeza.Visible = state == "Body";
             ShowStateFields(textBoxes, labels, state == "Body" || state == "Alas" ? new[] { 0, 2, 3, 4, 5 } : new[] { 0, 2, 3, 4 });
         }
     

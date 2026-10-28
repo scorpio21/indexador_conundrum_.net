@@ -367,6 +367,22 @@ static void TestMainFormStates()
             "MainForm Body: selector visible y frames oculto");
         Assert(GetMain<TextBox>(main, "speedText").Visible && !GetMain<TextBox>(main, "yText").Visible,
             "MainForm Body: offset visible y posición Y oculta");
+        var walkCombo = GetMain<ComboBox>(main, "directionCombo");
+        Assert(walkCombo.Items.Cast<object>().Select(item => item.ToString()).SequenceEqual(new[] { "Todos", "Norte", "Este", "Sur", "Oeste" }),
+            "MainForm Body: selector CDibujarWalk conserva Todos y las cuatro direcciones");
+        walkCombo.SelectedIndex = 1;
+        Assert(GetMainValue<int>(main, "_drawWalk") == 1, "MainForm Body: Norte selecciona una sola dirección");
+        walkCombo.SelectedIndex = 0;
+        Assert(GetMainValue<int>(main, "_drawWalk") == 0, "MainForm Body: Todos selecciona las cuatro direcciones");
+        var checkCabeza = GetMain<CheckBox>(main, "Checkcabeza");
+        Assert(checkCabeza.Visible && GetMain<Label>(main, "xLabel").Text == "Offset:",
+            "MainForm Body: Checkcabeza visible y Posicion X sustituida por Offset");
+        checkCabeza.Checked = true;
+        Assert(GetMainValue<int>(main, "cabezaActual") == 3008,
+            "MainForm Body: Checkcabeza asigna la cabeza 3008");
+        checkCabeza.Checked = false;
+        Assert(GetMainValue<int>(main, "cabezaActual") == 0,
+            "MainForm Body: desmarcar Checkcabeza limpia cabezaActual");
 
         var directional = GetMainList<DirectionalIndexRecord>(main, "_directionalRecords");
         directional.Clear();

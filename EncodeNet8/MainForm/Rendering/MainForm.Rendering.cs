@@ -84,6 +84,11 @@ public partial class MainForm : Form
                 DrawAutoIndexerPreview(e.Graphics, _autoPreviewRecords);
                 return;
             }
+            if (_indexerState.Equals("Body", StringComparison.OrdinalIgnoreCase) && _drawWalk == 0)
+            {
+                DrawBodyPreview(e.Graphics);
+                return;
+            }
             if (_selectedRecord is null)
             {
                 ClearUtilError();
@@ -141,6 +146,98 @@ public partial class MainForm : Form
                 SetUtilError($"No se pudo dibujar el BMP: {ex.Message}");
                 using var brush = new SolidBrush(Color.DarkRed);
                 e.Graphics.DrawString($"No se pudo dibujar el BMP: {ex.Message}", Font, brush, new PointF(12, 12));
+            }
+        }
+
+        private void DrawBodyPreview(Graphics graphics)
+        {
+            if (indexList.SelectedIndex < 0 || indexList.SelectedIndex >= _bodyRecords.Count || _file is null)
+                return;
+
+            var body = _bodyRecords[indexList.SelectedIndex];
+            var width = Math.Max(1, previewPanel.ClientSize.Width);
+            var height = Math.Max(1, previewPanel.ClientSize.Height);
+            var margin = 12;
+            var cellWidth = Math.Max(1, (width - margin * 3) / 2);
+            var cellHeight = Math.Max(1, (height - margin * 3) / 2);
+            var slots = new[]
+            {
+                new Rectangle(margin, margin, cellWidth, cellHeight),
+                new Rectangle(margin * 2 + cellWidth, margin, cellWidth, cellHeight),
+                new Rectangle(margin, margin * 2 + cellHeight, cellWidth, cellHeight),
+                new Rectangle(margin * 2 + cellWidth, margin * 2 + cellHeight, cellWidth, cellHeight)
+            };
+            var directions = new[] { body.Walk1, body.Walk2, body.Walk3, body.Walk4 };
+            var drawnBody = new Rectangle[4];
+
+            for (var i = 0; i < directions.Length; i++)
+            {
+                var record = _file.Records.FirstOrDefault(item => item.Id == directions[i]);
+                if (record is null) continue;
+                var frame = ResolvePreviewFrame(record);
+                if (frame is null) continue;
+                drawnBody[i] = DrawRecordFit(graphics, frame, slots[i]);
+            }
+
+            if (cabezaActual > 0 && cabezaActual <= 32720 && drawnBody[2].Width > 0)
+            {
+                var head = _file.Records.FirstOrDefault(item => item.Id == cabezaActual);
+                if (head is not null)
+                    DrawOverlay(graphics, head, drawnBody[2]);
+            }
+        }
+
+        private GrhRecord? ResolvePreviewFrame(GrhRecord record)
+        {
+            if (!record.IsAnimation || _file is null || record.Frames.Count == 0) return record;
+            var frameId = record.Frames[Math.Clamp(_animationFrame, 0, record.Frames.Count - 1)];
+            return _file.Records.FirstOrDefault(item => item.Id == frameId);
+        }
+
+        private Rectangle DrawRecordFit(Graphics graphics, GrhRecord record, Rectangle slot)
+        {
+            var bitmapPath = Path.Combine(ResolvePath(_settings.GraphicsPath), $"{record.FileNumber}.bmp");
+            if (!File.Exists(bitmapPath) || record.Width <= 0 || record.Height <= 0) return Rectangle.Empty;
+            try
+            {
+                var bitmap = GetCachedBitmap(bitmapPath);
+                var source = new Rectangle(record.X, record.Y, record.Width, record.Height);
+                if (source.X < 0 || source.Y < 0 || source.Right > bitmap.Width || source.Bottom > bitmap.Height) return Rectangle.Empty;
+                var scale = Math.Min((double)slot.Width / source.Width, (double)slot.Height / source.Height);
+                scale = Math.Min(scale, 4D);
+                var dest = new Rectangle(slot.Left + (slot.Width - (int)(source.Width * scale)) / 2,
+                    slot.Top + (slot.Height - (int)(source.Height * scale)) / 2,
+                    Math.Max(1, (int)(source.Width * scale)), Math.Max(1, (int)(source.Height * scale)));
+                graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Half;
+                graphics.DrawImage(bitmap, dest, source, GraphicsUnit.Pixel);
+                return dest;
+            }
+            catch
+            {
+                return Rectangle.Empty;
+            }
+        }
+
+        private void DrawOverlay(Graphics graphics, GrhRecord record, Rectangle bodyBounds)
+        {
+            var bitmapPath = Path.Combine(ResolvePath(_settings.GraphicsPath), $"{record.FileNumber}.bmp");
+            if (!File.Exists(bitmapPath) || record.Width <= 0 || record.Height <= 0) return;
+            try
+            {
+                var bitmap = GetCachedBitmap(bitmapPath);
+                var source = new Rectangle(record.X, record.Y, record.Width, record.Height);
+                if (source.X < 0 || source.Y < 0 || source.Right > bitmap.Width || source.Bottom > bitmap.Height) return;
+                var scale = Math.Min((double)bodyBounds.Width / (source.Width * 2), (double)bodyBounds.Height / (source.Height * 2));
+                var dest = new Rectangle(bodyBounds.Left + (bodyBounds.Width - (int)(source.Width * scale)) / 2,
+                    bodyBounds.Top, Math.Max(1, (int)(source.Width * scale)), Math.Max(1, (int)(source.Height * scale)));
+                graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Half;
+                graphics.DrawImage(bitmap, dest, source, GraphicsUnit.Pixel);
+            }
+            catch
+            {
+                // El visor sigue mostrando el body aunque falte el GRH de cabeza.
             }
         }
 
