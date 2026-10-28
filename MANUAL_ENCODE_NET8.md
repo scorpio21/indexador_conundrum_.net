@@ -85,6 +85,35 @@ Las cuatro direcciones, offsets, GRH utilizados y escritura del archivo auxiliar
 - Generación compatible con WE: **100 %** — `REFERENCIA<n>` con nombre, GRH, alto y ancho.
 - Validación con mapas reales: **100 %** en la generación no destructiva de `Indices.ini`.
 
+#### ¿Para qué sirve exactamente «Generar índices para WE»?
+
+En el indexador VB6 original, esta herramienta prepara el archivo auxiliar `Indices.ini` que utiliza el editor de mapas WE para trabajar con superficies del mapa. No crea un gráfico nuevo en `Graficos.ind` ni modifica el BMP: registra una relación legible entre un nombre de terreno y un GRH ya existente.
+
+Al pulsar `ChaGenerarIndices`, el código VB6 realiza estas operaciones:
+
+1. Comprueba que se haya escrito un nombre (`txtNombre`) y que se haya elegido un terreno/GRH (`txtAlto` no vacío).
+2. Obtiene el GRH seleccionado en la lista.
+3. Inicializa o actualiza `INIT/Referencias` en `Indices.ini`.
+4. Escribe una sección `REFERENCIA<n>` con `Nombre`, `GrhIndice`, `Alto` y `Ancho`.
+5. Incrementa los contadores de referencia para que la siguiente superficie se guarde en otra sección.
+
+Ejemplo conceptual del resultado:
+
+```ini
+[INIT]
+Referencias=1
+
+[REFERENCIA1]
+Nombre=Hierba
+GrhIndice=115
+Alto=32
+Ancho=32
+```
+
+El WE puede usar después ese nombre como superficie seleccionable y recuperar el GRH y las dimensiones que debe colocar en el mapa. Por tanto, la función es un catálogo de superficies para el editor de mapas; no es un autoindexador de BMP ni un sistema de renderizado.
+
+En EncodeNet8, el panel de datos WE equivale a `FraDatosIndice`, el botón `Generar índice` equivale a `ChaGenerarIndices` y el botón `Capas`/menú `Indexar Superficies` activa la misma vista de trabajo. La implementación conserva las referencias consecutivas, valida los campos visibles y solicita confirmación antes de sobrescribir el archivo.
+
 ### Errores — **100 %**
 
 - Textos de error VB6: **100 %** — frames, BMP inexistente, dimensiones y GRH inválidos.
@@ -129,7 +158,7 @@ Las cuatro direcciones, offsets, GRH utilizados y escritura del archivo auxiliar
 2. ~~Comparar el autoindexador con VB6~~ — **100 %**, issue **#14** cerrado.
 3. ~~Completar recursos BMP y búsquedas~~ — **100 %**, issue **#10** cerrado.
 4. ~~Completar edición y guardado~~ — **100 %**, issue **#6** cerrado.
-5. Completar índices direccionales: objetivo **85 %**.
+5. ~~Completar índices direccionales~~ — **100 %** en la regresión Integer/Long y estados del issue **#8**.
 6. ~~Terminar errores y `LUlitError`~~ — **100 %**, issue **#12** cerrado.
 7. ~~Completar visor, temporización y regresión~~ — **100 %**, issue **#13** cerrado.
 8. ~~Implementar `Indexar Superficies`~~ — **100 %** en generación de `Indices.ini`, issue **#7** cerrado.
