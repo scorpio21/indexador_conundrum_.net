@@ -18,6 +18,7 @@ public partial class MainForm : Form
     private readonly Dictionary<string, int> _lastIndexByState = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<BodyIndexRecord> _bodyRecords = new();
     private readonly List<DirectionalIndexRecord> _directionalRecords = new();
+    private readonly Dictionary<string, List<DirectionalIndexRecord>> _pendingDirectionalRecords = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<FxIndexRecord> _fxRecords = new();
     private readonly Dictionary<int, int> _referenceCounts = new();
     private string? _directionalPath;
