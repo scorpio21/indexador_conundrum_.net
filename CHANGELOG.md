@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.0.49-beta] - 2026-10-28
+
+### Avance — Issue #14
+
+- Se igualaron las plantillas direccionales `(pj) clásico` y `(pj) Alkon` con las posiciones X/Y del `formAuto.frm` original.
+- Los frames base de esas dos plantillas conservan la referencia VB6 `1..22`; NPC y offset mantienen sus referencias generadas y sus cuadrículas correspondientes.
+- Se mantiene la creación del GRH final y la conexión con el índice direccional auxiliar de Body/Arma/Escudo/Alas/Espalda/Botas.
+- Build Release y pruebas existentes verificadas: 0 errores y 0 advertencias.
+
 ## [0.0.48-beta] - 2026-10-28
 
 ### Avance — Issue #14

@@ -525,7 +525,25 @@ public partial class FormAuto : Form
             var offset = ComboTipoAnim.SelectedIndex == 1 ? Parse(TextDatos2_7, 0) : 0;
             var offsetY = ComboTipoAnim.SelectedIndex == 1 ? Parse(TextDatos2_8, 0) : 0;
             var directional = ComboTipoAnim.SelectedIndex == 0;
-            GeneratedRecords = BuildGrid(start, total, columns, rows, Parse(textBox7, 0), Math.Max(1, Parse(textBox6, 26)), Math.Max(1, Parse(textBox5, 46)), offset, offsetY, true, directional);
+            var useLegacyDirectionalLayout = directional && !Optiondimension_1.Checked;
+            var directionalPositions = Optiondimension_2.Checked
+                ? CreateAlkonPositions()
+                : CreateClassicPositions();
+            GeneratedRecords = BuildGrid(
+                start,
+                total,
+                columns,
+                rows,
+                Parse(textBox7, 0),
+                Math.Max(1, Parse(textBox6, 26)),
+                Math.Max(1, Parse(textBox5, 46)),
+                offset,
+                offsetY,
+                true,
+                createAnimation: directional || ComboTipoAnim.SelectedIndex == 1,
+                directionalAnimations: directional,
+                legacyDirectionalPositions: useLegacyDirectionalLayout ? directionalPositions : null,
+                legacyFrameReferences: useLegacyDirectionalLayout);
             if (directional && checkAuto.Checked)
             {
                 var bodyId = Parse(text1, 0);
@@ -613,12 +631,16 @@ public partial class FormAuto : Form
         int offsetY,
         bool sameBitmap,
         bool createAnimation = false,
-        bool directionalAnimations = false)
+        bool directionalAnimations = false,
+        IReadOnlyList<Point>? legacyDirectionalPositions = null,
+        bool legacyFrameReferences = false)
     {
         if (bmpNumber <= 0) throw new InvalidDataException("Indica un número de BMP válido.");
         if (start <= 0 || start > _maxGrh) throw new InvalidDataException("El primer índice no es válido.");
         if (total <= 0 || total > 25) throw new InvalidDataException("El total debe estar entre 1 y 25.");
         if (columns <= 0 || rows <= 0) throw new InvalidDataException("La cuadrícula debe tener columnas y filas válidas.");
+        if (legacyDirectionalPositions is not null && legacyDirectionalPositions.Count < total)
+            throw new InvalidDataException("La animación direccional necesita una posición para cada frame.");
         if (createAnimation && start > _maxGrh - total)
             throw new InvalidDataException("No hay sitio para la animación.");
         if (!TryGetBitmap(bmpNumber, out var bitmap)) throw new InvalidDataException($"No se encontró el BMP {bmpNumber}.");
@@ -635,15 +657,17 @@ public partial class FormAuto : Form
             if (id > _maxGrh || _usedGrh.Contains(id)) throw new InvalidDataException($"El GRH {id} ya existe o supera el máximo.");
             var column = i % columns;
             var row = i / columns;
+            var sourceX = legacyDirectionalPositions is null ? column * width + offsetX : legacyDirectionalPositions[i].X;
+            var sourceY = legacyDirectionalPositions is null ? row * height + offsetY : legacyDirectionalPositions[i].Y;
             result.Add(new GrhRecord
             {
                 Id = id,
                 FileNumber = checked((short)(sameBitmap ? bmpNumber : bmpNumber + i)),
-                X = checked((short)(sameBitmap ? column * width + offsetX : 0)),
-                Y = checked((short)(sameBitmap ? row * height + offsetY : 0)),
+                X = checked((short)(sameBitmap ? sourceX : 0)),
+                Y = checked((short)(sameBitmap ? sourceY : 0)),
                 Width = checked((short)width),
                 Height = checked((short)height),
-                Frames = new List<int> { id }
+                Frames = new List<int> { legacyFrameReferences ? i + 1 : id }
             });
         }
 
@@ -721,6 +745,25 @@ public partial class FormAuto : Form
     }
 
     private static int Parse(TextBox field, int fallback) => int.TryParse(field.Text, out var value) ? value : fallback;
+
+    private static IReadOnlyList<Point> CreateClassicPositions()
+    {
+        var x = new[] { 0, 25, 49, 73, 98, 123 };
+        var y = new[] { 0, 45, 90, 135 };
+        return Enumerable.Range(0, 22)
+            .Select(index => new Point(x[index % 6], y[index / 6]))
+            .ToArray();
+    }
+
+    private static IReadOnlyList<Point> CreateAlkonPositions()
+    {
+        var x = new[] { 0, 25, 50, 75, 100, 125 };
+        var y = new[] { 0, 45, 90, 135 };
+        return Enumerable.Range(0, 22)
+            .Select(index => new Point(x[index % 6], y[index / 6]))
+            .ToArray();
+    }
+
     private static (int X, int Y) ParseOffset(string text)
     {
         var parts = text.Split('º', StringSplitOptions.TrimEntries);

@@ -4,7 +4,7 @@
 
 ## Resumen
 
-**Cobertura global estimada: 72 %.**
+**Cobertura global estimada: 74 %.**
 
 Ya están migrados la ventana principal, estados básicos, lectura Integer/Long, visor, rutas JSON y autoindexador base. Falta completar operaciones auxiliares, compatibilidad exacta de formatos, superficies y regresión con recursos reales.
 
@@ -13,7 +13,7 @@ Ya están migrados la ventana principal, estados básicos, lectura Integer/Long,
 | VB6 | Destino C# | Cobertura | Falta |
 |---|---|---:|---|
 | `frmMain.frm` | `MainForm.cs` + `MainForm/` | **82 %** | Estados, visibilidad, colores, menús y eventos. |
-| `formAuto.frm` | `FormAuto.cs` + diseñador | **78 %** | Modos, controles, offsets, sobrescritura y resultados. |
+| `formAuto.frm` | `FormAuto.cs` + diseñador | **84 %** | Integración completa de auxiliares, preview de creación y comparación exhaustiva de resultados. |
 | `Mod_Graficos.bas` | `GraficosIndFile.cs` + `GrhModels.cs` | **84 %** | Casos límite, referencias y escritura idéntica. |
 | `Mod_Recursos.bas` | `ResourceIndexing.cs` | **65 %** | BMP no indexados, búsqueda y mensajes. |
 | `Mod_Directorios.bas` | `SettingsForm.cs` + JSON | **90 %** | Rutas relativas y valores iniciales. |
