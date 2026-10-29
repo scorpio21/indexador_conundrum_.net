@@ -78,7 +78,7 @@ public partial class MainForm : Form
 
         private int ReadWeReferenceCount()
         {
-            var path = Path.Combine(ResolvePath(_settings.InitPath), "Indices.ini");
+            var path = ResolveConfiguredIndicesFilePath();
             if (!File.Exists(path)) return 0;
             return File.ReadLines(path)
                 .Select(line => line.Trim())
@@ -114,7 +114,7 @@ public partial class MainForm : Form
                 return;
             }
 
-            var path = Path.Combine(ResolvePath(_settings.InitPath), "Indices.ini");
+            var path = ResolveConfiguredIndicesFilePath();
             if (File.Exists(path))
             {
                 var answer = MessageBox.Show(this,
@@ -142,6 +142,20 @@ public partial class MainForm : Form
                 SetUtilError($"No se pudo generar el índice WE: {ex.Message}");
             }
         }
+
+        // Indicetext es un control creado desde el diseñador del formulario principal.
+        // Se busca por nombre para que esta parte siga compilando mientras el diseñador
+        // aún no haya guardado el campo generado; si no existe, se usa JSON/Conf.ini.
+        private string ResolveConfiguredIndicesFilePath()
+        {
+            var control = Controls.Find("Indicetext", true).OfType<TextBox>().FirstOrDefault();
+            var configuredValue = control?.Text.Trim();
+            if (string.IsNullOrWhiteSpace(configuredValue))
+                return _settings.ResolveIndicesFilePath(AppContext.BaseDirectory);
+
+            var settings = new IndexerSettings { IndicesPath = configuredValue };
+            return settings.ResolveIndicesFilePath(AppContext.BaseDirectory);
+        }
     
             private void SetUtilError(string? message)
         {
@@ -159,6 +173,7 @@ public partial class MainForm : Form
                 DisposeBitmapCache();
                 indsText.Text = _settings.InitPath;
                 graphicsText.Text = _settings.GraphicsPath;
+                Indicetext.Text = _settings.IndicesPath;
                 previewPanel.Invalidate();
                 statusLabel.Text = "Configuración guardada en JSON.";
             }

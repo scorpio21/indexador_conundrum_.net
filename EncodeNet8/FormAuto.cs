@@ -111,6 +111,53 @@ public partial class FormAuto : Form
         ValidateSimpleInputs();
     }
 
+    /// <summary>
+    /// Prepara el formulario igual que las opciones del menú contextual de
+    /// FrmSearch.frm: body, animación normal o gráfico independiente.
+    /// </summary>
+    public void PrepareFromSearch(SearchIndexMode mode, int bmpNumber)
+    {
+        if (bmpNumber <= 0) return;
+
+        switch (mode)
+        {
+            case SearchIndexMode.Body:
+                ShowMode(GroupBox);
+                ComboTipoAnim.SelectedIndex = 0;
+                Optiondimension_0.Checked = true;
+                textBox7.Text = bmpNumber.ToString();
+                textDatos2_0.Text = "6";
+                textDatos2_1.Text = "4";
+                textDatos2_3.Text = "22";
+                textBox5.Text = "46";
+                textBox6.Text = "26";
+                textBox4.Text = FindFreeIndex(26).ToString();
+                text1.Text = Math.Max(1, _usedDirectional.DefaultIfEmpty(0).Max() + 1).ToString();
+                Text2.Text = "-38º0";
+                checkAuto.Checked = false;
+                combo2.SelectedIndex = 0;
+                break;
+
+            case SearchIndexMode.Animation:
+                ShowMode(groupBox1);
+                textBox15.Text = bmpNumber.ToString();
+                textBox21.Text = "1";
+                textBox20.Text = "1";
+                textBox19.Text = "1";
+                textBox17.Text = "16";
+                textBox16.Text = "16";
+                textBox18.Text = FindFreeIndex(2).ToString();
+                radioButton6.Checked = true;
+                break;
+
+            case SearchIndexMode.IndependentGraphic:
+                ShowMode(groupBox1);
+                textBoxBmp.Text = bmpNumber.ToString();
+                textBoxGrh.Text = FindFreeIndex(1).ToString();
+                break;
+        }
+    }
+
     private void ShowMode(Control active)
     {
         // Los tres GroupBox guardados por el diseñador son hermanos directos

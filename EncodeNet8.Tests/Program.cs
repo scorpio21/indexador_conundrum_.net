@@ -82,6 +82,7 @@ try
     TestAutoIndexer(root);
     TestFormAutoModes(root);
     TestWeIndexFile(root);
+    TestIndexerSettings(root);
     TestMainFormStates();
     TestAllIndexerStates();
     Console.WriteLine("Graficos.ind, lectores direccionales y adicionales: Integer/Long OK; truncado rechazado.");
@@ -523,6 +524,20 @@ static void TestWeIndexFile(string root)
         && content.Contains("[REFERENCIA1]") && content.Contains("GrhIndice=115")
         && content.Contains("[REFERENCIA2]") && content.Contains("GrhIndice=116"),
         "WE: genera y añade referencias compatibles en Indices.ini");
+}
+
+static void TestIndexerSettings(string root)
+{
+    var settings = new IndexerSettings { IndicesPath = "Datos", ResourceMode = 1 };
+    var expected = Path.Combine(AppContext.BaseDirectory, "Datos", "Indices.ini");
+    Assert(settings.ResolveIndicesFilePath(AppContext.BaseDirectory) == expected, "Indices.ini: carpeta de datos");
+
+    settings.IndicesPath = Path.Combine(root, "personalizado", "Indices.ini");
+    Assert(settings.ResolveIndicesFilePath(AppContext.BaseDirectory) == settings.IndicesPath, "Indices.ini: ruta completa");
+
+    settings.ResourceMode = 7;
+    settings.Save();
+    Assert(settings.ResourceMode == 1, "ResourceMode: valor fuera de rango normalizado");
 }
 
 static void TestAllIndexerStates()

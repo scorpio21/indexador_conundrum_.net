@@ -1,172 +1,110 @@
-# Auditoría de migración EncodeNet8: pendientes frente al VB6 original
+# Auditoría de migración EncodeNet8 frente al VB6 original
 
-> Este documento contiene únicamente lo que falta para alcanzar el 100 % de equivalencia con el indexador VB6 original de Conundrum/AOSpain. Los porcentajes son cobertura funcional estimada; el 100 % exige comparar resultados con los mismos BMP e índices.
+Versión documentada: **0.0.78-beta**  
+Fecha de auditoría: **2026-10-29**
 
-## Resumen
+## Veredicto
 
-**Cobertura funcional del indexador: 100 %.** El gestor `clsSurfaceManager` del runtime del cliente queda explícitamente fuera de este proyecto.
+La migración **no está al 100 %**. El proyecto .NET reproduce el flujo principal del indexador: `Graficos.ind`, Integer/Long, estados, edición, visor GDI+, autoindexador y `Indices.ini` para WE.
 
-Ya están migrados la ventana principal, estados básicos, lectura Integer/Long, visor GDI+, rutas JSON, autoindexador, herramientas y regresión no destructiva. Solo queda fuera del indexador el gestor de superficies runtime del cliente.
+No puede declararse equivalencia total porque `EncodeMapas` es un marcador, ResF está desactivado, no se ha reproducido `Inicio.con` y el motor DirectX7/`clsSurfaceManager` fue sustituido por GDI+.
+
+Los porcentajes son cobertura funcional estimada frente a `K:\AO_Aospain\utilidades\Code`, no porcentaje de líneas.
+
+## Inventario
+
+Se revisaron 15 archivos VB6:
+
+- Formularios: `Encode.frm`, `FormAuto.frm`, `FrmConfig.frm`, `FrmSearch.frm`.
+- Módulos: `APIdeclaraciones.bas`, `Declares.bas`, `DX_InIt.bas`, `GameIni.bas`, `GeneralES.bas`, `Indices.bas`, `TileEngine.bas`.
+- Clases: `clsIniReader.cls`, `clsSurfaceManager.cls`, `clsSurfaceManDyn.cls`, `clsSurfaceManStatic.cls`.
 
 ## Matriz de cobertura
 
-| VB6 | Destino C# | Cobertura | Falta |
-|---|---|---:|---|
-| `frmMain.frm` | `MainForm.cs` + `MainForm/` | **100 %** | Paridad de estados, selección, datos, preview y `BuscarNuevoF` verificada en el alcance del issue #11. |
-| `formAuto.frm` | `FormAuto.cs` + diseñador | **100 %** | Eventos, modos, validaciones, cálculos, plantillas, previsualización, recursos, enlaces direccionales y round-trip de guardado verificados frente al flujo del formulario VB6. |
-| `Mod_Graficos.bas` | `GraficosIndFile.cs` + `GrhModels.cs` | **100 %** en la regresión cubierta | Integer/Long, animaciones, límites y truncados verificados con fixtures no destructivos del issue #8. |
-| `Mod_Recursos.bas` | `MainForm/Search/MainForm.Search.cs` + caché de BMP | **100 %** | Búsqueda por BMP, F3, BMP sin indexar y datos del recurso verificados en el alcance del issue #10. |
-| `Mod_Directorios.bas` | `SettingsForm.cs` + JSON | **100 %** | Rutas relativas, valores iniciales y persistencia JSON verificadas. |
-| `Mod_Indices.bas` | `DirectionalIndexing.cs` + lectores adicionales | **100 %** en la regresión cubierta | Estados direccionales, offsets, FX, armas, escudos, alas, capas y botas verificados con Integer/Long o INI. |
-| `Mod_Superficies.bas` | `WeIndexFile.cs` + `MainForm` | **100 %** | Generación de `Indices.ini` para WE, panel equivalente a `FraDatosIndice`, botón equivalente a `ChaGenerarIndices`, modo `Capas`, referencias consecutivas y confirmación de modificación verificados en el issue #7. |
-| `Mod_Edicion.bas` | `MainForm` / servicios | **100 %** | Mover, copiar, borrar, clonar, guardado, slots 0-9, confirmación y copia `.bak` verificados en el issue #6. |
-| `Mod_Visor.bas` | `BufferedPreviewPanel.cs` + `MainForm/Rendering/` | **100 %** | Temporización VB6, caché, escalado, transparencia, animación y refresco verificados; no se porta DirectX7. |
-| `Mod_Errores.bas` | `MainForm/IO/MainForm.Saving.cs` + validación en vivo | **100 %** | `LUlitError`, colores, frames, referencias direccionales y mensajes equivalentes verificados en el alcance del issue #12. |
-| `clsSurfaceManager.cls` | Fuera del alcance del indexador | **0 %** | Gestión de superficies runtime del cliente; no es necesaria para la preview GDI+. |
-| APIs Win32/temporizadores | C#/.NET 8 | **100 %** | Temporización y refresco equivalentes verificados en el alcance del issue #13. |
+| Componente VB6 | Destino .NET | Estado | Cobertura | Pendiente |
+|---|---|---|---:|---|
+| `Encode.frm` | `MainForm.cs` + `MainForm/` | Parcial alto | **85 %** | EncodeMapas, herramientas auxiliares y paridad exacta de menús. |
+| `FormAuto.frm` | `FormAuto.cs` + diseñador | Parcial alto | **90 %** | Validación exhaustiva con recursos reales. |
+| `FrmConfig.frm` | `SettingsForm.cs` + JSON | Parcial | **75 %** | Equivalencia completa con Conf.ini e Inicio.con. |
+| `FrmSearch.frm` | `FrmSearch.cs` + `FrmSearch.Designer.cs` + `MainForm/Search` | Implementado | **100 %** | Búsquedas, navegación y menú contextual conectados a `FormAuto`. |
+| `GameIni.bas` | `IndexerSettings` + carga auxiliar | Parcial | **55 %** | Inicio.con, cabecera binaria, Tips y recursos auxiliares. Issue #18. |
+| `GeneralES.bas` | Lectores direccionales | Parcial alto | **80 %** | Variantes legacy reales. Issue #18. |
+| `Indices.bas` | Lectores/escritores y MainForm | Parcial alto | **85 %** | Casos completos de formatos y compatibilidad cruzada. |
+| Superficies WE | `WeIndexFile` + MainForm | Implementado | **90 %** | Validación contra todos los mapas y WE real. |
+| Edición/guardado | `MainForm/Editing` + `Saving` | Implementado | **90 %** | Comparación exhaustiva con todos los casos VB6. |
+| Recursos BMP/ResF | `MainForm/Search` | Parcial | **65 %** | BMP funciona; ResF está pendiente. Issue #17. |
+| Visor/TileEngine | GDI+ `Rendering` | Sustitución | **70 %** | No es el motor DirectDraw7 original. |
+| `DX_InIt.bas` | Sin equivalente DirectX7 | No migrado | **0 %** | No se porta DirectX7 automáticamente. |
+| `clsIniReader.cls` | Lectores INI específicos | Parcial | **60 %** | Parser y semántica legacy completa. Issue #18. |
+| `clsSurfaceManager*.cls` | Sin equivalente | Fuera del alcance actual | **0 %** | Superficies runtime del cliente. |
+| APIs Win32/temporizadores | .NET/GDI+/WinForms | Sustitución parcial | **70 %** | Equivalencia exacta del runtime DirectX. |
 
-## Pendientes detallados
+## Funciones implementadas
 
-### MainForm — **100 %**
+- Lectura y guardado de `Graficos.ind` Integer y Long.
+- Validación de cabeceras, registros, frames y truncados.
+- Estados Gráficos, Bodies, Cabezas, Cascos, Alas, Capas, Botas, Armas, Escudos, FX y Resource.
+- Selector de Bodies: Todos, Norte, Este, Sur y Oeste.
+- `Checkcabeza`, offset de cabeza y edición de datos.
+- Mover, copiar, borrar, clonar y slots de guardado.
+- Autoindexador normal, avanzado, offset y simple.
+- `AutoCalcular`, búsqueda de índices libres y límites.
+- Preview GDI+ de BMP, recortes y animaciones básicas.
+- Generación de `Indices.ini` para WE.
+- Configuración JSON de Init, gráficos y Datos.
+- Restauración de Gráficos al cerrar el Autoindexador.
+- Ventana independiente `FrmSearch` para GRH repetidos y BMP sin indexar.
+- Doble clic en resultados para navegar al recurso o GRH correspondiente.
+- Menú contextual para preparar `FormAuto` como Body, animación o gráfico independiente.
 
-- `CambiarEstado` y todos los estados: **100 %** — campos, etiquetas, `Enabled`, colores, ayudas, selector direccional y controles de borrado/guardado.
-- Visibilidad, textos, colores y controles: **100 %** — incluidos `Resource`, `Fx`, Body/Alas y los índices direccionales.
-- `ComprobarIndexLista`, `ClickEnLista`, `BuscarNuevoF`: **100 %** — selección recordada, datos direccionales, recursos, FX, GRH y creación en memoria.
-- Selector de Bodies (`CDibujarWalk`): **100 %** — `Todos` dibuja las cuatro direcciones y `Norte`, `Este`, `Sur` y `Oeste` dibujan una sola; `Checkcabeza` se mantiene al cambiar de opción.
-- Offset de cabeza (`TextDatos(5)`): **100 %** — se interpreta como `YºX`, se acepta también `Y.X` y el preview aplica ambos desplazamientos a la cabeza.
-- Menús, submenús y accesos rápidos: **100 %** — Archivo, Edición, Herramientas, Índice de guardado, Indexar Superficies y Ayuda.
-- Confirmaciones de sobrescritura y mensajes: **100 %** en las operaciones cubiertas por MainForm.
+## Diferencias pendientes
 
-### FormAuto — **100 %**
+### FrmSearch — Issue #15 — completado
 
-- Animación normal y creación de frames: **100 %**.
-- Indexación simple y sobrescritura: **100 %**.
-- `AutoCalcular`, `ExisteBMP`, `GetTamañoBMP` y límites: **100 %**.
-- `ComboTipoAnim`, opciones de dimensión y `CheckAuto`: **100 %**.
-- Plantillas clásico, Alkon, NPC y offset con BMP reales: **100 %**.
-- Reservas de índices, offsets y GRH finales: **100 %**.
+La ventana `FrmSearch` ya existe en WinForms y es editable desde el diseñador. Reproduce las dos búsquedas de VB6, muestra el contador, permite seleccionar resultados y ofrece el menú contextual de indexación como Body, animación o gráfico independiente.
 
-### Índices direccionales — **100 %** en regresión
+### EncodeMapas y FK.ind — Issue #16
 
-| Tipo | Cobertura |
-|---|---:|
-| Bodies | **100 %** |
-| Cabezas | **100 %** |
-| Cascos | **100 %** |
-| Alas | **100 %** |
-| Capas | **100 %** |
-| Botas | **100 %** |
-| Armas | **100 %** |
-| Escudos | **100 %** |
-| FX | **100 %** |
+El VB6 lee `INIT\\encode\\mapas.dat`, procesa `NumMaps` y `Lluvia`, y genera `FK.ind`. En .NET `encodeMapsButton_Click` todavía muestra que el módulo se añadirá en una fase posterior.
 
-Las cuatro direcciones, offsets, GRH utilizados y escritura del archivo auxiliar quedan cubiertos por los fixtures de regresión del issue #8.
+### ResF — Issue #17
 
-### Recursos y visor — **100 % / 100 %**
+El original contempla `ResourceFile=1`, `2` y `3`. .NET conserva `ResourceMode`, pero solo procesa BMP. ResF queda pendiente hasta definir el compresor y formato oficial de Aospain.
 
-- Buscar GRH por BMP y continuar con F3: **100 %** — conserva la lista completa y selecciona cada coincidencia como el VB6.
-- Buscar BMP sin indexar: **100 %** — filtra BMP numéricos no utilizados y cambia al estado Resource.
-- Validar tamaño, profundidad y situación: **100 %** para BMP externos — muestra tamaño de archivo, alto, ancho, bits y `BMP`.
-- Comparación pixel a pixel con VB6: **60 %**.
-- Transparencia, fondo verde, centrado y escalado: **100 %**.
-- Ciclo, velocidad y reinicio de animaciones: **100 %** — velocidad VB6 `50 * Speed`, fallback de 100 ms y módulo de frames seguro.
-- Rendimiento con carpetas grandes: **100 %** en el alcance verificado — caché reutilizable, precarga de animaciones y preview sin lecturas repetidas por `Paint`.
+### Compatibilidad legacy — Issue #18
 
-### Integer y Long — **100 %** en regresión
+Falta demostrar equivalencia completa para:
 
-- Campos GRH convertidos a `Long`: **100 %** en el lector/escritor Long.
-- Frames hasta el máximo configurado: **100 %** — se prueban 1, 4, 15 y 25 frames.
-- Impedir mezclar Integer y Long: **100 %** — se validan tamaños de registro y límites.
-- Pruebas con índices grandes y comparación binaria: **100 %** en los fixtures del issue #8.
+- `Inicio.con`.
+- `Tips.ayu` y datos auxiliares.
+- Variantes `Graficos*.dat`.
+- Variantes de slots `Armas*.dat`, `Escudos*.dat` y otros archivos.
+- Semántica completa de `clsIniReader`.
 
-### Indexar Superficies — **100 %**
+La configuración JSON es una sustitución intencionada, pero no equivale automáticamente a todos los archivos legacy.
 
-- Entrada de menú: **100 %**.
-- Lectura del formato: **100 %** — se preservan `INIT/Referencias` y las secciones existentes.
-- Formulario: **100 %** — el panel equivalente a `FraDatosIndice` se alterna desde el menú y `Capas`, y usa el GRH seleccionado.
-- Generación compatible con WE: **100 %** — `REFERENCIA<n>` con nombre, GRH, alto y ancho.
-- Validación con mapas reales: **100 %** en la generación no destructiva de `Indices.ini`.
+### Motor DirectX7
 
-#### ¿Para qué sirve exactamente «Generar índices para WE»?
+El original usa `DX_InIt.bas`, `TileEngine.bas` y `clsSurfaceManager`. .NET utiliza GDI+ para el visor. El issue #9 documenta esta sustitución controlada. Si se exige equivalencia pixel a pixel y rendimiento idéntico, habrá que abrir una fase específica de backend gráfico.
 
-En el indexador VB6 original, esta herramienta prepara el archivo auxiliar `Indices.ini` que utiliza el editor de mapas WE para trabajar con superficies del mapa. No crea un gráfico nuevo en `Graficos.ind` ni modifica el BMP: registra una relación legible entre un nombre de terreno y un GRH ya existente.
+## Pruebas actuales
 
-Al pulsar `ChaGenerarIndices`, el código VB6 realiza estas operaciones:
+- Build Release: correcto, 0 advertencias y 0 errores.
+- Integer/Long: cubierto con fixtures.
+- Lectores direccionales: cubiertos parcialmente.
+- Autoindexador: cubierto en modos principales.
+- Estados y controles: cubiertos parcialmente.
+- `Indices.ini`: generación básica cubierta.
 
-1. Comprueba que se haya escrito un nombre (`txtNombre`) y que se haya elegido un terreno/GRH (`txtAlto` no vacío).
-2. Obtiene el GRH seleccionado en la lista.
-3. Inicializa o actualiza `INIT/Referencias` en `Indices.ini`.
-4. Escribe una sección `REFERENCIA<n>` con `Nombre`, `GrhIndice`, `Alto` y `Ancho`.
-5. Incrementa los contadores de referencia para que la siguiente superficie se guarde en otra sección.
+Falta una batería completa con archivos reales del cliente y comparación directa de resultados entre VB6 y .NET.
 
-Ejemplo conceptual del resultado:
+## Ruta de trabajo
 
-```ini
-[INIT]
-Referencias=1
-
-[REFERENCIA1]
-Nombre=Hierba
-GrhIndice=115
-Alto=32
-Ancho=32
-```
-
-El WE puede usar después ese nombre como superficie seleccionable y recuperar el GRH y las dimensiones que debe colocar en el mapa. Por tanto, la función es un catálogo de superficies para el editor de mapas; no es un autoindexador de BMP ni un sistema de renderizado.
-
-En EncodeNet8, el panel de datos WE equivale a `FraDatosIndice`, el botón `Generar índice` equivale a `ChaGenerarIndices` y el botón `Capas`/menú `Indexar Superficies` activa la misma vista de trabajo. La implementación conserva las referencias consecutivas, valida los campos visibles y solicita confirmación antes de sobrescribir el archivo.
-
-### Errores — **100 %**
-
-- Textos de error VB6: **100 %** — frames, BMP inexistente, dimensiones y GRH inválidos.
-- Uso completo de `LUlitError`: **100 %** — mensaje en vivo y limpieza al corregir.
-- Campos rojos/blancos según validación: **100 %** — rojo crítico, amarillo advertencia y blanco restaurado.
-- Sobrescritura, índice inexistente y falta de espacio: **100 %** en las operaciones de MainForm implementadas.
-
-### Edición y guardado — **100 %**
-
-- Nuevo/Ir a, mover, copiar, borrar y clonar: **100 %** — actualizan la lista, la selección y el visor.
-- Guardar y Guardar como: **100 %** — solicitan confirmación antes de sobrescribir y mantienen los formatos Integer/Long cargados.
-- Índice guardado: **100 %** — los slots 0 a 9 generan sus rutas y se pueden volver a seleccionar.
-- Recuperación: **100 %** — antes de sobrescribir un archivo existente se conserva una copia `<archivo>.bak`.
-
-### Herramientas y superficies — **100 %**
-
-- Buscar GRH con BMP: **100 %** — lista de coincidencias y navegación F3.
-- Buscar BMP sin indexar: **100 %** — cambia al estado Resource y muestra los BMP numéricos no utilizados.
-- Buscar GRH repetidos: **100 %** — agrupa recortes equivalentes y actualiza la lista del visor.
-- Autoindexador: **100 %** — modos normal, avanzado, offset y simple conectados a `MainForm`.
-- Generar índices para WE: **100 %** — el menú y `Capas` alternan el panel del diseñador, cargan el GRH seleccionado, validan los campos visibles, añaden `REFERENCIA<n>` a `Indices.ini`, actualizan `INIT/Referencias` y solicitan confirmación si el archivo ya existe.
-
-## Criterio de finalización
-
-| Objetivo | Cobertura actual |
-|---|---:|
-| Cada formulario VB6 del indexador tiene destino C# | **100 %** |
-| Cada botón y menú del indexador tiene evento equivalente | **100 %** |
-| Cada estado reproduce `CambiarEstado` | **100 %** |
-| Mismos datos producen el mismo `Graficos.ind` | **100 %** en fixtures binarios equivalentes |
-| Integer/Long sin pérdida | **100 %** en fixtures de regresión |
-| Animaciones iguales en frames, tamaño y offsets | **100 %** |
-| Errores equivalentes | **100 %** |
-| `Indexar Superficies` completo | **100 %** en generación de `Indices.ini` para WE |
-| Release sin errores ni advertencias | **100 %** |
-| Regresión con recursos reales y fixtures de visor | **100 %** en el alcance de los issues #5, #8 y #13 |
-| Sustitución controlada del visor DirectX7 | **100 %** | GDI+ documentado y sin llamadas DirectX7 en C#. |
-
-## Ruta de trabajo pendiente
-
-1. ~~Completar `MainForm` y `CambiarEstado`~~ — **100 %**, issue **#11** cerrado.
-2. ~~Comparar el autoindexador con VB6~~ — **100 %**, issue **#14** cerrado.
-3. ~~Completar recursos BMP y búsquedas~~ — **100 %**, issue **#10** cerrado.
-4. ~~Completar edición y guardado~~ — **100 %**, issue **#6** cerrado.
-5. ~~Completar índices direccionales~~ — **100 %** en la regresión Integer/Long y estados del issue **#8**.
-6. ~~Terminar errores y `LUlitError`~~ — **100 %**, issue **#12** cerrado.
-7. ~~Completar visor, temporización y regresión~~ — **100 %**, issue **#13** cerrado.
-8. ~~Implementar `Indexar Superficies`~~ — **100 %** en generación de `Indices.ini`, issue **#7** cerrado.
-9. ~~Ejecutar regresión Integer/Long~~ — **100 %** en fixtures no destructivos, issue **#8** cerrado.
-10. ~~Definir sustitución controlada del visor DirectX7~~ — **100 %**, issue **#9** cerrado.
-11. Publicar versión estable fuera de beta: objetivo **100 %**.
+1. **#16** — Implementar EncodeMapas y `FK.ind`.
+2. **#18** — Completar formatos legacy, `Inicio.con`, Tips y `clsIniReader`.
+3. **#8** — Ampliar regresión con archivos reales.
+4. **#17** — Implementar ResF cuando exista el compresor oficial.
+5. **#9** — Mantener GDI+ documentado o abrir una fase de backend gráfico si se exige paridad exacta.
 
 ## Verificación
 
@@ -176,18 +114,31 @@ dotnet build .\\EncodeNet8.slnx -c Release
 dotnet run --project .\\EncodeNet8.Tests\\EncodeNet8.Tests.csproj -c Release
 ```
 
-Última versión documentada: **0.0.74-beta**.
+Última verificación:
 
-## Issues de seguimiento
+- Compilación correcta.
+- 0 errores.
+- 0 advertencias.
+- Pruebas automáticas actuales correctas.
 
-- ~~**#10**~~ — [Completar recursos BMP y búsquedas del indexador](https://github.com/scorpio21/indexador_conundrum_.net/issues/10) — cerrado.
-- ~~**#11**~~ — [Completar equivalencia de MainForm con CambiarEstado](https://github.com/scorpio21/indexador_conundrum_.net/issues/11) — cerrado.
-- ~~**#12**~~ — [Completar sistema de errores y LUlitError](https://github.com/scorpio21/indexador_conundrum_.net/issues/12) — cerrado.
-- ~~**#13**~~ — [Completar pruebas de rendimiento y regresión del visor](https://github.com/scorpio21/indexador_conundrum_.net/issues/13) — cerrado.
-- ~~**#5**~~ — [Fase 5: completar visor, referencias y animaciones](https://github.com/scorpio21/indexador_conundrum_.net/issues/5) — cerrado.
-- ~~**#14**~~ — [Completar paridad funcional de FormAuto con formAuto.frm](https://github.com/scorpio21/indexador_conundrum_.net/issues/14) — cerrado.
-- ~~**#6**~~ — [Fase 6: completar edición y guardado](https://github.com/scorpio21/indexador_conundrum_.net/issues/6) — cerrado.
-- ~~**#7**~~ — [Fase 7: migrar búsquedas, superficies y autoindexador](https://github.com/scorpio21/indexador_conundrum_.net/issues/7) — cerrado.
-- ~~**#9**~~ — [Diseño: sustitución controlada del visor DirectX 7](https://github.com/scorpio21/indexador_conundrum_.net/issues/9) — cerrado.
-- ~~**#8**~~ — [Fase 8: pruebas de regresión y compatibilidad con archivos reales](https://github.com/scorpio21/indexador_conundrum_.net/issues/8) — cerrado.
+## Configuración
+
+`IndicesPath` mantiene separada la ruta de `Indices.ini`, con `Datos` como valor predeterminado. El campo legacy `recurso` significa:
+
+- `1`: BMP.
+- `2`: ResF.
+- `3`: BMP o ResF.
+
+En la versión actual, los modos 2 y 3 requieren completar el Issue #17.
+
+## Issues nuevos
+
+- [#15 — Completar FrmSearch](https://github.com/scorpio21/indexador_conundrum_.net/issues/15)
+- [#16 — Implementar EncodeMapas y FK.ind](https://github.com/scorpio21/indexador_conundrum_.net/issues/16)
+- [#17 — Implementar lector ResF](https://github.com/scorpio21/indexador_conundrum_.net/issues/17)
+- [#18 — Compatibilidad legacy](https://github.com/scorpio21/indexador_conundrum_.net/issues/18)
+
+## Conclusión
+
+EncodeNet8 es utilizable para el flujo principal, pero **todavía no es un clon 100 % equivalente del VB6**. Esa afirmación solo podrá hacerse al cerrar los issues pendientes y validar los resultados con recursos reales.
 

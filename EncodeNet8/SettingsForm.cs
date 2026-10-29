@@ -10,10 +10,13 @@ public partial class SettingsForm : Form
         InitializeComponent();
         initPathText.Text = settings.InitPath;
         graphicsPathText.Text = settings.GraphicsPath;
+        Datosindicetext.Text = settings.IndicesPath;
+        browseIndiceButton.Click += browseIndiceButton_Click;
     }
 
     private void browseInitButton_Click(object? sender, EventArgs e) => SelectFolder(initPathText);
     private void browseGraphicsButton_Click(object? sender, EventArgs e) => SelectFolder(graphicsPathText);
+    private void browseIndiceButton_Click(object? sender, EventArgs e) => SelectFolder(Datosindicetext);
 
     private static void SelectFolder(TextBox target)
     {
@@ -25,6 +28,7 @@ public partial class SettingsForm : Form
     {
         Settings.InitPath = initPathText.Text.Trim();
         Settings.GraphicsPath = graphicsPathText.Text.Trim();
+        Settings.IndicesPath = string.IsNullOrWhiteSpace(Datosindicetext.Text) ? "Datos" : Datosindicetext.Text.Trim();
         Settings.Save();
         DialogResult = DialogResult.OK;
         Close();

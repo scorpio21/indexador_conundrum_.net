@@ -75,7 +75,7 @@ También define `e_EstadoIndexador`, cuyos estados son GRH, Body, Cabezas, Casco
 | `DX_InIt.bas` | — | 0% | No implementado intencionadamente | No se convierte DirectX 7 automáticamente. |
 | `APIdeclaraciones.bas` | — | 0% | No implementado | Solo debe migrarse lo necesario para el comportamiento WinForms final. |
 | `FormAuto.frm` | — | 0% | No implementado | Autoindexador y plantillas de animación pendientes. |
-| `FrmSearch.frm` | — | 0% | No implementado | Búsqueda de GRH/BMP/repetidos pendiente. |
+| `FrmSearch.frm` | `FrmSearch.cs` + `FrmSearch.Designer.cs` + `MainForm/Search` | 100% | Implementado | Búsquedas de GRH/BMP, navegación y menú contextual conectados a `FormAuto`. |
 | `FrmConfig.frm` | `SettingsForm.cs`, `SettingsForm.Designer.cs` | 70% | Parcial | Existe ventana de configuración de rutas, pero no reproduce toda la configuración VB6. |
 
 ## Destino C# actual

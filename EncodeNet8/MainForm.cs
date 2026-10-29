@@ -37,6 +37,7 @@ public partial class MainForm : Form
     private short _previewHeadOffsetX;
     private short _previewHeadOffsetY;
     private IReadOnlyList<GrhRecord>? _autoPreviewRecords;
+    private FrmSearch? _searchWindow;
 
     private static readonly string[] AllStates = { "Grh", "Body", "Cabezas", "Cascos", "Escudos", "Armas", "Alas", "Capas", "Fx", "Resource", "Botas" };
 
@@ -53,6 +54,7 @@ public partial class MainForm : Form
             box.TextChanged += dataText_TextChanged;
         indsText.Text = _settings.InitPath;
         graphicsText.Text = _settings.GraphicsPath;
+        Indicetext.Text = _settings.IndicesPath;
         formatCombo.SelectedIndex = 0;
         LoadConfiguredGraphics();
         UpdateUi();

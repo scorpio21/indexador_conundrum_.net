@@ -59,6 +59,13 @@ public partial class MainForm : Form
     
             private void ClickResourceSearchItem()
         {
+            if (_settings.ResourceMode == 2)
+            {
+                // RESF DESACTIVADO: cada cliente puede usar una compresión distinta.
+                // Se implementará cuando Aospain defina su propio formato.
+                SetUtilError("ResourceMode=2 requiere un lector ResF; el visor .NET aún solo puede mostrar BMP.");
+                return;
+            }
             if (indexList.SelectedIndex < 0 || indexList.SelectedIndex >= _searchResults.Count) return;
             var fileNumber = _searchResults[indexList.SelectedIndex];
             var bitmapPath = Path.Combine(ResolvePath(_settings.GraphicsPath), $"{fileNumber}.bmp");
@@ -108,6 +115,13 @@ public partial class MainForm : Form
             private void SearchUnindexedBmps()
         {
             if (_file is null) { SetUtilError("No hay Graficos.ind cargado."); return; }
+            if (_settings.ResourceMode == 2)
+            {
+                // RESF DESACTIVADO: no se debe interpretar un archivo comprimido
+                // como BMP ni inventar una estructura binaria incompatible.
+                SetUtilError("ResourceMode=2 está configurado para ResF, pero el lector ResF aún no está implementado.");
+                return;
+            }
             // La ventana VB6 abre el buscador de recursos; en MainForm el
             // equivalente es cambiar al estado Resource antes de mostrar la lista.
             CambiarEstado("Resource");
@@ -126,31 +140,89 @@ public partial class MainForm : Form
             _searchResults = unindexed;
             _searchCursor = 0;
             buscarSiguienteMenu.Visible = false;
-            indexList.Items.Clear();
-            foreach (var fileNumber in unindexed) indexList.Items.Add(fileNumber);
-            if (unindexed.Count > 0) indexList.SelectedIndex = 0;
-            SetUtilError(unindexed.Count == 0 ? "No hay BMPs sin indexar." : "F3 para continuar la búsqueda.");
-            statusLabel.Text = $"BMP sin GRH indexado: {unindexed.Count}.";
+            var results = unindexed.Select(fileNumber => new SearchResultItem
+            {
+                GrhId = fileNumber,
+                IsResource = true,
+                DisplayText = $"{fileNumber}.bmp NO está indexado."
+            }).ToList();
+            ShowSearchWindow(results, $"BMP sin GRH indexado: {unindexed.Count}.");
         }
     
             private void SearchRepeatedGrh()
         {
-            if (_file is null) { ShowPending("Buscar GRH repetidos: no hay Graficos.ind cargado"); return; }
+            if (_file is null) { SetUtilError("Carga primero Graficos.ind para buscar GRH repetidos."); return; }
             _resourceSearchMode = false;
             buscarSiguienteMenu.Visible = false;
             var repeated = _file.Records
-                .GroupBy(record => (record.FileNumber, record.X, record.Y, record.Width, record.Height))
+                // FrmSearch.frm compara FileNum, NumFrames, sX, sY y los dos
+                // primeros frames. Se mantiene esa semántica para que el
+                // resultado coincida con HacerBusquedaR del VB6.
+                .Where(record => record.Frames.Count > 0)
+                .GroupBy(record => string.Join("|", new[]
+                {
+                    record.FileNumber.ToString(), record.Frames.Count.ToString(),
+                    record.X.ToString(), record.Y.ToString(),
+                    record.Frames.ElementAtOrDefault(0).ToString(),
+                    record.Frames.ElementAtOrDefault(1).ToString()
+                }))
                 .Where(group => group.Count() > 1)
-                .SelectMany(group => group.Select(record => record.Id))
-                .OrderBy(id => id)
+                .SelectMany(group =>
+                {
+                    var ordered = group.OrderBy(record => record.Id).ToList();
+                    return ordered.SelectMany((first, index) => ordered.Skip(index + 1).Select(second =>
+                        new SearchResultItem
+                        {
+                            GrhId = second.Id,
+                            SecondaryGrhId = first.Id,
+                            DisplayText = $"Grh: {first.Id} es igual al grh: {second.Id}"
+                        }));
+                })
+                .OrderBy(item => item.GrhId)
                 .ToList();
-            _searchResults = repeated;
+            _searchResults = repeated.Select(item => item.GrhId).ToList();
             _searchCursor = 0;
-            ReplaceGrhList(repeated);
-            statusLabel.Text = $"GRH repetidos por recorte: {repeated.Count}.";
+            ShowSearchWindow(repeated, $"GRH repetidos encontrados: {repeated.Count}.");
         }
     
-            private void OpenAutoIndexer()
+        private void ShowSearchWindow(IReadOnlyList<SearchResultItem> results, string progressText)
+        {
+            if (_searchWindow is not null && !_searchWindow.IsDisposed)
+            {
+                _searchWindow.SetResults(results, progressText);
+                _searchWindow.Activate();
+                return;
+            }
+
+            _searchWindow = new FrmSearch(
+                results,
+                progressText,
+                NavigateSearchResult,
+                (mode, bmp) => OpenAutoIndexer(mode, bmp));
+            _searchWindow.FormClosed += (_, _) => _searchWindow = null;
+            _searchWindow.Show(this);
+        }
+
+        private void NavigateSearchResult(int id, bool isResource)
+        {
+            if (isResource)
+            {
+                _resourceSearchMode = true;
+                _searchResults = new List<int> { id };
+                CambiarEstado("Resource");
+                indexList.Items.Clear();
+                indexList.Items.Add(id);
+                indexList.SelectedIndex = 0;
+                ClickResourceSearchItem();
+                return;
+            }
+
+            _resourceSearchMode = false;
+            CambiarEstado("Grh");
+            BuscarNuevoF(id);
+        }
+
+        private void OpenAutoIndexer(SearchIndexMode? requestedMode = null, int? requestedBmp = null)
         {
             if (_file is null)
             {
@@ -167,11 +239,14 @@ public partial class MainForm : Form
                 ParseInt(maxGrhText.Text),
                 _file.Records.Select(record => record.Id),
                 _directionalRecords.Select(record => record.Id).Concat(_bodyRecords.Select(record => record.Id)));
+            if (requestedMode is { } mode && requestedBmp is { } bmp)
+                dialog.PrepareFromSearch(mode, bmp);
             dialog.PreviewChanged += AutoIndexerPreviewChanged;
             dialog.ResourcePreviewChanged += AutoIndexerResourcePreviewChanged;
+            DialogResult dialogResult = DialogResult.Cancel;
             try
             {
-                if (dialog.ShowDialog(this) != DialogResult.OK || dialog.GeneratedRecords is null) return;
+                dialogResult = dialog.ShowDialog(this);
             }
             finally
             {
@@ -180,6 +255,17 @@ public partial class MainForm : Form
                 _autoPreviewRecords = null;
                 previewPanel.Invalidate();
             }
+
+            // Al cerrar con X (o cancelar) FormAuto deja el estado principal
+            // en Recursos, igual que Form_Load de formAuto.frm. En VB6 el
+            // formulario principal vuelve a leer Graficos.ind al salir del
+            // autoindexador; aquí hacemos explícitamente esa restauración.
+            if (dialogResult != DialogResult.OK || dialog.GeneratedRecords is null)
+            {
+                RestoreGraphicsAfterAutoIndexer();
+                return;
+            }
+
             try
             {
                 var records = dialog.GeneratedRecords.ToList();
@@ -201,6 +287,29 @@ public partial class MainForm : Form
             {
                 SetUtilError($"Autoindexador: {ex.Message}");
             }
+        }
+
+        private void RestoreGraphicsAfterAutoIndexer()
+        {
+            _resourceSearchMode = false;
+            _searchResults.Clear();
+            _searchCursor = 0;
+            buscarSiguienteMenu.Visible = false;
+
+            // Forzamos la lectura desde disco aunque hubiera un índice en
+            // memoria. Así se descartan las previsualizaciones del diálogo
+            // y se recupera exactamente Graficos.ind.
+            _file = null;
+            CambiarEstado("Grh");
+
+            if (indexList.Items.Count > 0)
+            {
+                indexList.SelectedIndex = 0;
+                ClickEnLista();
+            }
+
+            statusLabel.Text = "Graficos.ind recargado. Estado Gráficos restaurado.";
+            previewPanel.Invalidate();
         }
 
         private void AutoIndexerPreviewChanged(object? sender, EventArgs e)

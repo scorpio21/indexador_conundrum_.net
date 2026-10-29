@@ -1,5 +1,42 @@
 # Changelog
 
+## [0.0.78-beta] - 2026-10-29
+
+### FrmSearch — Issue #15
+
+- Añadido `FrmSearch` como formulario WinForms editable desde el diseñador.
+- Migradas las búsquedas de GRH repetidos y BMP sin indexar del `FrmSearch.frm` original.
+- Añadido contador de resultados/progreso y selección con navegación al visor principal.
+- Añadido menú contextual para preparar el `FormAuto` como Body, animación o gráfico independiente.
+- Se conserva la semántica VB6 de comparación de GRH repetidos: BMP, número de frames, recorte y primeros frames.
+- Build y pruebas verificadas: 0 advertencias y 0 errores.
+
+## [0.0.77-beta] - 2026-10-29
+
+### Corregido
+
+- Al cerrar el Autoindexador con `X` o cancelar, se desuscriben sus eventos,
+  se vuelve a cargar `Graficos.ind`, se restaura el estado Gráficos y se
+  selecciona el primer índice.
+- El menú de Herramientas vuelve a quedar disponible inmediatamente después
+  de cerrar el Autoindexador.
+
+## [0.0.76-beta] - 2026-10-28
+
+### Añadido
+
+- La configuración incorpora `Datosindicetext` y `browseIndiceButton` para elegir la carpeta o ruta de `Indices.ini`.
+- La ruta se guarda en JSON como `IndicesPath` y se utiliza al leer y generar índices WE.
+- Se mantiene `Datos` como valor predeterminado compatible con el cliente VB6.
+
+## [0.0.75-beta] - 2026-10-28
+
+### Corregido
+
+- **Compatibilidad con `Indices.ini`**: la generación y lectura de superficies WE usan ahora `Datos\Indices.ini` por defecto, equivalente a `PathDat`/`CarpetaDedatos` del VB6, y aceptan una ruta personalizada.
+- **Configuración de recursos**: se conserva `ResourceMode` con la semántica original `1=BMP`, `2=ResF`, `3=BMP o ResF`; el visor avisa claramente cuando se solicita `ResF`, que aún no tiene lector .NET.
+- Añadidas pruebas para rutas de `Indices.ini` y normalización del modo de recursos.
+
 ## [0.0.74-beta] - 2026-10-28
 
 ### Vista de Indexar Superficies

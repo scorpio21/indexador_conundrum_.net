@@ -145,6 +145,8 @@ partial class MainForm
         surfaceWidthText = new TextBox();
         surfaceGrhText = new TextBox();
         surfaceReferencesText = new TextBox();
+        IndicesLabel = new Label();
+        Indicetext = new TextBox();
         menuStrip.SuspendLayout();
         dataGroup.SuspendLayout();
         foldersGroup.SuspendLayout();
@@ -333,7 +335,6 @@ partial class MainForm
         // borrarMenu
         // 
         borrarMenu.Name = "borrarMenu";
-        borrarMenu.ShortcutKeys = Keys.None;
         borrarMenu.ShortcutKeyDisplayString = "Supr";
         borrarMenu.Size = new Size(172, 22);
         borrarMenu.Text = "Borrar";
@@ -852,6 +853,8 @@ partial class MainForm
         // 
         // foldersGroup
         // 
+        foldersGroup.Controls.Add(Indicetext);
+        foldersGroup.Controls.Add(IndicesLabel);
         foldersGroup.Controls.Add(indsLabel);
         foldersGroup.Controls.Add(graphicsLabel);
         foldersGroup.Controls.Add(maxGrhLabel);
@@ -869,7 +872,7 @@ partial class MainForm
         // indsLabel
         // 
         indsLabel.AutoSize = true;
-        indsLabel.Location = new Point(10, 28);
+        indsLabel.Location = new Point(10, 19);
         indsLabel.Name = "indsLabel";
         indsLabel.Size = new Size(32, 15);
         indsLabel.TabIndex = 0;
@@ -878,7 +881,7 @@ partial class MainForm
         // graphicsLabel
         // 
         graphicsLabel.AutoSize = true;
-        graphicsLabel.Location = new Point(10, 58);
+        graphicsLabel.Location = new Point(0, 45);
         graphicsLabel.Name = "graphicsLabel";
         graphicsLabel.Size = new Size(53, 15);
         graphicsLabel.TabIndex = 1;
@@ -887,7 +890,7 @@ partial class MainForm
         // maxGrhLabel
         // 
         maxGrhLabel.AutoSize = true;
-        maxGrhLabel.Location = new Point(10, 88);
+        maxGrhLabel.Location = new Point(18, 96);
         maxGrhLabel.Name = "maxGrhLabel";
         maxGrhLabel.Size = new Size(34, 15);
         maxGrhLabel.TabIndex = 2;
@@ -895,27 +898,27 @@ partial class MainForm
         // 
         // indsText
         // 
-        indsText.Location = new Point(98, 25);
+        indsText.Location = new Point(63, 16);
         indsText.Name = "indsText";
-        indsText.Size = new Size(90, 23);
+        indsText.Size = new Size(125, 23);
         indsText.TabIndex = 3;
         indsText.Text = "init";
         // 
         // graphicsText
         // 
-        graphicsText.Location = new Point(98, 55);
+        graphicsText.Location = new Point(63, 42);
         graphicsText.Name = "graphicsText";
-        graphicsText.Size = new Size(90, 23);
+        graphicsText.Size = new Size(125, 23);
         graphicsText.TabIndex = 4;
         graphicsText.Text = "graficos";
         // 
         // maxGrhText
         // 
         maxGrhText.ForeColor = Color.Blue;
-        maxGrhText.Location = new Point(98, 85);
+        maxGrhText.Location = new Point(63, 93);
         maxGrhText.Name = "maxGrhText";
         maxGrhText.ReadOnly = true;
-        maxGrhText.Size = new Size(90, 23);
+        maxGrhText.Size = new Size(51, 23);
         maxGrhText.TabIndex = 5;
         maxGrhText.Text = "32720";
         // 
@@ -986,8 +989,8 @@ partial class MainForm
         directionCombo.Name = "directionCombo";
         directionCombo.Size = new Size(89, 23);
         directionCombo.TabIndex = 27;
-        directionCombo.SelectedIndexChanged += directionCombo_SelectedIndexChanged;
         directionCombo.Visible = false;
+        directionCombo.SelectedIndexChanged += directionCombo_SelectedIndexChanged;
         // 
         // surfaceGroup
         // 
@@ -1101,6 +1104,23 @@ partial class MainForm
         surfaceReferencesText.Size = new Size(32, 23);
         surfaceReferencesText.TabIndex = 10;
         // 
+        // IndicesLabel
+        // 
+        IndicesLabel.AutoSize = true;
+        IndicesLabel.Location = new Point(5, 69);
+        IndicesLabel.Name = "IndicesLabel";
+        IndicesLabel.Size = new Size(47, 15);
+        IndicesLabel.TabIndex = 6;
+        IndicesLabel.Text = "indices:";
+        // 
+        // Indicetext
+        // 
+        Indicetext.Location = new Point(63, 66);
+        Indicetext.Name = "Indicetext";
+        Indicetext.Size = new Size(125, 23);
+        Indicetext.TabIndex = 7;
+        Indicetext.Text = "Indices";
+        // 
         // MainForm
         // 
         BackColor = Color.FromArgb(192, 255, 192);
@@ -1172,4 +1192,6 @@ partial class MainForm
     private ToolStripStatusLabel usageStatusLabel;
     private Label xLabel;
     private Label yLabel;
+    private Label IndicesLabel = null!;
+    private TextBox Indicetext = null!;
 }
