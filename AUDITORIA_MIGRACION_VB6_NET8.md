@@ -102,6 +102,10 @@ También define `e_EstadoIndexador`, cuyos estados son GRH, Body, Cabezas, Casco
 
 ## Restricciones de la migración
 
+### Actualización 2026-10-30 — Issue #16
+
+`EncodeMapas` ya no es un marcador: `EncodeMapsForm` permite seleccionar `mapas.dat` y `FK.ind`, y `MapIndexFile` genera el formato binario compatible con el procedimiento `EncodeMapas_Click` del VB6. El issue queda cerrado. ResF continúa deliberadamente pendiente hasta definir el compresor oficial de Aospain.
+
 - No reescribir código ya cubierto sin una prueba de regresión.
 - No usar `Integer` donde el archivo indique un índice GRH Long.
 - No cambiar offsets de cabecera o tamaños de estructuras sin verificar el formato binario.

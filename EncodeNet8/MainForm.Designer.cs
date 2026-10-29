@@ -10,7 +10,7 @@ partial class MainForm
     private ToolStripMenuItem guardarGraficosMenu = null!, guardarMenu = null!, cargarGraficosMenu = null!, cargarMenu = null!, indiceGuardadoMenu = null!, salirMenu = null!;
     private ToolStripMenuItem slot0Menu = null!, slot1Menu = null!, slot2Menu = null!, slot3Menu = null!, slot4Menu = null!, slot5Menu = null!, slot6Menu = null!, slot7Menu = null!, slot8Menu = null!, slot9Menu = null!;
     private ToolStripMenuItem nuevoIrMenu = null!, moverMenu = null!, copiarMenu = null!, borrarMenu = null!, clonarMenu = null!, colorFondoMenu = null!;
-    private ToolStripMenuItem buscarGrhMenu = null!, buscarBmpsMenu = null!, buscarSiguienteMenu = null!, autoindexadorMenu = null!, repetidosMenu = null!, generarWeMenu = null!, acercaMenu = null!;
+    private ToolStripMenuItem buscarGrhMenu = null!, buscarBmpsMenu = null!, buscarSiguienteMenu = null!, autoindexadorMenu = null!, repetidosMenu = null!, encodeMapsMenu = null!, generarWeMenu = null!, acercaMenu = null!;
     private ToolStripSeparator archivoSeparator1 = null!, archivoSeparator2 = null!;
     private Button openButton = null!, saveButton = null!, deleteButton = null!, saveIndexButton = null!, clearMemoryButton = null!, viewButton = null!, encodeMapsButton = null!, newSearchButton = null!, greenButton = null!;
     private Button bodiesButton = null!, headsButton = null!, helmetsButton = null!, shieldsButton = null!, weaponsButton = null!, alasButton = null!, capasButton = null!, bootsButton = null!, fxButton = null!, generateSurfaceButton = null!;
@@ -67,6 +67,7 @@ partial class MainForm
         buscarSiguienteMenu = new ToolStripMenuItem();
         autoindexadorMenu = new ToolStripMenuItem();
         repetidosMenu = new ToolStripMenuItem();
+        encodeMapsMenu = new ToolStripMenuItem();
         configuracionMenu = new ToolStripMenuItem();
         indexarMenu = new ToolStripMenuItem();
         generarWeMenu = new ToolStripMenuItem();
@@ -153,9 +154,9 @@ partial class MainForm
         statusStrip.SuspendLayout();
         surfaceGroup.SuspendLayout();
         SuspendLayout();
-        // 
+        //
         // menuStrip
-        // 
+        //
         menuStrip.Items.AddRange(new ToolStripItem[] { archivoMenu, edicionMenu, herramientasMenu, indexarMenu, ayudaMenu });
         menuStrip.Location = new Point(0, 0);
         menuStrip.Name = "menuStrip";
@@ -356,7 +357,7 @@ partial class MainForm
         // 
         // herramientasMenu
         // 
-        herramientasMenu.DropDownItems.AddRange(new ToolStripItem[] { buscarGrhMenu, buscarBmpsMenu, buscarSiguienteMenu, autoindexadorMenu, repetidosMenu, configuracionMenu });
+        herramientasMenu.DropDownItems.AddRange(new ToolStripItem[] { buscarGrhMenu, buscarBmpsMenu, buscarSiguienteMenu, autoindexadorMenu, repetidosMenu, encodeMapsMenu, configuracionMenu });
         herramientasMenu.Name = "herramientasMenu";
         herramientasMenu.Size = new Size(90, 20);
         herramientasMenu.Text = "Herramientas";
@@ -396,7 +397,14 @@ partial class MainForm
         repetidosMenu.Size = new Size(230, 22);
         repetidosMenu.Text = "Buscar Grh Repetidos";
         repetidosMenu.Click += repetidosMenu_Click;
-        // 
+        //
+        // encodeMapsMenu
+        //
+        encodeMapsMenu.Name = "encodeMapsMenu";
+        encodeMapsMenu.Size = new Size(230, 22);
+        encodeMapsMenu.Text = "Encode Mapas (FK.ind)";
+        encodeMapsMenu.Click += encodeMapsMenu_Click;
+        //
         // configuracionMenu
         // 
         configuracionMenu.Name = "configuracionMenu";

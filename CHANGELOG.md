@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.80-beta] - 2026-10-30
+
+### EncodeMapas y FK.ind — Issue #16
+
+- Añadida la ventana `EncodeMapsForm`, editable desde el diseñador WinForms.
+- Conectado `Herramientas > Encode Mapas (FK.ind)` y el botón lateral `Encode Mapas`.
+- Implementada la lectura de `init\encode\mapas.dat` (`INIT/NumMaps` y `Map<n>/Lluvia`).
+- Implementada la generación binaria compatible con VB6: cabecera de 263 bytes, contador `Integer` y bytes de lluvia.
+- Los errores se muestran en la propia ventana y se añadió una prueba de tamaño y contenido de `FK.ind`.
+- Build y pruebas verificadas: 0 advertencias y 0 errores.
+- Issue cerrado: [#16](https://github.com/scorpio21/indexador_conundrum_.net/issues/16).
+
 ## [0.0.79-beta] - 2026-10-29
 
 ### Selector «Todos» en índices direccionales

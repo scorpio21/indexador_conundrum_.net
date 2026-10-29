@@ -82,6 +82,7 @@ try
     TestAutoIndexer(root);
     TestFormAutoModes(root);
     TestWeIndexFile(root);
+    TestMapIndexFile(root);
     TestIndexerSettings(root);
     TestMainFormStates();
     TestAllIndexerStates();
@@ -538,6 +539,25 @@ static void TestIndexerSettings(string root)
     settings.ResourceMode = 7;
     settings.Save();
     Assert(settings.ResourceMode == 1, "ResourceMode: valor fuera de rango normalizado");
+}
+
+static void TestMapIndexFile(string root)
+{
+    var mapasPath = Path.Combine(root, "encode", "mapas.dat");
+    var fkPath = Path.Combine(root, "init", "FK.ind");
+    Directory.CreateDirectory(Path.GetDirectoryName(mapasPath)!);
+    File.WriteAllText(mapasPath,
+        "[INIT]\nNumMaps=3\n\n[Map1]\nLluvia=1\n\n[Map2]\nLluvia=0\n\n[Map3]\nLluvia=255\n");
+
+    var count = MapIndexFile.Encode(mapasPath, fkPath);
+    var bytes = File.ReadAllBytes(fkPath);
+    Assert(count == 3 && bytes.Length == 263 + 2 + 3, "FK.ind: tamaño compatible con el formato VB6");
+
+    using var reader = new BinaryReader(File.OpenRead(fkPath));
+    reader.ReadBytes(263);
+    Assert(reader.ReadInt16() == 3, "FK.ind: contador NumMaps");
+    Assert(reader.ReadByte() == 1 && reader.ReadByte() == 0 && reader.ReadByte() == 255,
+        "FK.ind: valores Lluvia por mapa");
 }
 
 static void TestAllIndexerStates()

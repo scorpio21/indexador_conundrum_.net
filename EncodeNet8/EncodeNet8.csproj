@@ -6,11 +6,11 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <VersionPrefix>0.0.79</VersionPrefix>
+    <VersionPrefix>0.0.80</VersionPrefix>
     <VersionSuffix>beta</VersionSuffix>
-    <InformationalVersion>0.0.79-beta</InformationalVersion>
-    <AssemblyVersion>0.0.79.0</AssemblyVersion>
-    <FileVersion>0.0.79.0</FileVersion>
+    <InformationalVersion>0.0.80-beta</InformationalVersion>
+    <AssemblyVersion>0.0.80.0</AssemblyVersion>
+    <FileVersion>0.0.80.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +23,12 @@
     </Compile>
     <Compile Update="FormAuto.Designer.cs">
       <DependentUpon>FormAuto.cs</DependentUpon>
+    </Compile>
+    <Compile Update="EncodeMapsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="EncodeMapsForm.Designer.cs">
+      <DependentUpon>EncodeMapsForm.cs</DependentUpon>
     </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>

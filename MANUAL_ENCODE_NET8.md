@@ -1,13 +1,13 @@
 # Auditoría de migración EncodeNet8 frente al VB6 original
 
-Versión documentada: **0.0.79-beta**  
-Fecha de auditoría: **2026-10-29**
+Versión documentada: **0.0.80-beta**<br>
+Fecha de auditoría: **2026-10-30**
 
 ## Veredicto
 
 La migración **no está al 100 %**. El proyecto .NET reproduce el flujo principal del indexador: `Graficos.ind`, Integer/Long, estados, edición, visor GDI+, autoindexador y `Indices.ini` para WE.
 
-No puede declararse equivalencia total porque `EncodeMapas` es un marcador, ResF está desactivado, no se ha reproducido `Inicio.con` y el motor DirectX7/`clsSurfaceManager` fue sustituido por GDI+.
+No puede declararse equivalencia total porque ResF está desactivado, no se ha reproducido `Inicio.con` y el motor DirectX7/`clsSurfaceManager` fue sustituido por GDI+.
 
 Los porcentajes son cobertura funcional estimada frente a `K:\AO_Aospain\utilidades\Code`, no porcentaje de líneas.
 
@@ -23,7 +23,7 @@ Se revisaron 15 archivos VB6:
 
 | Componente VB6 | Destino .NET | Estado | Cobertura | Pendiente |
 |---|---|---|---:|---|
-| `Encode.frm` | `MainForm.cs` + `MainForm/` | Parcial alto | **85 %** | EncodeMapas, herramientas auxiliares y paridad exacta de menús. |
+| `Encode.frm` | `MainForm.cs` + `MainForm/` + `EncodeMapsForm` | Parcial alto | **90 %** | Herramientas legacy restantes y paridad exacta de menús. |
 | `FormAuto.frm` | `FormAuto.cs` + diseñador | Parcial alto | **90 %** | Validación exhaustiva con recursos reales. |
 | `FrmConfig.frm` | `SettingsForm.cs` + JSON | Parcial | **75 %** | Equivalencia completa con Conf.ini e Inicio.con. |
 | `FrmSearch.frm` | `FrmSearch.cs` + `FrmSearch.Designer.cs` + `MainForm/Search` | Implementado | **100 %** | Búsquedas, navegación y menú contextual conectados a `FormAuto`. |
@@ -57,6 +57,8 @@ Se revisaron 15 archivos VB6:
 - Ventana independiente `FrmSearch` para GRH repetidos y BMP sin indexar.
 - Doble clic en resultados para navegar al recurso o GRH correspondiente.
 - Menú contextual para preparar `FormAuto` como Body, animación o gráfico independiente.
+- Ventana `Encode Mapas (FK.ind)` desde Herramientas y botón Encode Mapas.
+- Lectura de `init\encode\mapas.dat` y generación binaria compatible de `FK.ind`.
 
 ## Diferencias pendientes
 
@@ -64,9 +66,11 @@ Se revisaron 15 archivos VB6:
 
 La ventana `FrmSearch` ya existe en WinForms y es editable desde el diseñador. Reproduce las dos búsquedas de VB6, muestra el contador, permite seleccionar resultados y ofrece el menú contextual de indexación como Body, animación o gráfico independiente.
 
-### EncodeMapas y FK.ind — Issue #16
+### EncodeMapas y FK.ind — Issue #16 — completado
 
-El VB6 lee `INIT\\encode\\mapas.dat`, procesa `NumMaps` y `Lluvia`, y genera `FK.ind`. En .NET `encodeMapsButton_Click` todavía muestra que el módulo se añadirá en una fase posterior.
+El VB6 lee `INIT\\encode\\mapas.dat`, procesa `NumMaps` y `Lluvia`, y genera `FK.ind`. .NET ahora ofrece una ventana editable para indicar ambos archivos desde Herramientas > Encode Mapas (FK.ind), además del botón lateral.
+
+El fichero generado conserva el formato binario del original: cabecera de 263 bytes, contador `Integer` de mapas y un byte `Lluvia` por mapa. Si ya existe un `FK.ind`, se conserva su cabecera; si no, se crea una cabecera compatible. Los errores se muestran dentro de la ventana y no interrumpen el formulario principal.
 
 ### ResF — Issue #17
 
@@ -102,11 +106,10 @@ Falta una batería completa con archivos reales del cliente y comparación direc
 
 ## Ruta de trabajo
 
-1. **#16** — Implementar EncodeMapas y `FK.ind`.
-2. **#18** — Completar formatos legacy, `Inicio.con`, Tips y `clsIniReader`.
-3. **#8** — Ampliar regresión con archivos reales.
-4. **#17** — Implementar ResF cuando exista el compresor oficial.
-5. **#9** — Mantener GDI+ documentado o abrir una fase de backend gráfico si se exige paridad exacta.
+1. **#18** — Completar formatos legacy, `Inicio.con`, Tips y `clsIniReader`.
+2. **#8** — Ampliar regresión con archivos reales.
+3. **#17** — Implementar ResF cuando exista el compresor oficial.
+4. **#9** — Mantener GDI+ documentado o abrir una fase de backend gráfico si se exige paridad exacta.
 
 ## Verificación
 
@@ -136,7 +139,7 @@ En la versión actual, los modos 2 y 3 requieren completar el Issue #17.
 ## Issues nuevos
 
 - [#15 — Completar FrmSearch](https://github.com/scorpio21/indexador_conundrum_.net/issues/15)
-- [#16 — Implementar EncodeMapas y FK.ind](https://github.com/scorpio21/indexador_conundrum_.net/issues/16)
+- [#16 — Implementar EncodeMapas y FK.ind — completado](https://github.com/scorpio21/indexador_conundrum_.net/issues/16)
 - [#17 — Implementar lector ResF](https://github.com/scorpio21/indexador_conundrum_.net/issues/17)
 - [#18 — Compatibilidad legacy](https://github.com/scorpio21/indexador_conundrum_.net/issues/18)
 

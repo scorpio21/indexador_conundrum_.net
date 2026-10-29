@@ -24,7 +24,18 @@ public partial class MainForm : Form
     
             private void clearMemoryButton_Click(object? sender, EventArgs e) => ClearMemory();
     
-            private void encodeMapsButton_Click(object? sender, EventArgs e) => MessageBox.Show(this, "El módulo de mapas se añadirá en la siguiente fase.", "Encode Mapas");
+            private void encodeMapsButton_Click(object? sender, EventArgs e) => OpenEncodeMaps();
+
+            private void encodeMapsMenu_Click(object? sender, EventArgs e) => OpenEncodeMaps();
+
+            private void OpenEncodeMaps()
+            {
+                var initPath = ResolvePath(_settings.InitPath);
+                var mapasDatPath = Path.Combine(initPath, "encode", "mapas.dat");
+                var fkPath = Path.Combine(initPath, "FK.ind");
+                using var dialog = new EncodeMapsForm(mapasDatPath, fkPath);
+                dialog.ShowDialog(this);
+            }
     
             private void newSearchButton_Click(object? sender, EventArgs e)
         {
