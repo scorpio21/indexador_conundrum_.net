@@ -6,15 +6,20 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <VersionPrefix>0.0.80</VersionPrefix>
+    <VersionPrefix>0.0.81</VersionPrefix>
     <VersionSuffix>beta</VersionSuffix>
-    <InformationalVersion>0.0.80-beta</InformationalVersion>
-    <AssemblyVersion>0.0.80.0</AssemblyVersion>
-    <FileVersion>0.0.80.0</FileVersion>
+    <InformationalVersion>0.0.81-beta</InformationalVersion>
+    <AssemblyVersion>0.0.81.0</AssemblyVersion>
+    <FileVersion>0.0.81.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <Content Include="Assets\Icons\*.ico" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\init\encode\Mapas.dat"
+             Link="encode\Mapas.dat"
+             Condition="Exists('..\..\init\encode\Mapas.dat')"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

@@ -31,7 +31,11 @@ public partial class MainForm : Form
             private void OpenEncodeMaps()
             {
                 var initPath = ResolvePath(_settings.InitPath);
-                var mapasDatPath = Path.Combine(initPath, "encode", "mapas.dat");
+                var configuredMapasPath = Path.Combine(initPath, "encode", "mapas.dat");
+                var outputMapasPath = Path.Combine(AppContext.BaseDirectory, "encode", "Mapas.dat");
+                var mapasDatPath = File.Exists(configuredMapasPath) || !File.Exists(outputMapasPath)
+                    ? configuredMapasPath
+                    : outputMapasPath;
                 var fkPath = Path.Combine(initPath, "FK.ind");
                 using var dialog = new EncodeMapsForm(mapasDatPath, fkPath);
                 dialog.ShowDialog(this);

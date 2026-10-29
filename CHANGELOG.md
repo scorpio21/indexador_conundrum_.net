@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.0.81-beta] - 2026-10-30
+
+### Editor de mapas para FK.ind — Issue #16
+
+- La ventana muestra la lista completa de mapas de Mapas.dat, con número y nombre.
+- Cada fila permite elegir 1 (se muestra), 2 (no se muestra) o conservar 0 (sin configurar).
+- La generación de FK.ind usa los valores seleccionados.
+- Mapas.dat se copia automáticamente a encode\Mapas.dat en las salidas Debug/Release cuando existe el archivo fuente.
+
 ## [0.0.80-beta] - 2026-10-30
 
 ### EncodeMapas y FK.ind — Issue #16

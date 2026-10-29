@@ -11,12 +11,25 @@ public static class MapIndexFile
 {
     private const int HeaderSize = 263;
 
+    public sealed record MapSetting(int Number, string Name, byte RainMode);
+
     public static int Encode(string mapasDatPath, string fkPath)
     {
         if (!File.Exists(mapasDatPath))
             throw new FileNotFoundException("No se encontró mapas.dat.", mapasDatPath);
 
-        var maps = ReadMaps(mapasDatPath);
+        var maps = Load(mapasDatPath);
+        return Encode(mapasDatPath, fkPath, maps.Select(map => map.RainMode).ToList());
+    }
+
+    public static int Encode(string mapasDatPath, string fkPath, IReadOnlyList<byte> rainModes)
+    {
+        if (!File.Exists(mapasDatPath))
+            throw new FileNotFoundException("No se encontró mapas.dat.", mapasDatPath);
+
+        var maps = Load(mapasDatPath);
+        if (maps.Count != rainModes.Count)
+            throw new InvalidDataException("La cantidad de valores no coincide con NumMaps.");
         if (maps.Count > short.MaxValue)
             throw new InvalidDataException($"NumMaps ({maps.Count}) supera el límite Integer del formato VB6.");
 
@@ -28,28 +41,30 @@ public static class MapIndexFile
         using var writer = new BinaryWriter(stream, Encoding.Latin1, leaveOpen: false);
         writer.Write(header);
         writer.Write((short)maps.Count);
-        foreach (var value in maps) writer.Write(value);
+        foreach (var value in rainModes) writer.Write(value);
         return maps.Count;
     }
 
-    private static List<byte> ReadMaps(string path)
+    public static List<MapSetting> Load(string path)
     {
-        var lines = File.ReadLines(path)
-            .Select(line => line.Split('\'', 2)[0].Trim())
-            .ToList();
-
         var count = 0;
         var currentMap = 0;
+        var currentName = string.Empty;
         var inInit = false;
-        var values = new Dictionary<int, byte>();
+        var values = new Dictionary<int, (string Name, byte RainMode)>();
 
-        foreach (var line in lines)
+        foreach (var rawLine in File.ReadLines(path))
         {
+            var commentIndex = rawLine.IndexOf('\'');
+            var line = (commentIndex >= 0 ? rawLine[..commentIndex] : rawLine).Trim();
+            var comment = commentIndex >= 0 ? rawLine[(commentIndex + 1)..].Trim() : string.Empty;
+
             if (line.StartsWith("[", StringComparison.Ordinal) && line.EndsWith("]", StringComparison.Ordinal))
             {
                 var section = line[1..^1].Trim();
                 inInit = section.Equals("INIT", StringComparison.OrdinalIgnoreCase);
                 currentMap = 0;
+                currentName = comment;
                 if (section.StartsWith("Map", StringComparison.OrdinalIgnoreCase) &&
                     int.TryParse(section[3..], out var mapNumber) && mapNumber > 0)
                     currentMap = mapNumber;
@@ -69,13 +84,16 @@ public static class MapIndexFile
 
             if (currentMap > 0 && key.Equals("Lluvia", StringComparison.OrdinalIgnoreCase) &&
                 int.TryParse(value, out var rain))
-                values[currentMap] = (byte)Math.Clamp(rain, byte.MinValue, byte.MaxValue);
+                values[currentMap] = (currentName, (byte)Math.Clamp(rain, byte.MinValue, byte.MaxValue));
         }
 
-        if (count == 0) return new List<byte>();
-        var maps = new List<byte>(count);
+        if (count == 0) return new List<MapSetting>();
+        var maps = new List<MapSetting>(count);
         for (var i = 1; i <= count; i++)
-            maps.Add(values.TryGetValue(i, out var rain) ? rain : (byte)0);
+        {
+            var value = values.TryGetValue(i, out var map) ? map : (string.Empty, (byte)0);
+            maps.Add(new MapSetting(i, value.Item1, value.Item2));
+        }
         return maps;
     }
 
