@@ -5,9 +5,9 @@ namespace EncodeNet8;
 partial class SettingsForm
 {
     private System.ComponentModel.IContainer? components = null;
-    private Label initPathLabel = null!, graphicsPathLabel = null!, titleLabel = null!;
-    private TextBox initPathText = null!, graphicsPathText = null!;
-    private Button browseInitButton = null!, browseGraphicsButton = null!, saveButton = null!, cancelButton = null!;
+    private Label initPathLabel = null!, graphicsPathLabel = null!, titleLabel = null!, encodePathLabel = null!, encodeOutputPathLabel = null!;
+    private TextBox initPathText = null!, graphicsPathText = null!, encodePathText = null!, encodeOutputPathText = null!;
+    private Button browseInitButton = null!, browseGraphicsButton = null!, browseEncodeButton = null!, browseEncodeOutputButton = null!, saveButton = null!, cancelButton = null!;
 
     protected override void Dispose(bool disposing) { if (disposing && components != null) components.Dispose(); base.Dispose(disposing); }
 
@@ -25,6 +25,12 @@ partial class SettingsForm
         Datoslabel = new Label();
         Datosindicetext = new TextBox();
         browseIndiceButton = new Button();
+        encodePathLabel = new Label();
+        encodeOutputPathLabel = new Label();
+        encodePathText = new TextBox();
+        encodeOutputPathText = new TextBox();
+        browseEncodeButton = new Button();
+        browseEncodeOutputButton = new Button();
         SuspendLayout();
         // 
         // titleLabel
@@ -86,9 +92,29 @@ partial class SettingsForm
         browseGraphicsButton.Text = "...";
         browseGraphicsButton.Click += browseGraphicsButton_Click;
         // 
+        // encodePathLabel
+        encodePathLabel.AutoSize = true;
+        encodePathLabel.Location = new Point(16, 138);
+        encodePathLabel.Text = "DAT Encode:";
+        encodePathText.Location = new Point(105, 134);
+        encodePathText.Size = new Size(300, 23);
+        browseEncodeButton.Location = new Point(415, 133);
+        browseEncodeButton.Size = new Size(32, 25);
+        browseEncodeButton.Text = "...";
+        browseEncodeButton.Click += browseEncodeButton_Click;
+        // encodeOutputPathLabel
+        encodeOutputPathLabel.AutoSize = true;
+        encodeOutputPathLabel.Location = new Point(16, 167);
+        encodeOutputPathLabel.Text = "Salida Encode:";
+        encodeOutputPathText.Location = new Point(105, 163);
+        encodeOutputPathText.Size = new Size(300, 23);
+        browseEncodeOutputButton.Location = new Point(415, 162);
+        browseEncodeOutputButton.Size = new Size(32, 25);
+        browseEncodeOutputButton.Text = "...";
+        browseEncodeOutputButton.Click += browseEncodeOutputButton_Click;
         // saveButton
         // 
-        saveButton.Location = new Point(286, 145);
+        saveButton.Location = new Point(286, 205);
         saveButton.Name = "saveButton";
         saveButton.Size = new Size(78, 30);
         saveButton.TabIndex = 7;
@@ -97,7 +123,7 @@ partial class SettingsForm
         // 
         // cancelButton
         // 
-        cancelButton.Location = new Point(369, 145);
+        cancelButton.Location = new Point(369, 205);
         cancelButton.Name = "cancelButton";
         cancelButton.Size = new Size(78, 30);
         cancelButton.TabIndex = 8;
@@ -130,10 +156,16 @@ partial class SettingsForm
         // 
         // SettingsForm
         // 
-        ClientSize = new Size(465, 195);
+        ClientSize = new Size(465, 255);
         Controls.Add(Datoslabel);
         Controls.Add(Datosindicetext);
         Controls.Add(browseIndiceButton);
+        Controls.Add(encodePathLabel);
+        Controls.Add(encodePathText);
+        Controls.Add(browseEncodeButton);
+        Controls.Add(encodeOutputPathLabel);
+        Controls.Add(encodeOutputPathText);
+        Controls.Add(browseEncodeOutputButton);
         Controls.Add(titleLabel);
         Controls.Add(initPathLabel);
         Controls.Add(initPathText);

@@ -402,7 +402,7 @@ partial class MainForm
         //
         encodeMapsMenu.Name = "encodeMapsMenu";
         encodeMapsMenu.Size = new Size(230, 22);
-        encodeMapsMenu.Text = "Encode Mapas (FK.ind)";
+        encodeMapsMenu.Text = "Encode";
         encodeMapsMenu.Click += encodeMapsMenu_Click;
         //
         // configuracionMenu

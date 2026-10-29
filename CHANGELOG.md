@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.82-beta] - 2026-10-30
+
+### Codificador general
+
+- Renombrado el acceso de Herramientas a Encode.
+- La ventana permite seleccionar Alas.dat, Body.dat, Botas.dat, Cascos.dat, escudos.dat, Fx.dat, Head.dat y Mapas.dat.
+- La tabla cambia sus columnas según el formato seleccionado.
+- Implementada la escritura Long compatible para índices direccionales, FX y mapas.
+- Añadidas a Configuración las rutas de entrada DAT y salida IND.
+- Si falta la ruta de entrada, Encode abre automáticamente el configurador.
+- Añadidas pruebas de estructura para Body.dat y Head.dat.
+
 ## [0.0.81-beta] - 2026-10-30
 
 ### Editor de mapas para FK.ind — Issue #16

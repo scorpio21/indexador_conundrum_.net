@@ -1,6 +1,6 @@
 # Auditoría de migración EncodeNet8 frente al VB6 original
 
-Versión documentada: **0.0.81-beta**<br>
+Versión documentada: **0.0.82-beta**<br>
 Fecha de auditoría: **2026-10-30**
 
 ## Veredicto

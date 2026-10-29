@@ -5,12 +5,11 @@ namespace EncodeNet8;
 partial class EncodeMapsForm
 {
     private System.ComponentModel.IContainer? components = null;
-    private Label mapasLabel = null!, fkLabel = null!, statusLabel = null!, legendLabel = null!;
-    private TextBox mapasDatText = null!, fkText = null!;
-    private Button browseMapasButton = null!, browseFkButton = null!, loadMapsButton = null!, generateButton = null!, closeButton = null!;
-    private DataGridView mapsGrid = null!;
-    private DataGridViewTextBoxColumn mapNumberColumn = null!, mapNameColumn = null!;
-    private DataGridViewComboBoxColumn rainModeColumn = null!;
+    private Label sourceLabel = null!, outputLabel = null!, encodeStatusLabel = null!, legendLabel = null!, typeLabel = null!;
+    private TextBox sourcePathText = null!, outputPathText = null!;
+    private ComboBox encodeTypeCombo = null!;
+    private Button browseSourceButton = null!, browseOutputButton = null!, loadDataButton = null!, saveDataButton = null!, closeButton = null!;
+    private DataGridView encodeGrid = null!;
 
     protected override void Dispose(bool disposing)
     {
@@ -20,112 +19,107 @@ partial class EncodeMapsForm
 
     private void InitializeComponent()
     {
-        mapasLabel = new Label();
-        fkLabel = new Label();
-        statusLabel = new Label();
+        sourceLabel = new Label();
+        outputLabel = new Label();
+        encodeStatusLabel = new Label();
         legendLabel = new Label();
-        mapasDatText = new TextBox();
-        fkText = new TextBox();
-        browseMapasButton = new Button();
-        browseFkButton = new Button();
-        generateButton = new Button();
+        typeLabel = new Label();
+        sourcePathText = new TextBox();
+        outputPathText = new TextBox();
+        encodeTypeCombo = new ComboBox();
+        browseSourceButton = new Button();
+        browseOutputButton = new Button();
+        loadDataButton = new Button();
+        saveDataButton = new Button();
         closeButton = new Button();
-        loadMapsButton = new Button();
-        mapsGrid = new DataGridView();
-        mapNumberColumn = new DataGridViewTextBoxColumn();
-        mapNameColumn = new DataGridViewTextBoxColumn();
-        rainModeColumn = new DataGridViewComboBoxColumn();
+        encodeGrid = new DataGridView();
         SuspendLayout();
-        // mapasLabel
-        mapasLabel.AutoSize = true;
-        mapasLabel.Location = new Point(18, 22);
-        mapasLabel.Text = "mapas.dat:";
-        // mapasDatText
-        mapasDatText.Location = new Point(100, 18);
-        mapasDatText.Size = new Size(440, 23);
-        // browseMapasButton
-        browseMapasButton.Location = new Point(550, 17);
-        browseMapasButton.Size = new Size(90, 25);
-        browseMapasButton.Text = "Examinar...";
-        browseMapasButton.Click += browseMapasButton_Click;
-        // fkLabel
-        fkLabel.AutoSize = true;
-        fkLabel.Location = new Point(18, 61);
-        fkLabel.Text = "FK.ind:";
-        // fkText
-        fkText.Location = new Point(100, 57);
-        fkText.Size = new Size(440, 23);
-        // browseFkButton
-        browseFkButton.Location = new Point(550, 56);
-        browseFkButton.Size = new Size(90, 25);
-        browseFkButton.Text = "Examinar...";
-        browseFkButton.Click += browseFkButton_Click;
-        // loadMapsButton
-        loadMapsButton.Location = new Point(18, 96);
-        loadMapsButton.Size = new Size(120, 28);
-        loadMapsButton.Text = "Cargar mapas";
-        loadMapsButton.Click += loadMapsButton_Click;
+        // typeLabel
+        typeLabel.AutoSize = true;
+        typeLabel.Location = new Point(18, 18);
+        typeLabel.Text = "Codificar:";
+        // encodeTypeCombo
+        encodeTypeCombo.DropDownStyle = ComboBoxStyle.DropDownList;
+        encodeTypeCombo.Location = new Point(100, 14);
+        encodeTypeCombo.Size = new Size(220, 23);
+        // sourceLabel
+        sourceLabel.AutoSize = true;
+        sourceLabel.Location = new Point(18, 54);
+        sourceLabel.Text = "Archivo origen:";
+        // sourcePathText
+        sourcePathText.Location = new Point(100, 50);
+        sourcePathText.Size = new Size(440, 23);
+        // browseSourceButton
+        browseSourceButton.Location = new Point(550, 49);
+        browseSourceButton.Size = new Size(90, 25);
+        browseSourceButton.Text = "Examinar...";
+        browseSourceButton.Click += browseSourceButton_Click;
+        // outputLabel
+        outputLabel.AutoSize = true;
+        outputLabel.Location = new Point(18, 87);
+        outputLabel.Text = "Guardar en:";
+        // outputPathText
+        outputPathText.Location = new Point(100, 83);
+        outputPathText.Size = new Size(440, 23);
+        // browseOutputButton
+        browseOutputButton.Location = new Point(550, 82);
+        browseOutputButton.Size = new Size(90, 25);
+        browseOutputButton.Text = "Examinar...";
+        browseOutputButton.Click += browseOutputButton_Click;
+        // loadDataButton
+        loadDataButton.Location = new Point(18, 119);
+        loadDataButton.Size = new Size(120, 28);
+        loadDataButton.Text = "Cargar datos";
+        loadDataButton.Click += loadDataButton_Click;
         // legendLabel
         legendLabel.AutoSize = true;
-        legendLabel.Location = new Point(150, 103);
-        legendLabel.Text = "1 = se muestra   2 = no se muestra";
-        // mapsGrid
-        mapsGrid.AllowUserToAddRows = false;
-        mapsGrid.AllowUserToDeleteRows = false;
-        mapsGrid.AutoGenerateColumns = false;
-        mapsGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-        mapsGrid.Columns.AddRange(new DataGridViewColumn[] { mapNumberColumn, mapNameColumn, rainModeColumn });
-        mapsGrid.Location = new Point(18, 132);
-        mapsGrid.ReadOnly = false;
-        mapsGrid.RowHeadersVisible = false;
-        mapsGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-        mapsGrid.Size = new Size(622, 250);
-        // mapNumberColumn
-        mapNumberColumn.HeaderText = "Mapa";
-        mapNumberColumn.ReadOnly = true;
-        mapNumberColumn.Width = 75;
-        // mapNameColumn
-        mapNameColumn.HeaderText = "Nombre";
-        mapNameColumn.ReadOnly = true;
-        mapNameColumn.Width = 330;
-        // rainModeColumn
-        rainModeColumn.HeaderText = "Lluvia";
-        rainModeColumn.Items.AddRange(new object[] { "1 - Se muestra", "2 - No se muestra", "0 - Sin configurar" });
-        rainModeColumn.Width = 190;
-        // generateButton
-        generateButton.Location = new Point(205, 394);
-        generateButton.Size = new Size(145, 32);
-        generateButton.Text = "Generar FK.ind";
-        generateButton.Click += generateButton_Click;
+        legendLabel.Location = new Point(155, 126);
+        legendLabel.Text = "Para Mapas: 1 = se muestra   2 = no se muestra";
+        // encodeGrid
+        encodeGrid.AllowUserToAddRows = false;
+        encodeGrid.AllowUserToDeleteRows = false;
+        encodeGrid.AutoGenerateColumns = true;
+        encodeGrid.Location = new Point(18, 155);
+        encodeGrid.ReadOnly = false;
+        encodeGrid.RowHeadersVisible = false;
+        encodeGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        encodeGrid.Size = new Size(622, 275);
+        // saveDataButton
+        saveDataButton.Location = new Point(205, 440);
+        saveDataButton.Size = new Size(145, 32);
+        saveDataButton.Text = "Generar índice";
+        saveDataButton.Click += saveDataButton_Click;
         // closeButton
-        closeButton.Location = new Point(370, 394);
+        closeButton.Location = new Point(370, 440);
         closeButton.Size = new Size(100, 32);
         closeButton.Text = "Cerrar";
         closeButton.Click += closeButton_Click;
-        // statusLabel
-        statusLabel.BorderStyle = BorderStyle.FixedSingle;
-        statusLabel.Location = new Point(18, 438);
-        statusLabel.Size = new Size(622, 50);
-        statusLabel.TextAlign = ContentAlignment.MiddleLeft;
+        // encodeStatusLabel
+        encodeStatusLabel.BorderStyle = BorderStyle.FixedSingle;
+        encodeStatusLabel.Location = new Point(18, 480);
+        encodeStatusLabel.Size = new Size(622, 50);
+        encodeStatusLabel.TextAlign = ContentAlignment.MiddleLeft;
         // form
-        ClientSize = new Size(660, 505);
-        Controls.Add(mapasLabel);
-        Controls.Add(mapasDatText);
-        Controls.Add(browseMapasButton);
-        Controls.Add(fkLabel);
-        Controls.Add(fkText);
-        Controls.Add(browseFkButton);
-        Controls.Add(loadMapsButton);
+        ClientSize = new Size(660, 550);
+        Controls.Add(typeLabel);
+        Controls.Add(encodeTypeCombo);
+        Controls.Add(sourceLabel);
+        Controls.Add(sourcePathText);
+        Controls.Add(browseSourceButton);
+        Controls.Add(outputLabel);
+        Controls.Add(outputPathText);
+        Controls.Add(browseOutputButton);
+        Controls.Add(loadDataButton);
         Controls.Add(legendLabel);
-        Controls.Add(mapsGrid);
-        Controls.Add(generateButton);
+        Controls.Add(encodeGrid);
+        Controls.Add(saveDataButton);
         Controls.Add(closeButton);
-        Controls.Add(statusLabel);
+        Controls.Add(encodeStatusLabel);
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
         MinimizeBox = false;
         StartPosition = FormStartPosition.CenterParent;
-        Text = "Encode Mapas - Generar FK.ind";
+        Text = "Encode - Generar índices";
         ResumeLayout(false);
         PerformLayout();
     }

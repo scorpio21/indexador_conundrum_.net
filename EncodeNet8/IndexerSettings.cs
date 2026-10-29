@@ -6,6 +6,8 @@ public sealed class IndexerSettings
 {
     public string InitPath { get; set; } = "init";
     public string GraphicsPath { get; set; } = "graficos";
+    public string EncodePath { get; set; } = Path.Combine("init", "encode");
+    public string EncodeOutputPath { get; set; } = "init";
     // Equivalente a CarpetaDedatos/PathDat del cliente VB6.
     // Puede ser una carpeta ("Datos") o la ruta completa de Indices.ini.
     public string IndicesPath { get; set; } = "Datos";
@@ -55,6 +57,8 @@ public sealed class IndexerSettings
             if (key.Equals("CarpetaDeInis", StringComparison.OrdinalIgnoreCase)) settings.InitPath = value;
             else if (key.Equals("CarpetaGraficos", StringComparison.OrdinalIgnoreCase)) settings.GraphicsPath = value;
             else if (key.Equals("CarpetaDedatos", StringComparison.OrdinalIgnoreCase)) settings.IndicesPath = value;
+            else if (key.Equals("CarpetaEncode", StringComparison.OrdinalIgnoreCase)) settings.EncodePath = value;
+            else if (key.Equals("CarpetaSalidaEncode", StringComparison.OrdinalIgnoreCase)) settings.EncodeOutputPath = value;
             else if (key.Equals("recurso", StringComparison.OrdinalIgnoreCase) && int.TryParse(value, out var mode)) settings.ResourceMode = mode;
         }
         settings.ResourceMode = settings.ResourceMode is >= 1 and <= 3 ? settings.ResourceMode : 1;

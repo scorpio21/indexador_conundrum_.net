@@ -83,6 +83,7 @@ try
     TestFormAutoModes(root);
     TestWeIndexFile(root);
     TestMapIndexFile(root);
+    TestDatIndexEncoder(root);
     TestIndexerSettings(root);
     TestMainFormStates();
     TestAllIndexerStates();
@@ -558,6 +559,23 @@ static void TestMapIndexFile(string root)
     Assert(reader.ReadInt16() == 3, "FK.ind: contador NumMaps");
     Assert(reader.ReadByte() == 1 && reader.ReadByte() == 0 && reader.ReadByte() == 255,
         "FK.ind: valores Lluvia por mapa");
+}
+
+static void TestDatIndexEncoder(string root)
+{
+    var bodyDat = Path.Combine(root, "Body.dat");
+    var bodyInd = Path.Combine(root, "Personajes.ind");
+    File.WriteAllText(bodyDat, "[INIT]\nNumBodies=1\n\n[Body1]\nWalk1=4582\nWalk2=4584\nWalk3=4581\nWalk4=4583\nHeadOffsetX=0\nHeadOffsetY=-38\n");
+    var body = DatIndexEncoder.Load(bodyDat, EncodeIndexType.Body);
+    DatIndexEncoder.Save(bodyDat, bodyInd, EncodeIndexType.Body, body);
+    Assert(body.Count == 1 && new FileInfo(bodyInd).Length == 263 + 2 + 20, "Encode Body.dat: estructura Long y offsets");
+
+    var headDat = Path.Combine(root, "Head.dat");
+    var headInd = Path.Combine(root, "Cabezas.ind");
+    File.WriteAllText(headDat, "[INIT]\nNumHeads=1\n\n[Head1]\nHead0=3003\nHead1=3001\nHead2=3000\nHead3=3002\n");
+    var head = DatIndexEncoder.Load(headDat, EncodeIndexType.Head);
+    DatIndexEncoder.Save(headDat, headInd, EncodeIndexType.Head, head);
+    Assert(head.Count == 1 && new FileInfo(headInd).Length == 263 + 2 + 16, "Encode Head.dat: cuatro GRH Long");
 }
 
 static void TestAllIndexerStates()

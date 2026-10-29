@@ -30,13 +30,22 @@ public partial class MainForm : Form
 
             private void OpenEncodeMaps()
             {
-                var initPath = ResolvePath(_settings.InitPath);
-                var configuredMapasPath = Path.Combine(initPath, "encode", "mapas.dat");
+                var encodePath = ResolvePath(_settings.EncodePath);
+                var outputPath = ResolvePath(_settings.EncodeOutputPath);
+                var configuredMapasPath = Path.Combine(encodePath, "Mapas.dat");
                 var outputMapasPath = Path.Combine(AppContext.BaseDirectory, "encode", "Mapas.dat");
+                if (!File.Exists(configuredMapasPath) && !File.Exists(outputMapasPath))
+                {
+                    using var settingsDialog = new SettingsForm(_settings);
+                    if (settingsDialog.ShowDialog(this) != DialogResult.OK) return;
+                    encodePath = ResolvePath(_settings.EncodePath);
+                    outputPath = ResolvePath(_settings.EncodeOutputPath);
+                    configuredMapasPath = Path.Combine(encodePath, "Mapas.dat");
+                }
                 var mapasDatPath = File.Exists(configuredMapasPath) || !File.Exists(outputMapasPath)
                     ? configuredMapasPath
                     : outputMapasPath;
-                var fkPath = Path.Combine(initPath, "FK.ind");
+                var fkPath = Path.Combine(outputPath, "FK.ind");
                 using var dialog = new EncodeMapsForm(mapasDatPath, fkPath);
                 dialog.ShowDialog(this);
             }
