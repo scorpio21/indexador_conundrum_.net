@@ -454,6 +454,7 @@ partial class MainForm
         saveButton.Size = new Size(90, 30);
         saveButton.TabIndex = 2;
         saveButton.Text = "Guardar";
+        saveButton.Visible = false;
         saveButton.Click += saveButton_Click;
         // 
         // deleteButton
@@ -1092,7 +1093,7 @@ partial class MainForm
         // 
         surfaceGrhText.Location = new Point(205, 30);
         surfaceGrhText.Name = "surfaceGrhText";
-        surfaceGrhText.ReadOnly = true;
+        surfaceGrhText.ReadOnly = false;
         surfaceGrhText.Size = new Size(59, 23);
         surfaceGrhText.TabIndex = 9;
         // 

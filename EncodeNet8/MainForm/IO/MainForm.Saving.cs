@@ -49,6 +49,8 @@ public partial class MainForm : Form
         private void dataText_TextChanged(object? sender, EventArgs e)
         {
             if (_indexerState.Equals("Resource", StringComparison.OrdinalIgnoreCase)) return;
+            if (_selectedRecord is not null)
+                saveButton.Visible = true;
             if (_indexerState.Equals("Grh", StringComparison.OrdinalIgnoreCase))
             {
                 if (_selectedRecord is null) return;

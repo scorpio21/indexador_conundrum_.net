@@ -107,27 +107,31 @@ public partial class MainForm : Form
             }
 
             var name = surfaceNameText.Text.Trim();
-            if (string.IsNullOrWhiteSpace(name)) return;
-            if (string.IsNullOrWhiteSpace(surfaceHeightText.Text.Trim()))
+            if (string.IsNullOrWhiteSpace(name))
             {
-                SetUtilError("Indica el alto de la superficie.");
+                SetUtilError("Debes indicar un nombre para la superficie.");
+                return;
+            }
+
+            if (!int.TryParse(surfaceHeightText.Text.Trim(), out var requestedHeight) || requestedHeight <= 0)
+            {
+                SetUtilError("Indica un alto numérico válido para la superficie.");
+                return;
+            }
+
+            if (!int.TryParse(surfaceWidthText.Text.Trim(), out var requestedWidth) || requestedWidth <= 0)
+            {
+                SetUtilError("Indica un ancho numérico válido para la superficie.");
                 return;
             }
 
             var path = ResolveConfiguredIndicesFilePath();
-            if (File.Exists(path))
-            {
-                var answer = MessageBox.Show(this,
-                    $"El archivo ya existe:\n{path}\n¿Deseas añadir la referencia sin sobrescribir sus datos?",
-                    "Generar índices para WE", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-                if (answer != DialogResult.Yes) return;
-            }
 
             try
             {
                 var frame = _file.Records.FirstOrDefault(record => record.Id == _selectedRecord.Frames.FirstOrDefault()) ?? _selectedRecord;
-                var height = ParseInt(surfaceHeightText.Text);
-                var width = ParseInt(surfaceWidthText.Text);
+                var height = requestedHeight;
+                var width = requestedWidth;
                 if (height <= 0) height = frame.Height > 0 ? frame.Height : _selectedRecord.Height;
                 if (width <= 0) width = frame.Width > 0 ? frame.Width : _selectedRecord.Width;
                 var grh = ParseInt(surfaceGrhText.Text);
@@ -135,7 +139,7 @@ public partial class MainForm : Form
                 var reference = WeIndexFile.Append(path, name, grh, height, width);
                 surfaceReferencesText.Text = reference.ToString();
                 statusLabel.Text = $"Índice WE {reference} generado en {path}.";
-                SetUtilError(null);
+                SetUtilError($"Referencia {reference} añadida correctamente en Indices.ini.");
             }
             catch (Exception ex)
             {

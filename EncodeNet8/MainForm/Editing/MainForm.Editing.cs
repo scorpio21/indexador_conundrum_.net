@@ -42,6 +42,9 @@ public partial class MainForm : Form
             private void ClickEnLista()
         {
             ClearUtilError();
+            // Al seleccionar un índice se descartan los cambios pendientes del
+            // registro anterior, igual que GetInfoGHR/GetInfoDataIndex en VB6.
+            saveButton.Visible = false;
             if (_resourceSearchMode)
             {
                 ClickResourceSearchItem();
@@ -104,6 +107,7 @@ public partial class MainForm : Form
             ConfigureAnimationTimer(_selectedRecord);
             previewPanel.Invalidate();
             statusLabel.Text = $"GRH {_selectedRecord.Id} seleccionado ({_indexerState}).";
+            saveButton.Visible = false;
         }
     
             private void DeleteSelected()

@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.0.79-beta] - 2026-10-29
+
+### Selector «Todos» en índices direccionales
+
+- Corregido el visor para que `Todos` dibuje las cuatro direcciones en `Cabezas`, `Cascos`, `Escudos`, `Armas`, `Alas`, `Capas` y `Botas`, además de `Bodies`.
+- Las opciones `Norte`, `Este`, `Sur` y `Oeste` siguen mostrando únicamente la dirección seleccionada.
+- La corrección se ha realizado en el renderizado del visor, manteniendo el flujo del selector VB6 `CDibujarWalk`.
+- Build verificado: 0 advertencias y 0 errores.
+
 ## [0.0.78-beta] - 2026-10-29
 
 ### FrmSearch — Issue #15

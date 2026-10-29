@@ -99,6 +99,9 @@ public partial class MainForm : Form
             Checkcabeza.Checked = false;
             cabezaActual = 0;
             DescripcionAyuda.Visible = false;
+            // Equivale a BotonGuardar.Visible = False en CambiarEstado del VB6.
+            // Solo se muestra cuando el usuario modifica el registro cargado.
+            saveButton.Visible = false;
             saveIndexButton.Visible = true;
             deleteButton.Visible = true;
             herramientasMenu.Visible = state.Equals("Grh", StringComparison.OrdinalIgnoreCase);

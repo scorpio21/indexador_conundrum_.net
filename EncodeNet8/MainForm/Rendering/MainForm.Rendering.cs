@@ -84,9 +84,12 @@ public partial class MainForm : Form
                 DrawAutoIndexerPreview(e.Graphics, _autoPreviewRecords);
                 return;
             }
-            if (_indexerState.Equals("Body", StringComparison.OrdinalIgnoreCase) && _drawWalk == 0)
+            if (_drawWalk == 0 && IsDirectionalStateForPreview(_indexerState))
             {
-                DrawBodyPreview(e.Graphics);
+                if (_indexerState.Equals("Body", StringComparison.OrdinalIgnoreCase))
+                    DrawBodyPreview(e.Graphics);
+                else
+                    DrawAllDirectionalPreview(e.Graphics);
                 return;
             }
             if (_selectedRecord is null)
@@ -188,6 +191,37 @@ public partial class MainForm : Form
                     DrawOverlay(graphics, head, southBody, drawnBody[2]);
             }
         }
+
+        private void DrawAllDirectionalPreview(Graphics graphics)
+        {
+            if (indexList.SelectedIndex < 0 || indexList.SelectedIndex >= _directionalRecords.Count || _file is null)
+                return;
+
+            var item = _directionalRecords[indexList.SelectedIndex];
+            var width = Math.Max(1, previewPanel.ClientSize.Width);
+            var height = Math.Max(1, previewPanel.ClientSize.Height);
+            var margin = 12;
+            var cellWidth = Math.Max(1, (width - margin * 3) / 2);
+            var cellHeight = Math.Max(1, (height - margin * 3) / 2);
+            var slots = new[]
+            {
+                new Rectangle(margin, margin, cellWidth, cellHeight),
+                new Rectangle(margin * 2 + cellWidth, margin, cellWidth, cellHeight),
+                new Rectangle(margin, margin * 2 + cellHeight, cellWidth, cellHeight),
+                new Rectangle(margin * 2 + cellWidth, margin * 2 + cellHeight, cellWidth, cellHeight)
+            };
+
+            for (var i = 0; i < item.Directions.Length && i < slots.Length; i++)
+            {
+                var record = _file.Records.FirstOrDefault(candidate => candidate.Id == item.Directions[i]);
+                if (record is null) continue;
+                var frame = ResolvePreviewFrame(record);
+                if (frame is not null) DrawRecordFit(graphics, frame, slots[i]);
+            }
+        }
+
+        private static bool IsDirectionalStateForPreview(string state) =>
+            state is "Body" or "Cabezas" or "Cascos" or "Escudos" or "Armas" or "Alas" or "Capas" or "Botas";
 
         private GrhRecord? ResolvePreviewFrame(GrhRecord record)
         {

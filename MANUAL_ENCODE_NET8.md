@@ -1,6 +1,6 @@
 # Auditoría de migración EncodeNet8 frente al VB6 original
 
-Versión documentada: **0.0.78-beta**  
+Versión documentada: **0.0.79-beta**  
 Fecha de auditoría: **2026-10-29**
 
 ## Veredicto
@@ -45,6 +45,7 @@ Se revisaron 15 archivos VB6:
 - Validación de cabeceras, registros, frames y truncados.
 - Estados Gráficos, Bodies, Cabezas, Cascos, Alas, Capas, Botas, Armas, Escudos, FX y Resource.
 - Selector de Bodies: Todos, Norte, Este, Sur y Oeste.
+- Selector de índices direccionales: `Todos` dibuja las cuatro direcciones en Cabezas, Cascos, Escudos, Armas, Alas, Capas y Botas; las opciones individuales dibujan solo la dirección seleccionada.
 - `Checkcabeza`, offset de cabeza y edición de datos.
 - Mover, copiar, borrar, clonar y slots de guardado.
 - Autoindexador normal, avanzado, offset y simple.
@@ -95,6 +96,7 @@ El original usa `DX_InIt.bas`, `TileEngine.bas` y `clsSurfaceManager`. .NET util
 - Autoindexador: cubierto en modos principales.
 - Estados y controles: cubiertos parcialmente.
 - `Indices.ini`: generación básica cubierta.
+- Selector `Todos` y render compuesto de índices direccionales: compilado y verificado en la ruta de renderizado.
 
 Falta una batería completa con archivos reales del cliente y comparación directa de resultados entre VB6 y .NET.
 

@@ -6,11 +6,11 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <VersionPrefix>0.0.76</VersionPrefix>
+    <VersionPrefix>0.0.79</VersionPrefix>
     <VersionSuffix>beta</VersionSuffix>
-    <InformationalVersion>0.0.76-beta</InformationalVersion>
-    <AssemblyVersion>0.0.76.0</AssemblyVersion>
-    <FileVersion>0.0.76.0</FileVersion>
+    <InformationalVersion>0.0.79-beta</InformationalVersion>
+    <AssemblyVersion>0.0.79.0</AssemblyVersion>
+    <FileVersion>0.0.79.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,5 +37,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+
+  <Target Name="EnsureDatosDirectory" BeforeTargets="Build">
+    <MakeDir Directories="$(TargetDir)Datos" />
+  </Target>
 
 </Project>
