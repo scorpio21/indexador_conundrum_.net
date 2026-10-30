@@ -41,12 +41,37 @@ public partial class MainForm : Form
 
     private static readonly string[] AllStates = { "Grh", "Body", "Cabezas", "Cascos", "Escudos", "Armas", "Alas", "Capas", "Fx", "Resource", "Botas" };
 
+    // Conservamos también los Icon para mantener vivos sus handles nativos.
+    // Crear el Cursor directamente desde Properties.Resources.X.Handle dejaba
+    // el handle expuesto a la finalización del Icon y los cursores desaparecían
+    // después de un tiempo.
+    private readonly Icon _bastonIcon = (Icon)Properties.Resources.baston.Clone();
+    private readonly Icon _diabloIcon = (Icon)Properties.Resources.diablo.Clone();
+    private readonly Icon _manoIcon = (Icon)Properties.Resources.mano.Clone();
+    private readonly Cursor _bastonCursor;
+    private readonly Cursor _diabloCursor;
+    private readonly Cursor _manoCursor;
+
+
     public MainForm()
     {
         InitializeComponent();
+        _bastonCursor = new Cursor(_bastonIcon.Handle);
+        _diabloCursor = new Cursor(_diabloIcon.Handle);
+        _manoCursor = new Cursor(_manoIcon.Handle);
         _settings = IndexerSettings.Load();
         _drawTimer.Tick += drawTimer_Tick;
-        FormClosed += (_, _) => DisposeBitmapCache();
+        FormClosed += (_, _) =>
+        {
+            DisposeBitmapCache();
+            _bastonCursor.Dispose();
+            _diabloCursor.Dispose();
+            _manoCursor.Dispose();
+            _bastonIcon.Dispose();
+            _diabloIcon.Dispose();
+            _manoIcon.Dispose();
+        };
+        Cursor = _manoCursor;
         ConfigureIcons();
         foreach (var box in new[] { bmpText, framesText, heightText, widthText, speedText, xText, yText, tileHeightText, tileWidthText })
             box.DoubleClick += textData_DoubleClick;
@@ -70,6 +95,34 @@ public partial class MainForm : Form
 
         return base.ProcessCmdKey(ref msg, keyData);
     }
+
+    private void openButton_MouseEnter(object? sender, EventArgs e)
+    {
+        openButton.Cursor = _bastonCursor;
+    }
+
+    private void openButton_MouseDown(object? sender, MouseEventArgs e)
+    {
+        if (e.Button == MouseButtons.Left)
+            openButton.Cursor = _diabloCursor;
+    }
+
+    private void openButton_MouseUp(object? sender, MouseEventArgs e)
+    {
+        openButton.Cursor = IsPointerInside(openButton) ? _bastonCursor : _manoCursor;
+    }
+
+    private void openButton_MouseLeave(object? sender, EventArgs e)
+    {
+        openButton.Cursor = _manoCursor;
+    }
+
+    private static bool IsPointerInside(Control control)
+    {
+        var point = control.PointToClient(Cursor.Position);
+        return control.ClientRectangle.Contains(point);
+    }
+
 }
 
 #pragma warning restore CS8618

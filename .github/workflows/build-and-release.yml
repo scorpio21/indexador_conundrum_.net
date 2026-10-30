@@ -1,0 +1,113 @@
+name: build-and-release
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Versión (ej. 0.0.83-beta)'
+        required: true
+        default: '0.0.82-beta'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      RELEASE_VERSION: ${{ github.event.inputs.version || '0.0.82-beta' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Determinar versión
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ("${{ startsWith(github.ref, 'refs/tags/v') }}" -eq 'True') {
+            $version = "${{ github.ref_name }}".Substring(1)
+          } else {
+            $version = "${{ env.RELEASE_VERSION }}"
+          }
+          "RELEASE_VERSION=$version" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Instalar Inno Setup
+        shell: pwsh
+        run: choco install innosetup -y --no-progress
+
+      - name: Restore
+        run: dotnet restore EncodeNet8\EncodeNet8\EncodeNet8.csproj
+
+      - name: Publicar EncodeNet8
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          dotnet publish EncodeNet8\EncodeNet8\EncodeNet8.csproj `
+            -c Release -r win-x64 --self-contained true `
+            /p:PublishSingleFile=true /p:PublishTrimmed=false `
+            /p:VersionPrefix=$env:RELEASE_VERSION `
+            /p:InformationalVersion=$env:RELEASE_VERSION `
+            -o publish\win-x64-singlefile
+
+          if (!(Test-Path 'publish\win-x64-singlefile\EncodeNet8.exe')) {
+            throw 'No se generó EncodeNet8.exe'
+          }
+          if (!(Test-Path 'publish\win-x64-singlefile\Datos\Indices.ini')) {
+            throw 'No se copió Datos\Indices.ini'
+          }
+          if (!(Test-Path 'publish\win-x64-singlefile\encode\Mapas.dat')) {
+            throw 'No se copió encode\Mapas.dat'
+          }
+          Copy-Item README.md publish\win-x64-singlefile\README.md -Force
+          Copy-Item MANUAL_ENCODE_NET8.md publish\win-x64-singlefile\MANUAL_ENCODE_NET8.md -Force
+
+      - name: Generar instalador Inno Setup
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $iscc = "$env:ProgramFiles(x86)\Inno Setup 6\ISCC.exe"
+          if (!(Test-Path $iscc)) { $iscc = "$env:ProgramFiles\Inno Setup 6\ISCC.exe" }
+          if (!(Test-Path $iscc)) { throw 'No se encontró ISCC.exe' }
+          New-Item -ItemType Directory -Force -Path publish | Out-Null
+          & $iscc /Sspawn=0 /V=1 "/DMyAppVersion=$env:RELEASE_VERSION" `
+            "/O$env:GITHUB_WORKSPACE\publish" "$env:GITHUB_WORKSPACE\installer.iss"
+
+      - name: Crear ZIP portable
+        shell: pwsh
+        run: |
+          Compress-Archive -Path publish\win-x64-singlefile\* `
+            -DestinationPath "publish\EncodeNet8_${env:RELEASE_VERSION}_Portable.zip" -Force
+
+      - name: Subir artefactos
+        uses: actions/upload-artifact@v4
+        with:
+          name: EncodeNet8-${{ env.RELEASE_VERSION }}
+          path: |
+            publish/EncodeNet8_*_Portable.zip
+            publish/EncodeNet8_*_Setup.exe
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Crear GitHub Release
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.RELEASE_VERSION }}
+          name: EncodeNet8 v${{ env.RELEASE_VERSION }}
+          generate_release_notes: true
+          files: |
+            publish/EncodeNet8_*_Portable.zip
+            publish/EncodeNet8_*_Setup.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

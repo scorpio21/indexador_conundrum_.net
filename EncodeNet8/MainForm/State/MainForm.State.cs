@@ -6,6 +6,10 @@ public partial class MainForm : Form
 {
         private void graphicsButton_Click(object? sender, EventArgs e)
         {
+            // El botón lateral Gráficos equivale a seleccionar nuevamente
+            // e_EstadoIndexador.Grh en VB6: debe volver a leer el índice
+            // configurado, no abrir el diálogo de selección de archivos.
+            LoadConfiguredGraphics();
             CambiarEstado("Grh");
             ComprobarIndexLista();
             if (indexList.SelectedIndex >= 0) ClickEnLista();

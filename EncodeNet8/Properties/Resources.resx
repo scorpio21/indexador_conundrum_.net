@@ -117,4 +117,41 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Alas" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Assets\Icons\Alas.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <comment>Icono de las alas</comment>
+  </data>
+  <data name="Armas" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Assets\Icons\Armas.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <comment>Icono de Armas</comment>
+  </data>
+  <data name="baston" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Assets\Icons\baston.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <comment>Icono para el puntero del raton</comment>
+  </data>
+  <data name="Cascos" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Assets\Icons\Cascos.ico;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <comment>Icono de Cascos</comment>
+  </data>
+  <data name="Cuerpos" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Assets\Icons\Bodys.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <comment>Icono de Bodys</comment>
+  </data>
+  <data name="diablo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Assets\Icons\diablo.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <comment>Icono para el puntero del raton</comment>
+  </data>
+  <data name="escudos" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Assets\Icons\escudos.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <comment>Icono de escudo</comment>
+  </data>
+  <data name="logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Assets\Icons\logo.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <comment>Logo de la aplicacion</comment>
+  </data>
+  <data name="mano" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Assets\Icons\mano.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <comment>Icono para el puntero </comment>
+  </data>
 </root>

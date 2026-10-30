@@ -15,11 +15,8 @@
 
   <ItemGroup>
     <Content Include="Assets\Icons\*.ico" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="..\..\init\encode\Mapas.dat"
-             Link="encode\Mapas.dat"
-             Condition="Exists('..\..\init\encode\Mapas.dat')"
-             CopyToOutputDirectory="PreserveNewest"
-             CopyToPublishDirectory="PreserveNewest" />
+    <None Update="encode\**\*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Update="Datos\**\*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

@@ -120,6 +120,8 @@ partial class MainForm
         tileWidthText = new TextBox();
         DescripcionAyuda = new Label();
         foldersGroup = new GroupBox();
+        Indicetext = new TextBox();
+        IndicesLabel = new Label();
         indsLabel = new Label();
         graphicsLabel = new Label();
         maxGrhLabel = new Label();
@@ -146,17 +148,15 @@ partial class MainForm
         surfaceWidthText = new TextBox();
         surfaceGrhText = new TextBox();
         surfaceReferencesText = new TextBox();
-        IndicesLabel = new Label();
-        Indicetext = new TextBox();
         menuStrip.SuspendLayout();
         dataGroup.SuspendLayout();
         foldersGroup.SuspendLayout();
         statusStrip.SuspendLayout();
         surfaceGroup.SuspendLayout();
         SuspendLayout();
-        //
+        // 
         // menuStrip
-        //
+        // 
         menuStrip.Items.AddRange(new ToolStripItem[] { archivoMenu, edicionMenu, herramientasMenu, indexarMenu, ayudaMenu });
         menuStrip.Location = new Point(0, 0);
         menuStrip.Name = "menuStrip";
@@ -191,14 +191,14 @@ partial class MainForm
         cargarGraficosMenu.ShortcutKeys = Keys.Control | Keys.O;
         cargarGraficosMenu.Size = new Size(222, 22);
         cargarGraficosMenu.Text = "Cargar Graficos.ind";
-        cargarGraficosMenu.Click += openButton_Click;
+        cargarGraficosMenu.Click += this.openButton_Click;
         // 
         // cargarMenu
         // 
         cargarMenu.Name = "cargarMenu";
         cargarMenu.Size = new Size(222, 22);
         cargarMenu.Text = "Cargar...";
-        cargarMenu.Click += openButton_Click;
+        cargarMenu.Click += this.openButton_Click;
         // 
         // archivoSeparator1
         // 
@@ -397,14 +397,14 @@ partial class MainForm
         repetidosMenu.Size = new Size(230, 22);
         repetidosMenu.Text = "Buscar Grh Repetidos";
         repetidosMenu.Click += repetidosMenu_Click;
-        //
+        // 
         // encodeMapsMenu
-        //
+        // 
         encodeMapsMenu.Name = "encodeMapsMenu";
         encodeMapsMenu.Size = new Size(230, 22);
         encodeMapsMenu.Text = "Encode";
         encodeMapsMenu.Click += encodeMapsMenu_Click;
-        //
+        // 
         // configuracionMenu
         // 
         configuracionMenu.Name = "configuracionMenu";
@@ -448,12 +448,17 @@ partial class MainForm
         // 
         // openButton
         // 
+        openButton.FlatStyle = FlatStyle.Flat;
         openButton.Location = new Point(4, 70);
         openButton.Name = "openButton";
         openButton.Size = new Size(86, 30);
         openButton.TabIndex = 1;
         openButton.Text = "Graficos";
-        openButton.Click += graphicsButton_Click;
+        openButton.Click += this.graphicsButton_Click;
+        openButton.MouseDown += openButton_MouseDown;
+        openButton.MouseEnter += openButton_MouseEnter;
+        openButton.MouseLeave += openButton_MouseLeave;
+        openButton.MouseUp += openButton_MouseUp;
         // 
         // saveButton
         // 
@@ -878,6 +883,23 @@ partial class MainForm
         foldersGroup.TabStop = false;
         foldersGroup.Text = "Carpetas";
         // 
+        // Indicetext
+        // 
+        Indicetext.Location = new Point(63, 66);
+        Indicetext.Name = "Indicetext";
+        Indicetext.Size = new Size(125, 23);
+        Indicetext.TabIndex = 7;
+        Indicetext.Text = "Indices";
+        // 
+        // IndicesLabel
+        // 
+        IndicesLabel.AutoSize = true;
+        IndicesLabel.Location = new Point(5, 69);
+        IndicesLabel.Name = "IndicesLabel";
+        IndicesLabel.Size = new Size(47, 15);
+        IndicesLabel.TabIndex = 6;
+        IndicesLabel.Text = "indices:";
+        // 
         // indsLabel
         // 
         indsLabel.AutoSize = true;
@@ -1101,7 +1123,6 @@ partial class MainForm
         // 
         surfaceGrhText.Location = new Point(205, 30);
         surfaceGrhText.Name = "surfaceGrhText";
-        surfaceGrhText.ReadOnly = false;
         surfaceGrhText.Size = new Size(59, 23);
         surfaceGrhText.TabIndex = 9;
         // 
@@ -1112,23 +1133,6 @@ partial class MainForm
         surfaceReferencesText.ReadOnly = true;
         surfaceReferencesText.Size = new Size(32, 23);
         surfaceReferencesText.TabIndex = 10;
-        // 
-        // IndicesLabel
-        // 
-        IndicesLabel.AutoSize = true;
-        IndicesLabel.Location = new Point(5, 69);
-        IndicesLabel.Name = "IndicesLabel";
-        IndicesLabel.Size = new Size(47, 15);
-        IndicesLabel.TabIndex = 6;
-        IndicesLabel.Text = "indices:";
-        // 
-        // Indicetext
-        // 
-        Indicetext.Location = new Point(63, 66);
-        Indicetext.Name = "Indicetext";
-        Indicetext.Size = new Size(125, 23);
-        Indicetext.TabIndex = 7;
-        Indicetext.Text = "Indices";
         // 
         // MainForm
         // 

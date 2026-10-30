@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace EncodeNet8;
 
 public partial class EncodeMapsForm : Form
@@ -14,17 +16,27 @@ public partial class EncodeMapsForm : Form
         ["Mapas.dat"] = EncodeIndexType.Mapas
     };
 
-    public EncodeMapsForm(string mapasDatPath, string fkPath)
+    // Constructor utilizado por el diseñador de WinForms.
+    public EncodeMapsForm()
     {
         InitializeComponent();
-        BackColor = Color.FromArgb(192, 255, 192);
+    }
+
+    // Constructor utilizado por MainForm cuando se abre la ventana en ejecución.
+    public EncodeMapsForm(string mapasDatPath, string fkPath) : this()
+    {
+        if (IsInDesignMode()) return;
+
+        //BackColor = Color.FromArgb(192, 255, 192);
         sourcePathText.Text = mapasDatPath;
         outputPathText.Text = fkPath;
-        encodeTypeCombo.Items.AddRange(_types.Keys.ToArray());
         encodeTypeCombo.SelectedItem = "Mapas.dat";
-        encodeTypeCombo.SelectedIndexChanged += encodeTypeCombo_SelectedIndexChanged;
+        UpdateTypeUi();
         LoadSelectedFile();
     }
+
+    private static bool IsInDesignMode() =>
+        LicenseManager.UsageMode == LicenseUsageMode.Designtime;
 
     private EncodeIndexType SelectedType =>
         _types.TryGetValue(encodeTypeCombo.SelectedItem?.ToString() ?? string.Empty, out var type)
@@ -37,7 +49,15 @@ public partial class EncodeMapsForm : Form
         if (!string.IsNullOrWhiteSpace(sourceDirectory))
             sourcePathText.Text = Path.Combine(sourceDirectory, selected);
         outputPathText.Text = Path.Combine(Path.GetDirectoryName(outputPathText.Text) ?? string.Empty, OutputName(SelectedType));
+        UpdateTypeUi();
         LoadSelectedFile();
+    }
+
+    private void UpdateTypeUi()
+    {
+        var isMapas = SelectedType == EncodeIndexType.Mapas;
+        legendLabel.Visible = isMapas;
+        saveDataButton.Text = $"Generar índice {DisplayName(SelectedType)}";
     }
 
     private void browseSourceButton_Click(object? sender, EventArgs e)
@@ -190,6 +210,18 @@ public partial class EncodeMapsForm : Form
         EncodeIndexType.Fx => "Fxs.ind",
         EncodeIndexType.Head => "Cabezas.ind",
         _ => "FK.ind"
+    };
+
+    private static string DisplayName(EncodeIndexType type) => type switch
+    {
+        EncodeIndexType.Alas => "alas",
+        EncodeIndexType.Body => "body",
+        EncodeIndexType.Botas => "botas",
+        EncodeIndexType.Cascos => "cascos",
+        EncodeIndexType.Escudos => "escudos",
+        EncodeIndexType.Fx => "fx",
+        EncodeIndexType.Head => "head",
+        _ => "mapas"
     };
 
     private static int Get(IReadOnlyDictionary<string, int> values, string key) =>

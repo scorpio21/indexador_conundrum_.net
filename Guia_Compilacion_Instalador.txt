@@ -1,0 +1,83 @@
+Guía de compilación e instalador de EncodeNet8
+===============================================
+
+Proyecto WinForms .NET 8:
+
+  EncodeNet8\EncodeNet8\EncodeNet8.csproj
+
+El paquete final debe contener EncodeNet8.exe junto con las carpetas Datos,
+encode y Assets.
+
+1. Compilación Release
+----------------------
+
+Desde la raíz del repositorio:
+
+  dotnet restore EncodeNet8\EncodeNet8\EncodeNet8.csproj
+  dotnet build EncodeNet8\EncodeNet8\EncodeNet8.csproj -c Release
+
+La salida queda en:
+
+  EncodeNet8\bin\Release\net8.0-windows\
+
+2. Publicación portable
+-----------------------
+
+  Remove-Item .\publish\win-x64-singlefile -Recurse -Force -ErrorAction SilentlyContinue
+  dotnet publish EncodeNet8\EncodeNet8\EncodeNet8.csproj -c Release -r win-x64 `
+    --self-contained true /p:PublishSingleFile=true /p:PublishTrimmed=false `
+    -o publish\win-x64-singlefile
+
+El proyecto copia automáticamente:
+
+  publish\win-x64-singlefile\Datos\
+  publish\win-x64-singlefile\encode\
+  publish\win-x64-singlefile\Assets\
+
+Comprobar antes de crear el instalador:
+
+  Test-Path .\publish\win-x64-singlefile\EncodeNet8.exe
+  Test-Path .\publish\win-x64-singlefile\Datos\Indices.ini
+  Test-Path .\publish\win-x64-singlefile\encode\Mapas.dat
+
+3. Instalador Inno Setup
+------------------------
+
+Requiere Inno Setup 6. La ruta habitual de ISCC.exe es:
+
+  C:\Program Files (x86)\Inno Setup 6\ISCC.exe
+
+Desde la raíz del repositorio:
+
+  $iscc = "$env:ProgramFiles(x86)\Inno Setup 6\ISCC.exe"
+  if (!(Test-Path $iscc)) { $iscc = "$env:ProgramFiles\Inno Setup 6\ISCC.exe" }
+  & $iscc /Sspawn=0 /V=1 /DMyAppVersion=0.0.82-beta `
+    /O"$pwd\publish" "$pwd\installer.iss"
+
+Salida:
+
+  publish\EncodeNet8_0.0.82-beta_Setup.exe
+
+El script `installer.iss` toma todo el contenido de publish\win-x64-singlefile,
+por lo que incluye Datos, encode, Assets, DLL y el ejecutable.
+
+4. ZIP portable
+---------------
+
+  Compress-Archive -Path .\publish\win-x64-singlefile\* `
+    -DestinationPath .\publish\EncodeNet8_0.0.82-beta_Portable.zip -Force
+
+5. Workflow de GitHub Actions
+-----------------------------
+
+El archivo `.github/workflows/build-and-release.yml` compila en Windows, publica
+una versión self-contained x64, verifica Datos e encode, genera el instalador
+Inno Setup y sube el instalador y el ZIP como artefactos. Se ejecuta en `main`,
+tags `v*`, Pull Requests y manualmente desde GitHub Actions.
+
+6. Limpieza
+-----------
+
+  Remove-Item .\publish -Recurse -Force -ErrorAction SilentlyContinue
+  dotnet clean EncodeNet8\EncodeNet8\EncodeNet8.csproj
+  dotnet restore EncodeNet8\EncodeNet8\EncodeNet8.csproj

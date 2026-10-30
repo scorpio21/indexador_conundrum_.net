@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.0.82-beta] - 2026-10-30
+## v0.0.82-beta - 2026-10-30
 
 ### Codificador general
 
@@ -11,8 +11,10 @@
 - Añadidas a Configuración las rutas de entrada DAT y salida IND.
 - Si falta la ruta de entrada, Encode abre automáticamente el configurador.
 - Añadidas pruebas de estructura para Body.dat y Head.dat.
+- Adaptados `installer.iss`, `Guia_Compilacion_Instalador.txt` y el workflow de GitHub Actions para publicar `Datos`, `encode` y `Assets`.
+- El instalador genera `EncodeNet8_<versión>_Setup.exe` y también un ZIP portable.
 
-## [0.0.81-beta] - 2026-10-30
+## v0.0.81-beta - 2026-10-30
 
 ### Editor de mapas para FK.ind — Issue #16
 
@@ -21,7 +23,7 @@
 - La generación de FK.ind usa los valores seleccionados.
 - Mapas.dat se copia automáticamente a encode\Mapas.dat en las salidas Debug/Release cuando existe el archivo fuente.
 
-## [0.0.80-beta] - 2026-10-30
+## v0.0.80-beta - 2026-10-30
 
 ### EncodeMapas y FK.ind — Issue #16
 
@@ -33,7 +35,7 @@
 - Build y pruebas verificadas: 0 advertencias y 0 errores.
 - Issue cerrado: [#16](https://github.com/scorpio21/indexador_conundrum_.net/issues/16).
 
-## [0.0.79-beta] - 2026-10-29
+## v0.0.79-beta - 2026-10-29
 
 ### Selector «Todos» en índices direccionales
 
@@ -42,7 +44,7 @@
 - La corrección se ha realizado en el renderizado del visor, manteniendo el flujo del selector VB6 `CDibujarWalk`.
 - Build verificado: 0 advertencias y 0 errores.
 
-## [0.0.78-beta] - 2026-10-29
+## v0.0.78-beta - 2026-10-29
 
 ### FrmSearch — Issue #15
 
@@ -53,7 +55,7 @@
 - Se conserva la semántica VB6 de comparación de GRH repetidos: BMP, número de frames, recorte y primeros frames.
 - Build y pruebas verificadas: 0 advertencias y 0 errores.
 
-## [0.0.77-beta] - 2026-10-29
+## v0.0.77-beta - 2026-10-29
 
 ### Corregido
 
@@ -63,7 +65,7 @@
 - El menú de Herramientas vuelve a quedar disponible inmediatamente después
   de cerrar el Autoindexador.
 
-## [0.0.76-beta] - 2026-10-28
+## v0.0.76-beta - 2026-10-28
 
 ### Añadido
 
@@ -71,7 +73,7 @@
 - La ruta se guarda en JSON como `IndicesPath` y se utiliza al leer y generar índices WE.
 - Se mantiene `Datos` como valor predeterminado compatible con el cliente VB6.
 
-## [0.0.75-beta] - 2026-10-28
+## v0.0.75-beta - 2026-10-28
 
 ### Corregido
 
@@ -79,7 +81,7 @@
 - **Configuración de recursos**: se conserva `ResourceMode` con la semántica original `1=BMP`, `2=ResF`, `3=BMP o ResF`; el visor avisa claramente cuando se solicita `ResF`, que aún no tiene lector .NET.
 - Añadidas pruebas para rutas de `Indices.ini` y normalización del modo de recursos.
 
-## [0.0.74-beta] - 2026-10-28
+## v0.0.74-beta - 2026-10-28
 
 ### Vista de Indexar Superficies
 
@@ -88,7 +90,7 @@
 - Añadida regresión WinForms para verificar la visibilidad de todos los controles.
 - Build Release y pruebas verificadas: 0 advertencias y 0 errores.
 
-## [0.0.73-beta] - 2026-10-28
+## v0.0.73-beta - 2026-10-28
 
 ### Edición segura del offset
 
@@ -97,7 +99,7 @@
 - Añadida regresión para evitar que el atajo global interfiera con la edición del offset.
 - Build Release y pruebas verificadas: 0 advertencias y 0 errores.
 
-## [0.0.72-beta] - 2026-10-28
+## v0.0.72-beta - 2026-10-28
 
 ### Offset de cabeza en Bodies
 
@@ -108,7 +110,7 @@
 - Añadida regresión para verificar el cambio de offset.
 - Build Release y pruebas verificadas: 0 advertencias y 0 errores.
 
-## [0.0.71-beta] - 2026-10-28
+## v0.0.71-beta - 2026-10-28
 
 ### Selector de dirección para Bodies
 
@@ -118,7 +120,7 @@
 - Añadida regresión para el selector y el flujo de repintado.
 - Build Release y pruebas verificadas: 0 advertencias y 0 errores.
 
-## [0.0.70-beta] - 2026-10-28
+## v0.0.70-beta - 2026-10-28
 
 ### Estado Bodies y Checkcabeza
 
@@ -128,7 +130,7 @@
 - Añadida regresión WinForms para visibilidad, etiquetas y valores del checkbox.
 - Build Release y pruebas verificadas: 0 advertencias y 0 errores.
 
-## [0.0.69-beta] - 2026-10-28
+## v0.0.69-beta - 2026-10-28
 
 ### Flujo visual de superficies WE
 
@@ -138,7 +140,7 @@
 - Añadida regresión WinForms para activar/desactivar el modo WE desde el menú y desde Capas.
 - Build Release y pruebas verificadas: 0 advertencias y 0 errores.
 
-## [0.0.68-beta] - 2026-10-28
+## v0.0.68-beta - 2026-10-28
 
 ### Corrección de validación de frames
 
@@ -147,14 +149,14 @@
 - Añadida regresión WinForms para el caso de frames sobrantes.
 - Build Release y pruebas verificadas: 0 advertencias y 0 errores.
 
-## [0.0.67-beta] - 2026-10-28
+## v0.0.67-beta - 2026-10-28
 
 ### Auditoría final del indexador
 
 - Se corrigieron las métricas obsoletas del manual: estados, índices direccionales, superficies WE, rutas JSON, menús y regresión quedan reflejados al 100 % dentro del alcance del indexador.
 - Se deja explícito que `clsSurfaceManager` pertenece al runtime del cliente y no forma parte de esta utilidad.
 
-## [0.0.66-beta] - 2026-10-28
+## v0.0.66-beta - 2026-10-28
 
 ### Arquitectura del visor — Issue #9
 
@@ -163,7 +165,7 @@
 - Se verificó que el código C# no contiene llamadas a `Microsoft.DirectX`, DirectDraw, Direct3D ni DX7.
 - Build Release y pruebas verificadas: 0 advertencias y 0 errores.
 
-## [0.0.65-beta] - 2026-10-28
+## v0.0.65-beta - 2026-10-28
 
 ### Regresión y compatibilidad — Issue #8
 
@@ -172,7 +174,7 @@
 - Se verificaron todos los estados de `MainForm`, BMP reales y ausentes, recortes inválidos, frames inválidos y archivos truncados.
 - Build Release y pruebas verificadas: 0 advertencias y 0 errores.
 
-## [0.0.64-beta] - 2026-10-28
+## v0.0.64-beta - 2026-10-28
 
 ### Herramientas y superficies — Issue #7
 
@@ -183,7 +185,7 @@
 - Las búsquedas por BMP, BMP sin indexar, repetidos y el autoindexador quedan documentados como operativos en esta fase.
 - Build Release y pruebas verificadas: 0 advertencias y 0 errores.
 
-## [0.0.63-beta] - 2026-10-28
+## v0.0.63-beta - 2026-10-28
 
 ### Edición y guardado — Issue #6
 
@@ -193,7 +195,7 @@
 - Se añadió una prueba WinForms STA que verifica que la copia anterior conserva exactamente el contenido original.
 - Build Release y pruebas verificadas: 0 advertencias y 0 errores.
 
-## [0.0.62-beta] - 2026-10-28
+## v0.0.62-beta - 2026-10-28
 
 ### Regresión del visor — Issue #5
 
@@ -203,7 +205,7 @@
 - La prueba WinForms STA cubre límites de frame, temporización y render de errores.
 - Build Release y pruebas verificadas: 0 advertencias y 0 errores.
 
-## [0.0.61-beta] - 2026-10-28
+## v0.0.61-beta - 2026-10-28
 
 ### Rendimiento y regresión del visor — Issue #13
 
@@ -214,7 +216,7 @@
 - Se añadieron pruebas deterministas de ciclo de frames y regresión WinForms STA.
 - Build Release y pruebas verificadas: 0 advertencias y 0 errores.
 
-## [0.0.60-beta] - 2026-10-28
+## v0.0.60-beta - 2026-10-28
 
 ### Validación y errores — Issue #12
 
@@ -225,7 +227,7 @@
 - Se añadieron pruebas STA para BMP inexistente, frames incoherentes y restauración de color.
 - Build Release y pruebas verificadas: 0 advertencias y 0 errores.
 
-## [0.0.59-beta] - 2026-10-28
+## v0.0.59-beta - 2026-10-28
 
 ### Recursos y búsquedas — Issue #10
 
@@ -236,7 +238,7 @@
 - Se añadió una prueba WinForms STA con BMP real temporal para validar dimensiones, bits, caché y selección.
 - Build Release y pruebas verificadas: 0 advertencias y 0 errores.
 
-## [0.0.58-beta] - 2026-10-28
+## v0.0.58-beta - 2026-10-28
 
 ### Paridad de MainForm — Issue #11
 
@@ -247,7 +249,7 @@
 - Se verificaron menús, submenús, accesos rápidos y confirmaciones del flujo principal.
 - Build Release y pruebas WinForms STA verificadas: 0 advertencias y 0 errores.
 
-## [0.0.57-beta] - 2026-10-28
+## v0.0.57-beta - 2026-10-28
 
 ### Regresión completa de controles — Issue #14
 
@@ -256,7 +258,7 @@
 - Se verificaron las dimensiones y offsets de las plantillas clásica, NPC y Alkon, además de la normalización de límites del offset.
 - Build Release y regresión WinForms STA verificadas: 0 advertencias y 0 errores.
 
-## [0.0.56-beta] - 2026-10-28
+## v0.0.56-beta - 2026-10-28
 
 ### Ciclo de vida — Issue #14
 
@@ -264,7 +266,7 @@
 - Se mantiene la previsualización activa durante la edición y se limpia al cerrar el diálogo.
 - Build Release y pruebas verificadas: 0 errores y 0 advertencias.
 
-## [0.0.55-beta] - 2026-10-28
+## v0.0.55-beta - 2026-10-28
 
 ### Paridad de previsualización — Issue #14
 
@@ -273,7 +275,7 @@
 - La prueba WinForms cubre el aviso de recurso en modo avanzado y simple.
 - Build Release y pruebas verificadas: 0 errores y 0 advertencias.
 
-## [0.0.54-beta] - 2026-10-28
+## v0.0.54-beta - 2026-10-28
 
 ### Recursos — Issue #14
 
@@ -282,7 +284,7 @@
 - Se añadió una prueba que verifica el aviso de recurso y la indexación simple.
 - Build Release y pruebas verificadas: 0 errores y 0 advertencias.
 
-## [0.0.53-beta] - 2026-10-28
+## v0.0.53-beta - 2026-10-28
 
 ### Integración y guardado — Issue #14
 
@@ -291,7 +293,7 @@
 - La prueba WinForms ahora cubre generación, integración de enlace y round-trip de archivos.
 - Build Release y pruebas verificadas: 0 errores y 0 advertencias.
 
-## [0.0.52-beta] - 2026-10-28
+## v0.0.52-beta - 2026-10-28
 
 ### Pruebas — Issue #14
 
@@ -299,14 +301,14 @@
 - Se verifican la animación clásica de 26 GRH, las posiciones VB6 `X=25`/`Y=45`, los grupos direccionales 6/6/5/5, el modo offset y la indexación simple.
 - Build Release y la suite de pruebas verificadas: 0 errores y 0 advertencias.
 
-## [0.0.51-beta] - 2026-10-28
+## v0.0.51-beta - 2026-10-28
 
 ### Corrección — Issue #14
 
 - Se conserva el texto de desplazamiento VB6 `-38º0` al seleccionar la plantilla `(pj) clásico`, manteniendo también el valor Y en cero.
 - Build Release y pruebas existentes verificadas: 0 errores y 0 advertencias.
 
-## [0.0.50-beta] - 2026-10-28
+## v0.0.50-beta - 2026-10-28
 
 ### Avance — Issue #14
 
@@ -316,7 +318,7 @@
 - La previsualización no modifica `Graficos.ind` hasta pulsar `Crear`.
 - Build Release y pruebas existentes verificadas: 0 errores y 0 advertencias.
 
-## [0.0.49-beta] - 2026-10-28
+## v0.0.49-beta - 2026-10-28
 
 ### Avance — Issue #14
 
@@ -325,7 +327,7 @@
 - Se mantiene la creación del GRH final y la conexión con el índice direccional auxiliar de Body/Arma/Escudo/Alas/Espalda/Botas.
 - Build Release y pruebas existentes verificadas: 0 errores y 0 advertencias.
 
-## [0.0.48-beta] - 2026-10-28
+## v0.0.48-beta - 2026-10-28
 
 ### Avance — Issue #14
 
@@ -339,7 +341,7 @@
 
 Todos los cambios relevantes de este proyecto se documentan aquí.
 
-## [0.0.47-beta] - 2026-10-28
+## v0.0.47-beta - 2026-10-28
 
 ### En progreso — Issue #7
 
@@ -351,7 +353,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Se corrigió la incompatibilidad del diseñador causada por lambdas dentro de `MainForm.Designer.cs`.
 - Build Release correcta con 0 errores y 0 advertencias.
 
-## [0.0.46-beta] - 2026-10-27
+## v0.0.46-beta - 2026-10-27
 
 ### En progreso — Issue #7
 
@@ -360,7 +362,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Se añadieron los valores iniciales de dimensiones y BMP observados en el original.
 - Build Release correcta con 0 errores y 0 advertencias.
 
-## [0.0.45-beta] - 2026-10-27
+## v0.0.45-beta - 2026-10-27
 
 ### En progreso — Issue #7
 
@@ -369,7 +371,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Se alinearon los controles principales con las posiciones de `FormAuto.frm`.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.44-beta] - 2026-10-27
+## v0.0.44-beta - 2026-10-27
 
 ### En progreso — Issue #7
 
@@ -377,7 +379,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Se mejora la compatibilidad del árbol de controles con el diseñador visual de Visual Studio.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.43-beta] - 2026-10-27
+## v0.0.43-beta - 2026-10-27
 
 ### En progreso — Issue #7
 
@@ -385,7 +387,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Se eliminaron llamadas auxiliares y lambdas del archivo del diseñador para mejorar la compatibilidad con Visual Studio.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.42-beta] - 2026-10-27
+## v0.0.42-beta - 2026-10-27
 
 ### En progreso — Issue #7
 
@@ -394,7 +396,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Se corrige el error del diseñador en la línea 24.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.41-beta] - 2026-10-26
+## v0.0.41-beta - 2026-10-26
 
 ### En progreso — Issue #7
 
@@ -403,7 +405,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Se incorporaron los campos, radios, botones y grupos principales del formulario VB6.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.40-beta] - 2026-10-26
+## v0.0.40-beta - 2026-10-26
 
 ### En progreso — Issue #7
 
@@ -412,7 +414,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Se corrige el error del diseñador de Visual Studio sobre la primera clase del archivo.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.39-beta] - 2026-10-26
+## v0.0.39-beta - 2026-10-26
 
 ### En progreso — Issue #7
 
@@ -420,7 +422,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Visual Studio identifica ahora el autoindexador como formulario WinForms y habilita `Ver diseñador`.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.38-beta] - 2026-10-26
+## v0.0.38-beta - 2026-10-26
 
 ### En progreso — Issue #7
 
@@ -429,7 +431,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Se mantiene la lógica de selección de BMP y creación de GRH/animación.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.37-beta] - 2026-10-26
+## v0.0.37-beta - 2026-10-26
 
 ### En progreso — Issue #7
 
@@ -440,7 +442,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Se añadió una prueba de generación de cuadrícula y animación.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.36-beta] - 2026-10-26
+## v0.0.36-beta - 2026-10-26
 
 ### En progreso — Issue #7
 
@@ -450,7 +452,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Se añadió protección para BMPs fuera del rango del formato Integer.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.35-beta] - 2026-10-26
+## v0.0.35-beta - 2026-10-26
 
 ### En progreso — Issue #7
 
@@ -459,7 +461,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Los BMP sin coincidencias muestran el mensaje en `LUlitError` sin abrir diálogos innecesarios.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.34-beta] - 2026-10-26
+## v0.0.34-beta - 2026-10-26
 
 ### En progreso — Issue #6
 
@@ -468,7 +470,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - El cambio solo afecta a la previsualización y no modifica los datos del índice.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.33-beta] - 2026-10-26
+## v0.0.33-beta - 2026-10-26
 
 ### En progreso — Issue #6
 
@@ -476,7 +478,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Se muestran nombres y extensiones coherentes: `Graficos.ind`, `Personajes.ind`, `Alas.ind`, `Fxs.ind`, `Armas.dat`, etc.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.32-beta] - 2026-10-26
+## v0.0.32-beta - 2026-10-26
 
 ### En progreso — Issue #6
 
@@ -485,7 +487,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Se confirma la escritura y se actualizan las rutas activas tras guardar la copia.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.31-beta] - 2026-10-26
+## v0.0.31-beta - 2026-10-26
 
 ### En progreso — Issue #6
 
@@ -495,7 +497,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - `Resource` permanece protegido porque no es un índice editable.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.30-beta] - 2026-10-26
+## v0.0.30-beta - 2026-10-26
 
 ### En progreso — Issue #6
 
@@ -504,7 +506,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Se recoloca `Fx` debajo de los nuevos botones para evitar solapamientos.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.29-beta] - 2026-10-26
+## v0.0.29-beta - 2026-10-26
 
 ### En progreso — Issue #6
 
@@ -514,7 +516,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - `Resource` permanece protegido porque no representa un índice editable.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.28-beta] - 2026-10-26
+## v0.0.28-beta - 2026-10-26
 
 ### En progreso — Issue #6
 
@@ -524,7 +526,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Los slots numerados de índices auxiliares quedan pendientes de sus diálogos Guardar como específicos.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.27-beta] - 2026-10-26
+## v0.0.27-beta - 2026-10-26
 
 ### En progreso — Issue #6
 
@@ -533,7 +535,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - La lista de GRH se refresca ordenada por identificador y la selección se sitúa automáticamente en el destino.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.26-beta] - 2026-10-26
+## v0.0.26-beta - 2026-10-26
 
 ### En progreso — Issue #6
 
@@ -543,7 +545,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Se mantienen validaciones de límites, confirmación de sobrescritura y protección de Resource.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.25-beta] - 2026-10-26
+## v0.0.25-beta - 2026-10-26
 
 ### En progreso — Issue #6
 
@@ -553,7 +555,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Los recursos quedan protegidos porque no son registros editables del índice.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.24-beta] - 2026-10-26
+## v0.0.24-beta - 2026-10-26
 
 ### En progreso — Issue #6
 
@@ -563,7 +565,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Los estados auxiliares permanecen protegidos hasta disponer de sus escritores específicos.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.23-beta] - 2026-10-26
+## v0.0.23-beta - 2026-10-26
 
 ### En progreso — Issue #5
 
@@ -574,7 +576,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Los mensajes detallados se muestran en `LUlitError`.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.22-beta] - 2026-10-26
+## v0.0.22-beta - 2026-10-26
 
 ### En progreso — Issue #5
 
@@ -584,7 +586,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Las búsquedas muestran en ese mismo área los mensajes equivalentes a “F3 para continuar la búsqueda” y “Se terminó la búsqueda”.
 - Build Release y pruebas pasan con 0 errores y 0 advertencias.
 
-## [0.0.21-beta] - 2026-10-26
+## v0.0.21-beta - 2026-10-26
 
 ### En progreso — Issue #5
 
@@ -593,7 +595,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - El loop continúa reiniciando en el primer frame al superar el último.
 - Issue #5 sigue abierto para validar fluidez visual con recursos reales.
 
-## [0.0.20-beta] - 2026-10-26
+## v0.0.20-beta - 2026-10-26
 
 ### En progreso — Issue #5
 
@@ -603,7 +605,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - El timer deja de sobrescribir la lista de frames con el número del frame actual.
 - Issue #5 sigue abierto para validar visualmente errores de recursos ausentes.
 
-## [0.0.19-beta] - 2026-10-26
+## v0.0.19-beta - 2026-10-26
 
 ### En progreso — Issue #5
 
@@ -611,7 +613,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Las búsquedas conservan esa etiqueta sin perder la resolución del ID real al seleccionar un elemento.
 - Issue #5 sigue abierto para validar fluidez con recursos reales y completar pruebas visuales automatizadas.
 
-## [0.0.18-beta] - 2026-10-26
+## v0.0.18-beta - 2026-10-26
 
 ### En progreso — Issue #5
 
@@ -620,7 +622,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - El ritmo almacenado del GRH se conserva como duración de cada frame.
 - Issue #5 sigue abierto para validar fluidez con recursos reales y completar pruebas visuales automatizadas.
 
-## [0.0.17-beta] - 2026-10-26
+## v0.0.17-beta - 2026-10-26
 
 ### En progreso — Issue #5
 
@@ -629,7 +631,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - La caché se libera al cerrar el programa o al cambiar las rutas de configuración.
 - Issue #5 sigue abierto para validar fluidez con los recursos reales y completar pruebas visuales automatizadas.
 
-## [0.0.16-beta] - 2026-10-26
+## v0.0.16-beta - 2026-10-26
 
 ### En progreso — Issue #5
 
@@ -638,7 +640,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - Los índices auxiliares inválidos se omiten individualmente para que no bloqueen el visor.
 - Issue #5 sigue abierto para completar las pruebas visuales automatizadas y la cobertura de recursos no indexados.
 
-## [0.0.15-beta] - 2026-10-26
+## v0.0.15-beta - 2026-10-26
 
 ### En progreso — Issue #5
 
@@ -646,7 +648,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 - La cifra se actualiza al seleccionar un GRH, una dirección o un FX, sustituyendo los textos fijos anteriores.
 - Issue #5 sigue abierto para completar la cobertura de referencias entre todos los índices y las pruebas visuales.
 
-## [0.0.14-beta] - 2026-10-26
+## v0.0.14-beta - 2026-10-26
 
 ### En progreso — Issue #5
 
@@ -765,7 +767,7 @@ Todos los cambios relevantes de este proyecto se documentan aquí.
 
 Cada issue se cerrará únicamente cuando la funcionalidad esté implementada, probada, documentada en esta sección y subida a Git. Las versiones futuras enlazarán explícitamente cada cambio con su issue.
 
-## [0.0.1] - 2026-10-25
+## v0.0.1 - 2026-10-25
 
 ### Añadido
 
