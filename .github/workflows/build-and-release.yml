@@ -76,9 +76,14 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $iscc = "$env:ProgramFiles(x86)\Inno Setup 6\ISCC.exe"
-          if (!(Test-Path $iscc)) { $iscc = "$env:ProgramFiles\Inno Setup 6\ISCC.exe" }
-          if (!(Test-Path $iscc)) { throw 'No se encontró ISCC.exe' }
+          $isccCandidates = @(
+            "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
+            "$env:ProgramFiles\Inno Setup 6\ISCC.exe",
+            'C:\ProgramData\chocolatey\bin\ISCC.exe',
+            'C:\Program Files (x86)\Inno Setup 6\ISCC.exe'
+          )
+          $iscc = $isccCandidates | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+          if ([string]::IsNullOrWhiteSpace($iscc)) { throw 'No se encontró ISCC.exe después de instalar Inno Setup.' }
           New-Item -ItemType Directory -Force -Path publish | Out-Null
           & $iscc /Sspawn=0 /V=1 "/DMyAppVersion=$env:RELEASE_VERSION" `
             "/O$env:GITHUB_WORKSPACE\publish" "$env:GITHUB_WORKSPACE\installer.iss"
