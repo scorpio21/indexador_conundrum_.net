@@ -47,13 +47,13 @@ jobs:
         run: choco install innosetup -y --no-progress
 
       - name: Restore
-        run: dotnet restore EncodeNet8\EncodeNet8\EncodeNet8.csproj
+        run: dotnet restore EncodeNet8\EncodeNet8.csproj
 
       - name: Publicar EncodeNet8
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          dotnet publish EncodeNet8\EncodeNet8\EncodeNet8.csproj `
+          dotnet publish EncodeNet8\EncodeNet8.csproj `
             -c Release -r win-x64 --self-contained true `
             /p:PublishSingleFile=true /p:PublishTrimmed=false `
             /p:VersionPrefix=$env:RELEASE_VERSION `
